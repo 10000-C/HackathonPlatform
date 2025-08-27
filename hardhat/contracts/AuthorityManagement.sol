@@ -8,8 +8,9 @@ contract AuthorityManagement {
     event UserUnblocked(address indexed user);
 
     address public owner;
-    mapping(address => bool) public authority;
-    mapping(address => bool) public isBlocked;
+    mapping(address => bool) private authority;// admin
+    mapping(address => bool) private isBlocked;
+    mapping(address => bool) private isOrganizer;
 
     constructor() {
         owner = msg.sender;
@@ -44,6 +45,16 @@ contract AuthorityManagement {
         return isBlocked[_user];
     }
 
+    //manage organizer
+    function addOrganizer(address _organizer) public onlyAdmin {
+        isOrganizer[_organizer] = true;
+    }
+    function removeOrganizer(address _organizer) public onlyAdmin {
+        isOrganizer[_organizer] = false;
+    }
+    function isAnOrganizer(address _organizer) public view returns (bool) {
+        return isOrganizer[_organizer];
+    }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the owner");
