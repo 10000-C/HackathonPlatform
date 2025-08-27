@@ -59,6 +59,14 @@ contract ActivitiesManagement {
         activities[_activityId].cuParticipants++;
     } 
 
+    function withdrawFromActivity(uint256 _activityId) public onlyLegalUser {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        require(isParticipant[_activityId][msg.sender] == true, "Not a participant in this activity");
+        
+        isParticipant[_activityId][msg.sender] = false;
+        activities[_activityId].cuParticipants--;
+    }
+
     modifier onlyOrganizer() {
         require(authorityManagement.isAnOrganizer(msg.sender), "Not an organizer");
         _;
