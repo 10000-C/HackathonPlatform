@@ -5,7 +5,7 @@ import "./AuthorityManagement.sol";
 
 contract ActivitiesManagement { 
     event ActivityCreated(uint256 indexed activityId, Activity activity);
-    event AcitivityUpdated(uint256 indexed activityId, Activity activity);
+    event ActivityUpdated(uint256 indexed activityId, Activity activity);
     event ActivityStateUpdated(uint256 indexed activityId, string newState);
     event ParticipantAdded(uint256 indexed activityId, address participant);
     event ParticipantRemoved(uint256 indexed activityId, address participant);
@@ -57,17 +57,36 @@ contract ActivitiesManagement {
         emit ActivityCreated(activityCount, newActivity);
     }
 
+    function updateActivity(
+        uint256 _activityId,
+        string memory _dataCID,
+        string memory _location,
+        string memory _topic,
+        uint256 _maxParticipants
+    ) public onlyOrganizer {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        require(activities[_activityId].creator == msg.sender, "Not the creator of the activity");
+        Activity storage activity = activities[_activityId];
+        activity.dataCID = _dataCID;
+        activity.location = _location;
+        activity.topic = _topic;
+        activity.maxParticipants = _maxParticipants;
+        emit ActivityUpdated(_activityId, activity);
+    }
+
     function deleteActivity(uint256 _activityId) public onlyOrganizer {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
         require(activities[_activityId].creator != address(0), "Activity does not exist");
         require(activities[_activityId].creator == msg.sender, "Not the creator of the activity");
         delete activities[_activityId];
+        emit ActivityDeleted(_activityId, msg.sender);
     } 
 
     function deleteActivityForAdmin(uint256 _activityId) public onlyAdmin {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
         require(activities[_activityId].creator != address(0), "Activity does not exist");
         delete activities[_activityId];
+        emit ActivityDeleted(_activityId, msg.sender);
     }
 
     function getActivity(uint256 _activityId) public view returns (Activity memory) {
