@@ -6,15 +6,12 @@ import "./AuthorityManagement.sol";
 contract ActivitiesManagement { 
     event ActivityCreated(uint256 indexed activityId, Activity activity);
     event ActivityUpdated(uint256 indexed activityId, Activity activity);
-    event ActivityStateUpdated(uint256 indexed activityId, string newState);
     event ParticipantAdded(uint256 indexed activityId, address participant);
     event ParticipantRemoved(uint256 indexed activityId, address participant);
     event ActivityDeleted(uint256 indexed activityId, address user);
     
     struct Activity {
         string dataCID; //IPFS CID for JSON metadata
-        string location;
-        string state;// upcoming, ongoing, completed
         string topic;
         address creator;
         uint256 maxParticipants;
@@ -37,7 +34,6 @@ contract ActivitiesManagement {
 
     function createActivity(
         string memory _dataCID,
-        string memory _location,
         string memory _topic,
         uint256 _maxParticipants,
         uint256 _cuParticipants
@@ -49,8 +45,6 @@ contract ActivitiesManagement {
             maxParticipants: _maxParticipants,
             cuParticipants: _cuParticipants,
             activityId: activityCount,
-            state: "upcoming",
-            location: _location,
             topic: _topic
         });
         activities[activityCount] = newActivity;
@@ -60,7 +54,6 @@ contract ActivitiesManagement {
     function updateActivity(
         uint256 _activityId,
         string memory _dataCID,
-        string memory _location,
         string memory _topic,
         uint256 _maxParticipants
     ) public onlyOrganizer {
@@ -68,7 +61,6 @@ contract ActivitiesManagement {
         require(activities[_activityId].creator == msg.sender, "Not the creator of the activity");
         Activity storage activity = activities[_activityId];
         activity.dataCID = _dataCID;
-        activity.location = _location;
         activity.topic = _topic;
         activity.maxParticipants = _maxParticipants;
         emit ActivityUpdated(_activityId, activity);
@@ -93,15 +85,6 @@ contract ActivitiesManagement {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
         require(activities[_activityId].creator != address(0), "Activity does not exist");
         return activities[_activityId];
-    }
-
-    function updateActivityState(uint256 _activityId, string memory newState) public onlyOrganizer {
-        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
-        require(activities[_activityId].creator == msg.sender, "Not the creator of the activity");
-        require(compareStrings(newState,"upcoming") || compareStrings(newState,"ongoing") || compareStrings(newState,"completed"), "Invalid state");
-        require(!compareStrings(newState,activities[_activityId].state), "Activity is already in this state");
-        activities[_activityId].state = newState;
-        emit ActivityStateUpdated(_activityId, newState);
     }
 
     function participateInActivity(uint256 _activityId) public onlyLegalUser {
