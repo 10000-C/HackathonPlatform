@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts"
+import { BigInt, Bytes, store } from "@graphprotocol/graph-ts"
 import {
   ActivitiesManagement,
   ActivityCreated,
@@ -7,32 +7,22 @@ import {
   ParticipantAdded,
   ParticipantRemoved
 } from "../generated/ActivitiesManagement/ActivitiesManagement"
-import { ExampleEntity } from "../generated/schema"
+import { Activity } from "../generated/schema"
 
 export function handleActivityCreated(event: ActivityCreated): void {
   // Entities can be loaded from the store using an ID; this ID
   // needs to be unique across all entities of the same type
-  const id = event.transaction.hash.concat(
-    Bytes.fromByteArray(Bytes.fromBigInt(event.logIndex))
+  const entity = new Activity(
+    Bytes.fromByteArray(Bytes.fromBigInt(event.params.activityId))
   )
-  let entity = ExampleEntity.load(id)
+  
 
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (!entity) {
-    entity = new ExampleEntity(id)
 
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
-  }
-
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
 
   // Entity fields can be set based on event parameters
   entity.activityId = event.params.activityId
   entity.activity_dataCID = event.params.activity.dataCID
-
+  entity.activity_topic = event.params.activity.topic
   // Entities can be written to the store with `.save()`
   entity.save()
 
@@ -58,9 +48,25 @@ export function handleActivityCreated(event: ActivityCreated): void {
   // - contract.isParticipantInActivity(...)
 }
 
-export function handleActivityDeleted(event: ActivityDeleted): void {}
+export function handleActivityDeleted(event: ActivityDeleted): void {
+  let id = Bytes.fromByteArray(Bytes.fromBigInt(event.params.activityId));
+  let entity = Activity.load(id);
+  if (entity == null) {
+    return;
+  }
+  store.remove("Activity", id.toHexString());
+}
 
-export function handleActivityUpdated(event: ActivityUpdated): void {}
+export function handleActivityUpdated(event: ActivityUpdated): void {
+  let id = Bytes.fromByteArray(Bytes.fromBigInt(event.params.activityId));
+  let entity = Activity.load(id);
+  if (entity == null) {
+    return;
+  }
+  entity.activity_dataCID = event.params.activity.dataCID
+  entity.activity_topic = event.params.activity.topic
+  entity.save();
+}
 
 export function handleParticipantAdded(event: ParticipantAdded): void {}
 
