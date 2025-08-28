@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import { useWallet } from '../utils/WalletContext';
 
 export default function HomePage() {
-  const { isWalletConnected } = useWallet();
+  const { isWalletConnected, connectToWallet } = useWallet();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -31,9 +31,22 @@ export default function HomePage() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="inline-block"
             >
-              <button className="px-8 py-4 bg-[#0066cc] text-white rounded-lg text-lg font-semibold shadow-lg hover:bg-[#0066cc]/90 transition-colors">
-                Start Exploring
+              <button 
+                onClick={() => {
+                  if (isWalletConnected) {
+                    window.location.href = '/hackathons';
+                  } else {
+                    connectToWallet();
+                  }
+                }}
+                className="px-8 py-4 text-lg font-semibold rounded-lg
+                  cursor-pointer transition-all duration-200 ease-in-out
+                  bg-gradient-to-r from-[#0066cc] to-[#5e5ce6] 
+                  text-white shadow-lg 
+                  hover:shadow-xl">
+                {isWalletConnected ? 'Start Exploring' : 'Connect Wallet'}
               </button>
             </motion.div>
           </motion.div>
@@ -95,14 +108,23 @@ export default function HomePage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 bg-[#0066cc] text-white rounded-lg font-semibold shadow-lg hover:bg-[#0066cc]/90 transition-colors"
+              className="px-8 py-3 font-semibold rounded-lg cursor-pointer
+                transition-all duration-200 ease-in-out
+                bg-gradient-to-r from-[#0066cc] to-[#5e5ce6] 
+                text-white shadow-lg 
+                hover:shadow-xl"
             >
               Join Now
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 bg-white text-[#0066cc] border-2 border-[#0066cc] rounded-lg font-semibold shadow-lg hover:bg-gray-50 transition-colors"
+              className="px-8 py-3 font-semibold rounded-lg cursor-pointer
+                transition-all duration-200 ease-in-out
+                bg-white text-[#0066cc] border-2 border-[#0066cc] 
+                shadow-lg hover:shadow-xl 
+                hover:bg-gradient-to-r hover:from-[#0066cc] hover:to-[#5e5ce6] 
+                hover:text-white hover:border-transparent"
             >
               Learn More
             </motion.button>

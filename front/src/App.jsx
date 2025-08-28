@@ -1,11 +1,30 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
-import { WalletProvider } from './utils/WalletContext'
+import HackathonsPage from './pages/HackathonsPage'
+import CreateHackathonForm from './pages/CreateHackathonForm'
+import { WalletProvider, useWallet } from './utils/WalletContext'
+import DashboardLayout from './components/DashboardLayout'
 
 function App() {
   return (
     <WalletProvider>
-      <HomePage />
+      <Router>
+        <Routes>
+          {/* 公开路由 - 未连接钱包时显示首页 */}
+          <Route path="/" element={<HomePage />} />
+          
+          {/* 认证后的路由 */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/hackathons" element={<HackathonsPage />} />
+            <Route path="/create-event" element={<CreateHackathonForm />} />
+            <Route path="/my-participations" element={<div>My Participations Page</div>} />
+            <Route path="/my-projects" element={<div>My Projects Page</div>} />
+            <Route path="/resources" element={<div>Resources Page</div>} />
+            <Route path="/settings" element={<div>Settings Page</div>} />
+          </Route>
+        </Routes>
+      </Router>
     </WalletProvider>
   )
 }

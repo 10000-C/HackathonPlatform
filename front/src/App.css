@@ -2,6 +2,7 @@
 
 #root {
   min-height: 100vh;
+  scrollbar-width: none;
 }
 
 /* 添加平滑滚动效果 */

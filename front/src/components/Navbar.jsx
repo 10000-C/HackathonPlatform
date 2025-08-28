@@ -23,13 +23,13 @@ export default function Navbar() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-8">
-            <a href="#" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium">
+            <a href="#" className="text-gray-700 hover:text-[#0066cc] px-3 py-2 text-sm font-medium cursor-pointer transition-all duration-200 ease-in-out hover:scale-105">
               Explore
             </a>
-            <a href="#" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium">
+            <a href="#" className="text-gray-700 hover:text-[#0066cc] px-3 py-2 text-sm font-medium cursor-pointer transition-all duration-200 ease-in-out hover:scale-105">
               Hackthon
             </a>
-            <a href="#" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium">
+            <a href="#" className="text-gray-700 hover:text-[#0066cc] px-3 py-2 text-sm font-medium cursor-pointer transition-all duration-200 ease-in-out hover:scale-105">
               Resource
             </a>
           </div>
@@ -38,7 +38,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             {/* Language Selector */}
             <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center text-gray-700 hover:text-primary">
+              <Menu.Button className="flex items-center text-gray-700 hover:text-[#0066cc] cursor-pointer transition-all duration-200 ease-in-out hover:scale-105">
                 <GlobeAltIcon className="h-5 w-5" />
               </Menu.Button>
               <Transition
@@ -50,18 +50,18 @@ export default function Navbar() {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 mt-2 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Items className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="py-1">
                     <Menu.Item>
                       {({ active }) => (
-                        <a href="#" className={`${active ? 'bg-gray-100' : ''} block px-4 py-2 text-sm text-gray-700`}>
+                        <a href="#" className={`${active ? 'bg-gray-50 text-[#0066cc]' : 'text-gray-700'} block px-4 py-2 text-sm cursor-pointer transition-all duration-200 ease-in-out`}>
                           简体中文
                         </a>
                       )}
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a href="#" className={`${active ? 'bg-gray-100' : ''} block px-4 py-2 text-sm text-gray-700`}>
+                        <a href="#" className={`${active ? 'bg-gray-50 text-[#0066cc]' : 'text-gray-700'} block px-4 py-2 text-sm cursor-pointer transition-all duration-200 ease-in-out`}>
                           English
                         </a>
                       )}
@@ -74,7 +74,12 @@ export default function Navbar() {
             {/* Wallet Connection */}
             <button
               onClick={isWalletConnected ? disconnectWallet : connectToWallet}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="inline-flex items-center px-6 py-2.5 text-sm font-medium rounded-lg 
+              cursor-pointer transition-all duration-200 ease-in-out
+              border-2 border-[#0066cc] 
+              bg-gradient-to-r from-[#0066cc] to-[#5e5ce6] 
+              text-white hover:shadow-lg hover:scale-105
+              focus:outline-none focus:ring-2 focus:ring-[#0066cc]/50"
             >
               {isWalletConnected ? truncateAddress(currentAccount) : 'Connect Wallet'}
             </button>
