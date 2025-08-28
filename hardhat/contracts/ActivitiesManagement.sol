@@ -47,6 +47,7 @@ contract ActivitiesManagement {
 
     function getActivity(uint256 _activityId) public view returns (Activity memory) {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        require(activities[_activityId].creator != address(0), "Activity does not exist");
         return activities[_activityId];
     }
 

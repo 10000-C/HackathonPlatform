@@ -62,7 +62,7 @@ contract AuthorityManagement {
     }
 
     modifier onlyAdmin() {
-        require(authority[msg.sender], "Not an admin");
+        require(authority[msg.sender], "Not the admin");
         _;
     }
 }
