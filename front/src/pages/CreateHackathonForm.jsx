@@ -7,6 +7,7 @@ import {
   PhotoIcon
 } from '@heroicons/react/24/outline';
 import saveToIPFS from '../utils/SaveToIPFS.jsx';
+import saveToContract from '../utils/SaveToContract.jsx';
 
 const ECOSYSTEMS = ['ethereum', 'solana', 'polygon', 'binance'];
 const TECH_STACKS = ['web3', 'ai', 'defi', 'nft'];
@@ -79,6 +80,7 @@ export default function CreateHackathonForm() {
       };
       const formDataBlob = new Blob([JSON.stringify(finalFormData)], { type: 'application/json' });
       const formDataCID = await saveToIPFS(formDataBlob);
+      const response = await saveToContract(formDataCID,formData.name,formData.maxParticipants);
       navigate('/hackathons');
     } catch (error) {
       setSubmitStatus({ loading: false, error: error.message });
