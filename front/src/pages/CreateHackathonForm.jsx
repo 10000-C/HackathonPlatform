@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   CalendarIcon,
@@ -6,6 +6,7 @@ import {
   TagIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
+import saveToIPFS from '../utils/SaveToIPFS.jsx';
 
 const ECOSYSTEMS = ['ethereum', 'solana', 'polygon', 'binance'];
 const TECH_STACKS = ['web3', 'ai', 'defi', 'nft'];
@@ -46,23 +47,20 @@ export default function CreateHackathonForm() {
     }));
   };
 
+  const latestLogoUrl = useRef('');
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploading(true);
     try {
-      // TODO: 实现文件上传逻辑
-      const formData = new FormData();
-      formData.append('logo', file);
-      
-      // const response = await fetch('/api/upload', {
-      //   method: 'POST',
-      //   body: formData
-      // });
-      // const { url } = await response.json();
-      
-      setFormData(prev => ({ ...prev, logo: 'url' }));
+      // save logo to IPFS
+      const logoCID = await saveToIPFS(file);
+      const logoURL = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${logoCID}`;
+       setFormData(prev => ({ ...prev, logo: logoURL }));
+      latestLogoUrl.current = logoURL; 
+      console.log('Logo uploaded to IPFS with CID:', logoCID);
+      console.log('Logo data in formData:', formData.logo);
     } catch (error) {
       console.error('Error uploading logo:', error);
     } finally {
@@ -75,18 +73,12 @@ export default function CreateHackathonForm() {
     setSubmitStatus({ loading: true, error: null });
 
     try {
-      // TODO: 实现表单提交逻辑
-      // const response = await fetch('/api/hackathons', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
-
-      // if (!response.ok) throw new Error('Failed to create hackathon');
-      
-      // const data = await response.json();
+      const finalFormData = {
+      ...formData,
+      logo: latestLogoUrl.current || formData.logo
+      };
+      const formDataBlob = new Blob([JSON.stringify(finalFormData)], { type: 'application/json' });
+      const formDataCID = await saveToIPFS(formDataBlob);
       navigate('/hackathons');
     } catch (error) {
       setSubmitStatus({ loading: false, error: error.message });
