@@ -1,110 +1,188 @@
-import { useState } from 'react';
-import { 
-  MapIcon, 
-  PlusCircleIcon, 
-  UserGroupIcon, 
-  TrophyIcon,
-  BookOpenIcon,
-  Cog6ToothIcon as CogIcon
-} from '@heroicons/react/24/outline';
 import { Link, useLocation } from 'react-router-dom';
-
-const navigation = [
-  { 
-    name: 'Explore Hackathons', 
-    path: '/hackathons', 
-    icon: MapIcon,
-    description: 'Discover ongoing and upcoming hackathons'
-  },
-  { 
-    name: 'Create Event', 
-    path: '/create-event', 
-    icon: PlusCircleIcon,
-    description: 'Organize your own hackathon'
-  },
-  { 
-    name: 'My Participations', 
-    path: '/my-participations', 
-    icon: UserGroupIcon,
-    description: 'View your registered hackathons'
-  },
-  { 
-    name: 'My Projects', 
-    path: '/my-projects', 
-    icon: TrophyIcon,
-    description: 'Manage your submitted projects'
-  },
-  { 
-    name: 'Resources', 
-    path: '/resources', 
-    icon: BookOpenIcon,
-    description: 'Helpful guides and documentation'
-  },
-  { 
-    name: 'Settings', 
-    path: '/settings', 
-    icon: CogIcon,
-    description: 'Account and profile settings'
-  },
-];
 
 export default function Sidebar() {
   const location = useLocation();
-  const [isHovered, setIsHovered] = useState(null);
 
   return (
-    <div className="w-64 min-h-screen bg-white border-r border-gray-200">
-      <div className="flex flex-col h-full">
-        {/* Logo和名字 */}
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
+    <div className="w-[216px] min-h-screen bg-[#1b1a1d] border-r border-[#2b3640] px-4 py-6">
+      {/* Logo */}
+      <div className="w-12 h-8 mb-8 ml-2">
+        <div className="relative h-8">
           <img
-            src="/logo.svg"
+            className="absolute w-[100%] h-[22px] top-[5px]"
             alt="Logo"
-            className="h-8 w-8"
+            src="/src/assets/logo.png"
           />
-          <span className="ml-2 text-xl font-semibold text-gray-900">HackQuest</span>
-        </div>
-        
-        <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-          <div className="flex-1 px-3 space-y-1">
-            {navigation.map((item) => {
-              const isActive = location.pathname === item.path;
-              const isItemHovered = isHovered === item.path;
-
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`
-                    group relative flex items-center px-4 py-3 text-sm font-medium rounded-lg
-                    transition-all duration-200 ease-in-out
-                    ${isActive 
-                      ? 'bg-[#0066cc]/10 text-[#0066cc]' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                  onMouseEnter={() => setIsHovered(item.path)}
-                  onMouseLeave={() => setIsHovered(null)}
-                >
-                  <item.icon
-                    className={`mr-3 h-5 w-5 transition-colors
-                      ${isActive ? 'text-[#0066cc]' : 'text-gray-400 group-hover:text-[#0066cc]'}
-                    `}
-                  />
-                  <span>{item.name}</span>
-                  
-                  {/* Tooltip */}
-                  {isItemHovered && !isActive && (
-                    <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg w-48">
-                      {item.description}
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
         </div>
       </div>
+
+      {/* Navigation */}
+      <nav className="flex flex-col space-y-6 mt-[40px]">
+        {/* Quest Section */}
+        <div className="space-y-6">
+          <Link 
+            to="/quest"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/quest' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/quest' ? '0092ff' : '949fa8'}/FFFFFF`} 
+              alt="Quest" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Quest</span>
+          </Link>
+        </div>
+        
+        <div className="h-px w-[184px] bg-[#2b3640]" />
+
+        {/* Certifications & Course */}
+        <div className="space-y-6">
+          <Link 
+            to="/certifications"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/certifications' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/certifications' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Certifications" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">My Certifications</span>
+          </Link>
+          <Link 
+            to="/course"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/course' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/course' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Course" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Explore Course</span>
+          </Link>
+        </div>
+
+        <div className="h-px w-[184px] bg-[#2b3640]" />
+
+        {/* Main Navigation */}
+        <div className="space-y-5">
+          <Link 
+            to="/dashboard"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/dashboard' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/dashboard' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Dashboard" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Dashboard</span>
+          </Link>
+          <Link 
+            to="/hackathons"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full h-12 ${
+              location.pathname === '/hackathons' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/hackathons' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Hackathons" 
+              className="w-4 h-4"
+            />
+            <span className="text-sm">Explore Hackathons</span>
+          </Link>
+          <Link 
+            to="/archive"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/archive' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/archive' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Archive" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Project Archive</span>
+          </Link>
+        </div>
+
+        <div className="h-px w-[184px] bg-[#2b3640]" />
+
+        {/* Footer Links */}
+        <div className="space-y-5">
+          <Link 
+            to="/events"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/events' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/events' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Events" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Community Events</span>
+          </Link>
+          <Link 
+            to="/camps"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/camps' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/camps' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Camps" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Learning Camps</span>
+          </Link>
+          <Link 
+            to="/support"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/support' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/support' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Support" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Discussion & Support</span>
+          </Link>
+          <Link 
+            to="/advocate"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/advocate' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/advocate' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="Advocate" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">Advocate Program</span>
+          </Link>
+          <Link 
+            to="/more"
+            className={`flex items-center gap-2 text-[#949fa8] hover:text-white w-full ${
+              location.pathname === '/more' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
+            }`}
+          >
+            <img 
+              src={`https://placehold.co/16x16/${location.pathname === '/more' ? '0092ff' : '949fa8'}/FFFFFF`}
+              alt="More" 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">More</span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 }

@@ -44,6 +44,65 @@ const filters = {
   ],
 };
 
+
+
+// 模拟数据
+const mockHackathons = [
+  {
+    id: 1,
+    name: "Web3 Innovation Challenge",
+    description: "Build the next generation of decentralized applications with cutting-edge blockchain technology.",
+    logo: "",  // 留空以使用占位图
+    techStack: ["Solidity", "React", "Node.js"],
+    registrationEnd: "Sep 30, 2025",
+    prizePool: 50000,
+    level: "Advanced",
+    participants: 248,
+    status: "Active",
+    ecosystem: "ethereum"
+  },
+  {
+    id: 2,
+    name: "AI + Blockchain Hackathon",
+    description: "Combine artificial intelligence with blockchain to create innovative solutions for real-world problems.",
+    logo: "",  // 留空以使用占位图
+    techStack: ["Python", "TensorFlow", "Ethereum"],
+    registrationEnd: "Oct 15, 2025",
+    prizePool: 75000,
+    level: "Intermediate",
+    participants: 186,
+    status: "Upcoming",
+    ecosystem: "solana"
+  },
+  {
+    id: 3,
+    name: "DeFi Protocol Challenge",
+    description: "Create innovative DeFi solutions on Polygon network.",
+    logo: "",  // 留空以使用占位图
+    techStack: ["Solidity", "Web3.js", "React"],
+    registrationEnd: "Nov 1, 2025",
+    prizePool: 100000,
+    level: "Advanced",
+    participants: 312,
+    status: "Active",
+    ecosystem: "polygon"
+  },
+  {
+    id: 4,
+    name: "NFT Gaming Hackathon",
+    description: "Build the next generation of blockchain games with NFT integration.",
+    logo: "",  // 留空以使用占位图
+    techStack: ["Unity", "Solidity", "NFT"],
+    registrationEnd: "Sep 15, 2025",
+    prizePool: 30000,
+    level: "Intermediate",
+    participants: 156,
+    status: "Ended",
+    ecosystem: "binance"
+  },
+];
+
+
 export default function HackathonsPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -232,41 +291,75 @@ export default function HackathonsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* 页面标题和创建按钮 */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Explore Hackathons</h1>
+    <div className="flex-1 min-h-screen bg-[#1b1a1d] px-40">
+      {/* Banner Section */}
+      <div className="relative h-[400px] overflow-hidden mb-8">
+        <img
+          src="src/assets/Hero Image.jpg"
+          alt="Open Source Frontier"
+          className="w-full h-full object-cover rounded-lg"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1a1d] via-transparent to-transparent" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center px-6">
+            <h1 className="text-5xl font-bold text-white mb-4">Open Source Frontier</h1>
+            <p className="text-[#949fa8] text-lg mb-8">AI x WEB3 x Transparency</p>
+            <div className="flex items-center justify-center gap-8 text-white">
+              <div className="text-center">
+                <div className="font-medium mb-1">Registration Close</div>
+                <div className="text-[#949fa8]">12 days left</div>
+              </div>
+              <div className="text-center">
+                <div className="font-medium mb-1">Tech Stack</div>
+                <div className="text-[#949fa8]">All tech stacks</div>
+              </div>
+              <div className="text-center">
+                <div className="font-medium mb-1">Level</div>
+                <div className="text-[#949fa8]">All levels accepted</div>
+              </div>
+              <div className="text-center">
+                <div className="font-medium mb-1">Total Prize</div>
+                <div className="text-[#949fa8]">50,000.00 USD</div>
+              </div>
+            </div>
+            <button className="mt-8 px-6 py-2 bg-[#0092ff] text-white rounded-lg hover:bg-[#0092ff]/90 transition-colors">
+              Start Register
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-8">
+        {/* Welcome Text and Host Button */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-white text-lg font-medium mb-2">Explore Hackathons</h2>
+            <p className="text-[#949fa8] text-sm">
+              Welcome to your hackathon dashboard! Manage projects, share innovations, and track your hackathon journey with ease — all in one place.
+            </p>
+          </div>
           <button
             onClick={() => navigate('/create-event')}
-            className="inline-flex items-center px-4 py-2 bg-[#0066cc] text-white rounded-lg hover:bg-[#0066cc]/90 transition-colors"
+            className="px-4 py-2 bg-[#0092ff] text-white text-sm rounded-lg hover:bg-[#0092ff]/90 transition-colors flex items-center gap-2 whitespace-nowrap"
           >
-            <PlusCircleIcon className="w-5 h-5 mr-2" />
-            Create Event
+            <PlusCircleIcon className="w-5 h-5" />
+            Host a Hackathon
           </button>
         </div>
 
-        {/* Search and Filters */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="flex-1 relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search hackathons..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0066cc] focus:border-transparent"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <AdjustmentsHorizontalIcon className="w-5 h-5 text-gray-700" />
-            </button>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-4">
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-4 mb-6 text-sm">
+          <span className="text-[#0092ff] px-2">Total Prize All</span>
+          <span className="text-[#949fa8] hover:text-white px-2">Ecosystem All</span>
+          <span className="text-[#949fa8] hover:text-white px-2">Tech Stack All</span>
+          <span className="text-[#949fa8] hover:text-white px-2">Status Live, Upcoming</span>
+        </div>
+        {/* 过滤器栏 */}
+        <div className="flex items-center space-x-2 mb-6">
+          <span className="text-sm text-[#949fa8]">Filter:</span>
+          <div className="flex items-center space-x-2">
             <FilterButton
-              label="Prize Pool"
+              label="Total Prize"
               options={filters.prizePool}
               value={activeFilters.prizePool}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, prizePool: value }))}
@@ -289,40 +382,21 @@ export default function HackathonsPage() {
               value={activeFilters.status}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, status: value }))}
             />
+          </div>
+          <div className="flex-1"></div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-[#949fa8]">Sort by:</span>
             <FilterButton
-              label="Sort by"
+              label="Sort"
               options={filters.sortBy}
               value={activeFilters.sortBy}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, sortBy: value }))}
             />
-            
-            {/* 清除筛选器按钮 */}
-            {(activeFilters.prizePool !== 'all' ||
-              activeFilters.ecosystem !== 'all' ||
-              activeFilters.techStack !== 'all' ||
-              activeFilters.status !== 'all' ||
-              searchQuery) && (
-              <button
-                onClick={() => {
-                  setActiveFilters({
-                    prizePool: 'all',
-                    ecosystem: 'all',
-                    techStack: 'all',
-                    status: 'all',
-                    sortBy: 'latest',
-                  });
-                  setSearchQuery('');
-                }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Clear Filters
-              </button>
-            )}
           </div>
         </div>
 
         {/* Hackathon Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-4">
           {filteredHackathons.length > 0 ? (
             filteredHackathons.map(hackathon => (
               <HackathonCard
@@ -334,8 +408,8 @@ export default function HackathonsPage() {
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-500 text-lg">
+            <div className="text-center py-12">
+              <p className="text-[#949fa8] text-sm">
                 No hackathons found matching your criteria.
               </p>
             </div>
