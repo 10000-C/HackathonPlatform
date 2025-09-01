@@ -1,6 +1,89 @@
 import PropTypes from 'prop-types';
 
+// 根据日期确定活动状态的辅助函数
+const calculateStatus = (startDate, registrationEnd, endDate) => {
+  const now = new Date();
+  
+  // 确保日期格式正确
+  const start = new Date(startDate);
+  const regEnd = new Date(registrationEnd);
+  const end = new Date(endDate);
+  
+  if (isNaN(start) || isNaN(regEnd) || isNaN(end)) {
+    return 'Unknown';
+  }
+
+  if (now < start) {
+    return 'upcoming';
+  } else if (now >= start && now <= end) {
+    return 'active';
+  } else {
+    return 'ended';
+  }
+};
+
+// 检查注册是否已结束
+const isRegistrationEnded = (registrationEnd) => {
+  const now = new Date();
+  const regEnd = new Date(registrationEnd);
+  
+  if (isNaN(regEnd)) return true;
+  
+  return now > regEnd;
+};
+
+// 格式化日期显示
+const formatDateDifference = (targetDate) => {
+  const now = new Date();
+  const target = new Date(targetDate);
+  
+  if (isNaN(target)) return 'Unknown';
+  
+  const diffTime = target - now;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) {
+    return 'Ended';
+  } else if (diffDays === 0) {
+    return 'Today';
+  } else if (diffDays === 1) {
+    return '1 day left';
+  } else {
+    return `${diffDays} days left`;
+  }
+};
+
 const HackathonCard = ({ hackathon }) => {
+  // 计算活动状态
+  const calculatedStatus = calculateStatus(
+    hackathon.startDate,
+    hackathon.registrationEnd,
+    hackathon.endDate
+  );
+  
+  // 检查注册是否已结束
+  const registrationEnded = isRegistrationEnded(hackathon.registrationEnd);
+  
+  // 根据状态确定显示文本
+  const statusDisplay = {
+    'upcoming': 'Upcoming',
+    'active': 'Live',
+    'ended': 'Ended',
+    'Unknown': 'Unknown'
+  }[calculatedStatus] || 'Unknown';
+  
+  // 确定是否显示"days left"信息
+  let daysLeftDisplay = '';
+  if (calculatedStatus === 'active' || calculatedStatus === 'upcoming') {
+    if (registrationEnded) {
+      daysLeftDisplay = 'Registration ended';
+    } else {
+      daysLeftDisplay = formatDateDifference(hackathon.registrationEnd);
+    }
+  } else if (calculatedStatus === 'ended') {
+    daysLeftDisplay = 'Ended';
+  }
+
   return (
     <div className="group">
       <div className="bg-[#2b3640] rounded-lg p-6 flex gap-6 hover:bg-[#3d4654] transition-all">
@@ -8,8 +91,14 @@ const HackathonCard = ({ hackathon }) => {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-white text-lg font-medium">{hackathon.name}</h3>
-            {hackathon.status === 'Active' && (
+            {calculatedStatus === 'active' && (
               <span className="px-2 py-0.5 bg-[#0092ff] text-white text-xs rounded">Live</span>
+            )}
+            {calculatedStatus === 'upcoming' && (
+              <span className="px-2 py-0.5 bg-[#ff9900] text-white text-xs rounded">Upcoming</span>
+            )}
+            {calculatedStatus === 'ended' && (
+              <span className="px-2 py-0.5 bg-[#949fa8] text-white text-xs rounded">Ended</span>
             )}
           </div>
           <p className="text-[#949fa8] text-sm mb-6 line-clamp-2">{hackathon.description}</p>
@@ -18,16 +107,20 @@ const HackathonCard = ({ hackathon }) => {
             <div className="flex items-center gap-2">
               <span className="text-[#949fa8] w-20">Status</span>
               <span className="text-white">
-                Voting {hackathon.status === 'Active' ? '12 days left' : 'Ended'}
+                {statusDisplay}{daysLeftDisplay ? `, ${daysLeftDisplay}` : ''}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#949fa8] w-20">Tech stack</span>
-              <span className="text-white">All tech stack</span>
+              <span className="text-white">
+                {hackathon.techStack && hackathon.techStack.length > 0 
+                  ? hackathon.techStack.join(', ') 
+                  : 'Not specified'}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#949fa8] w-20">Level</span>
-              <span className="text-white">All levels accepted</span>
+              <span className="text-white">{hackathon.level || 'Not specified'}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#949fa8] w-20">Total prize</span>
@@ -42,8 +135,15 @@ const HackathonCard = ({ hackathon }) => {
             >
               Details
             </button>
-            <button className="px-6 py-1.5 bg-[#0092ff] text-white rounded hover:bg-[#0092ff]/90 transition-colors">
-              Get Involved
+            <button 
+              disabled={calculatedStatus === 'ended' || registrationEnded}
+              className={`px-6 py-1.5 rounded transition-colors ${
+                (calculatedStatus === 'ended' || registrationEnded)
+                  ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                  : 'bg-[#0092ff] text-white hover:bg-[#0092ff]/90'
+              }`}
+            >
+              {calculatedStatus === 'ended' || registrationEnded ? 'Registration Closed' : 'Get Involved'}
             </button>
           </div>
         </div>
@@ -68,11 +168,12 @@ HackathonCard.propTypes = {
     description: PropTypes.string.isRequired,
     logo: PropTypes.string,
     techStack: PropTypes.arrayOf(PropTypes.string).isRequired,
+    startDate: PropTypes.string,
     registrationEnd: PropTypes.string.isRequired,
+    endDate: PropTypes.string,
     prizePool: PropTypes.number.isRequired,
     level: PropTypes.string.isRequired,
     participants: PropTypes.number.isRequired,
-    status: PropTypes.oneOf(['Active', 'Upcoming', 'Ended']).isRequired,
     ecosystem: PropTypes.string.isRequired,
     onViewDetails: PropTypes.func
   }).isRequired
