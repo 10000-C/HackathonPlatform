@@ -2,66 +2,60 @@ import PropTypes from 'prop-types';
 
 const HackathonCard = ({ hackathon }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900">{hackathon.name}</h3>
-          <p className="mt-2 text-gray-600 line-clamp-2">{hackathon.description}</p>
+    <div className="group">
+      <div className="bg-[#2b3640] rounded-lg p-6 flex gap-6 hover:bg-[#3d4654] transition-all">
+        {/* Left Content */}
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-white text-lg font-medium">{hackathon.name}</h3>
+            {hackathon.status === 'Active' && (
+              <span className="px-2 py-0.5 bg-[#0092ff] text-white text-xs rounded">Live</span>
+            )}
+          </div>
+          <p className="text-[#949fa8] text-sm mb-6 line-clamp-2">{hackathon.description}</p>
+          
+          <div className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-[#949fa8] w-20">Status</span>
+              <span className="text-white">
+                Voting {hackathon.status === 'Active' ? '12 days left' : 'Ended'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#949fa8] w-20">Tech stack</span>
+              <span className="text-white">All tech stack</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#949fa8] w-20">Level</span>
+              <span className="text-white">All levels accepted</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#949fa8] w-20">Total prize</span>
+              <span className="text-white">${hackathon.prizePool.toLocaleString()} USD</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => hackathon.onViewDetails?.(hackathon.id)}
+              className="text-[#949fa8] hover:text-white"
+            >
+              Details
+            </button>
+            <button className="px-6 py-1.5 bg-[#0092ff] text-white rounded hover:bg-[#0092ff]/90 transition-colors">
+              Get Involved
+            </button>
+          </div>
         </div>
-        <div className="flex-shrink-0">
-          <img 
-            src={hackathon.logo || 'https://via.placeholder.com/64'} 
-            alt={hackathon.name} 
-            className="w-16 h-16 rounded-lg object-cover"
+
+        {/* Right Image */}
+        <div className="w-[280px] h-[160px] rounded-lg overflow-hidden flex-shrink-0">
+          <img
+            src={hackathon.logo || `https://placehold.co/280x160/2b3640/3d4654/png?text=${hackathon.name}`}
+            alt={hackathon.name}
+            className="w-full h-full object-cover"
           />
         </div>
-      </div>
-      
-      <div className="mt-4 flex flex-wrap gap-2">
-        {hackathon.techStack.map(tech => (
-          <span 
-            key={tech}
-            className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div>
-          <p className="text-sm text-gray-500">Registration Ends</p>
-          <p className="font-medium text-gray-900">{hackathon.registrationEnd}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Prize Pool</p>
-          <p className="font-medium text-gray-900">${hackathon.prizePool.toLocaleString()}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Level</p>
-          <p className="font-medium text-gray-900">{hackathon.level}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Participants</p>
-          <p className="font-medium text-gray-900">{hackathon.participants}</p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <span className={`
-          px-3 py-1 rounded-full text-sm font-medium
-          ${hackathon.status === 'Active' ? 'bg-green-100 text-green-800' :
-            hackathon.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' :
-            'bg-gray-100 text-gray-800'}
-        `}>
-          {hackathon.status}
-        </span>
-        <button 
-          onClick={() => hackathon.onViewDetails?.(hackathon.id)}
-          className="px-4 py-2 bg-[#0066cc] text-white rounded-lg hover:bg-[#0066cc]/90 transition-colors"
-        >
-          View Details
-        </button>
       </div>
     </div>
   );
