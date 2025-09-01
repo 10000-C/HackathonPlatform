@@ -1,0 +1,292 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_authorityManagementAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "activityId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "dataCID", "type": "string" },
+          { "internalType": "string", "name": "topic", "type": "string" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "maxParticipants",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cuParticipants",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "activityId", "type": "uint256" }
+        ],
+        "indexed": false,
+        "internalType": "struct ActivitiesManagement.Activity",
+        "name": "activity",
+        "type": "tuple"
+      }
+    ],
+    "name": "ActivityCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "activityId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "ActivityDeleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "activityId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "dataCID", "type": "string" },
+          { "internalType": "string", "name": "topic", "type": "string" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "maxParticipants",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cuParticipants",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "activityId", "type": "uint256" }
+        ],
+        "indexed": false,
+        "internalType": "struct ActivitiesManagement.Activity",
+        "name": "activity",
+        "type": "tuple"
+      }
+    ],
+    "name": "ActivityUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "activityId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "participant",
+        "type": "address"
+      }
+    ],
+    "name": "ParticipantAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "activityId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "participant",
+        "type": "address"
+      }
+    ],
+    "name": "ParticipantRemoved",
+    "type": "event"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "activities",
+    "outputs": [
+      { "internalType": "string", "name": "dataCID", "type": "string" },
+      { "internalType": "string", "name": "topic", "type": "string" },
+      { "internalType": "address", "name": "creator", "type": "address" },
+      {
+        "internalType": "uint256",
+        "name": "maxParticipants",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "cuParticipants",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "activityId", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "activityCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "_dataCID", "type": "string" },
+      { "internalType": "string", "name": "_topic", "type": "string" },
+      {
+        "internalType": "uint256",
+        "name": "_maxParticipants",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_cuParticipants",
+        "type": "uint256"
+      }
+    ],
+    "name": "createActivity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" }
+    ],
+    "name": "deleteActivity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" }
+    ],
+    "name": "deleteActivityForAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" }
+    ],
+    "name": "getActivity",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "dataCID", "type": "string" },
+          { "internalType": "string", "name": "topic", "type": "string" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "maxParticipants",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cuParticipants",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "activityId", "type": "uint256" }
+        ],
+        "internalType": "struct ActivitiesManagement.Activity",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "isParticipant",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" },
+      { "internalType": "address", "name": "_user", "type": "address" }
+    ],
+    "name": "isParticipantInActivity",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" }
+    ],
+    "name": "participateInActivity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" },
+      { "internalType": "string", "name": "_dataCID", "type": "string" },
+      { "internalType": "string", "name": "_topic", "type": "string" },
+      {
+        "internalType": "uint256",
+        "name": "_maxParticipants",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateActivity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" }
+    ],
+    "name": "withdrawFromActivity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   AdjustmentsHorizontalIcon,
@@ -7,6 +7,7 @@ import {
   PlusCircleIcon
 } from '@heroicons/react/24/outline';
 import HackathonCard from '../components/HackathonCard';
+import callSearchService from '../utils/CallSearchService';
 
 const filters = {
   prizePool: [
@@ -101,6 +102,7 @@ const mockHackathons = [
   },
 ];
 
+
 export default function HackathonsPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,10 +113,91 @@ export default function HackathonsPage() {
     status: 'all',
     sortBy: 'latest',
   });
+  // 添加状态来存储从云端获取的数据和加载状态
+  const [hackathons, setHackathons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 在组件加载时从云端获取数据
+    useEffect(() => {
+    const fetchHackathons = async () => {
+      try {
+        setLoading(true);
+        
+        // 从GraphQL服务获取活动列表
+        const response = await callSearchService("", "all");
+        const activities = response.activities || [];
+        
+        // 从IPFS获取每个活动的详细数据
+        const hackathonPromises = activities.map(async (activity) => {
+          try {
+            // 构建IPFS URL
+            console.log("activity_dataCID",activity.activity_dataCID);
+            const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${activity.activity_dataCID}`
+            const request = await fetch(url);
+            const response = await request.json();
+            console.log("pinata response",response);
+            const hackathonData = response;
+            
+            //数据格式转换
+            let techStack = [];
+            if (Array.isArray(hackathonData.techStack)) {
+              techStack = hackathonData.techStack;
+            } else if (typeof hackathonData.techStack === 'string') {
+              // 如果是逗号分隔的字符串，则转换为数组
+              techStack = hackathonData.techStack.split(',').map(item => item.trim()).filter(item => item);
+            }
+            
+            // 确保其他字段有正确的默认值
+            const prizePool = parseFloat(hackathonData.prizePool) || 0;
+            const maxParticipants = parseInt(hackathonData.maxParticipants) || 0;
+
+            hackathonData.techStack = techStack;
+            hackathonData.prizePool = prizePool;
+            hackathonData.participants = maxParticipants;
+
+            return {
+              id: activity.activityId,
+              dataCID: activity.activity_dataCID,
+              ...hackathonData
+            };
+          } catch (ipfsError) {
+            console.error(`Failed to fetch data from IPFS for activity ${activity.activityId}:`, ipfsError);
+            return {
+              id: activity.activityId,
+              dataCID: activity.activity_dataCID,
+              name: `Hackathon ${activity.activityId}`,
+              description: "Failed to load details",
+              logo: "https://placehold.co/400",
+              techStack: [],
+              registrationEnd: "Unknown",
+              prizePool: 0,
+              level: "Unknown",
+              participants: 0,
+              status: "Unknown",
+              ecosystem: "Unknown"
+            };
+          }
+        });
+        
+        // 等待所有数据获取完成
+        const hackathonData = await Promise.all(hackathonPromises);
+        setHackathons(hackathonData);
+        setError(null);
+      } catch (err) {
+        console.error("获取黑客松数据失败:", err);
+        setError("获取数据失败，请稍后重试");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHackathons();
+  }, []);
 
   // 过滤和排序逻辑
   const filteredHackathons = useMemo(() => {
-    return mockHackathons
+    return hackathons
       .filter(hackathon => {
         // 搜索过滤
         if (searchQuery) {
@@ -158,7 +241,7 @@ export default function HackathonsPage() {
             return new Date(b.registrationEnd) - new Date(a.registrationEnd);
         }
       });
-  }, [searchQuery, activeFilters]);
+  }, [searchQuery, activeFilters, hackathons]);
 
 
 

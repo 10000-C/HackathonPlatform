@@ -1,0 +1,6 @@
+type Activity @entity(immutable: true) {
+  id: Bytes!
+  activityId: BigInt! # uint256
+  activity_dataCID: String! # string
+  activity_topic: String!
+}
