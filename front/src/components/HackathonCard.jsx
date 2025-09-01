@@ -139,7 +139,7 @@ const HackathonCard = ({ hackathon }) => {
               disabled={calculatedStatus === 'ended' || registrationEnded}
               className={`px-6 py-1.5 rounded transition-colors ${
                 (calculatedStatus === 'ended' || registrationEnded)
-                  ? 'bg-[#949fa8] text-gray-400 cursor-not-allowed' 
+                  ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
                   : 'bg-[#0092ff] text-white hover:bg-[#0092ff]/90'
               }`}
             >
