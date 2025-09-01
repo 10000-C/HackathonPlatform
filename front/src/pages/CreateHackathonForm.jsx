@@ -33,6 +33,7 @@ export default function CreateHackathonForm() {
   });
   const [uploading, setUploading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState({ loading: false, error: null });
+  const fileInputRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,24 +49,18 @@ export default function CreateHackathonForm() {
     }));
   };
 
-  const latestLogoUrl = useRef('');
-  const handleLogoUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleLogoUpload = async (file) => {
+    if (!file) return '';
 
-    setUploading(true);
     try {
       // save logo to IPFS
       const logoCID = await saveToIPFS(file);
       const logoURL = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${logoCID}`;
-       setFormData(prev => ({ ...prev, logo: logoURL }));
-      latestLogoUrl.current = logoURL; 
       console.log('Logo uploaded to IPFS with CID:', logoCID);
-      console.log('Logo data in formData:', formData.logo);
+      return logoURL;
     } catch (error) {
       console.error('Error uploading logo:', error);
-    } finally {
-      setUploading(false);
+      throw error;
     }
   };
 
@@ -74,13 +69,22 @@ export default function CreateHackathonForm() {
     setSubmitStatus({ loading: true, error: null });
 
     try {
+      let logoURL = formData.logo;
+      
+      // 如果有文件需要上传，先处理文件上传
+      if (fileInputRef.current && fileInputRef.current.files.length > 0) {
+        const file = fileInputRef.current.files[0];
+        logoURL = await handleLogoUpload(file);
+      }
+
       const finalFormData = {
-      ...formData,
-      logo: latestLogoUrl.current || formData.logo
+        ...formData,
+        logo: logoURL
       };
+      
       const formDataBlob = new Blob([JSON.stringify(finalFormData)], { type: 'application/json' });
       const formDataCID = await saveToIPFS(formDataBlob);
-      const response = await saveToContract(formDataCID,formData.name,formData.maxParticipants);
+      const response = await saveToContract(formDataCID, finalFormData.name, finalFormData.maxParticipants);
       navigate('/hackathons');
     } catch (error) {
       setSubmitStatus({ loading: false, error: error.message });
@@ -141,8 +145,8 @@ export default function CreateHackathonForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleLogoUpload}
-                  disabled={uploading}
+                  ref={fileInputRef}
+                  disabled={submitStatus.loading}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#0066cc]/10 file:text-[#0066cc] hover:file:bg-[#0066cc]/20"
                 />
               </div>
