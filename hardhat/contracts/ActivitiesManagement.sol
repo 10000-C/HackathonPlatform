@@ -111,6 +111,12 @@ contract ActivitiesManagement {
         return isParticipant[_activityId][_user];
     }
 
+    // for Judgement management verifies the creator of the activity
+    function getCreatorOfActivity(uint256 _activityId) public view returns (address) {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        return activities[_activityId].creator;
+    }
+
     modifier onlyOrganizer() {
         require(authorityManagement.isAnOrganizer(msg.sender), "Not an organizer");
         _;
