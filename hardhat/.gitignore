@@ -21,3 +21,6 @@
 
 # Private data
 .env
+
+/test
+/contracts/test
