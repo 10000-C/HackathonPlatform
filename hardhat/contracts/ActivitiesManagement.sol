@@ -16,7 +16,7 @@ contract ActivitiesManagement {
         address creator;
         uint256 maxParticipants;
         uint256 cuParticipants;
-        uint256 activityId;
+        uint256 activityId;// from 1 start
     }
     mapping(uint256 => mapping(address => bool)) public isParticipant;
     AuthorityManagement private authorityManagement;
