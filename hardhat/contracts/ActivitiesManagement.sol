@@ -16,7 +16,7 @@ contract ActivitiesManagement {
         address creator;
         uint256 maxParticipants;
         uint256 cuParticipants;
-        uint256 activityId;
+        uint256 activityId;// from 1 start
     }
     mapping(uint256 => mapping(address => bool)) public isParticipant;
     AuthorityManagement private authorityManagement;
@@ -109,6 +109,16 @@ contract ActivitiesManagement {
     function isParticipantInActivity(uint256 _activityId, address _user) public view returns (bool) {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
         return isParticipant[_activityId][_user];
+    }
+
+    // for Judgement management verifies the creator of the activity
+    function getCreatorOfActivity(uint256 _activityId) public view returns (address) {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        return activities[_activityId].creator;
+    }
+
+    function isActivityIdValid(uint256 _activityId) public view returns (bool) {
+        return _activityId > 0 && _activityId <= activityCount;
     }
 
     modifier onlyOrganizer() {
