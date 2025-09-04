@@ -15,6 +15,7 @@ contract DemosManagement {
     struct Demo {
         uint256 demoId;// 从0开始
         uint256 activityId;
+        uint256 cohortId;
         string dataCID;
         string vedioCID;
         address submitter;
@@ -27,7 +28,7 @@ contract DemosManagement {
         judgementManagement = JudgementManagement(_judgementManagementAddress);
     }
 
-    function submitDemo(uint256 _activityId, string memory _dataCID, string memory _vedioCID) public 
+    function submitDemo(uint256 _activityId, uint256 _cohortId,string memory _dataCID, string memory _vedioCID) public 
     {
         require(activitiesManagement.isParticipantInActivity(_activityId, msg.sender), "Not a participant of this activity");
         uint256 demoId = demos[_activityId].length; 
@@ -36,7 +37,8 @@ contract DemosManagement {
             activityId: _activityId,
             dataCID: _dataCID,
             vedioCID: _vedioCID,
-            submitter: msg.sender
+            submitter: msg.sender,
+            cohortId: _cohortId
         });
         demos[_activityId].push(newDemo);
         emit DemoSubmitted(_activityId, newDemo);
@@ -53,4 +55,9 @@ contract DemosManagement {
         emit DemoUpdated(_activityId, demoToUpdate);
     }
 
+    function getDemoCohortId(uint256 _activityId, uint256 _demoId) public view returns(uint256) {
+        require(_demoId >= 0 && _demoId <= demos[_activityId].length, "Invalid demo ID");
+        require(activitiesManagement.isActivityIdValid(_activityId), "Invalid activity ID");
+        return demos[_activityId][_demoId].cohortId;
+    }
 }

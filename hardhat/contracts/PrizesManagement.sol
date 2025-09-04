@@ -43,6 +43,12 @@ contract PrizesManagement {
         emit PrizeAdded(_activityId, prizes[_activityId]);
     }
 
+    function getCohort(uint256 _activityId, uint256 _cohortId) public view returns(cohort memory) {
+        require(prizes[_activityId].activityId != 0, "No prize info for this activity");
+        require(_cohortId < prizes[_activityId].cohorts.length, "Invalid cohort index");
+        return prizes[_activityId].cohorts[_cohortId];
+    }
+
     modifier onlyOrganizer(uint256 _activityId) {
         address activityCreator = activitiesManagement.getCreatorOfActivity(_activityId);
         require(msg.sender == activityCreator, "Not the organizer of this activity");

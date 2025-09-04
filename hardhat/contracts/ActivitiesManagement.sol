@@ -117,6 +117,10 @@ contract ActivitiesManagement {
         return activities[_activityId].creator;
     }
 
+    function isActivityIdValid(uint256 _activityId) public view returns (bool) {
+        return _activityId > 0 && _activityId <= activityCount;
+    }
+
     modifier onlyOrganizer() {
         require(authorityManagement.isAnOrganizer(msg.sender), "Not an organizer");
         _;
