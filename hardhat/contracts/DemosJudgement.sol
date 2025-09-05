@@ -1,18 +1,20 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./PrizesManagement.sol";
-import "./JudgementManagement.sol";
-import "./DemosManagement.sol";
-import "./ActivitiesManagement.sol";
+import "./interface/IPrizesManagement.sol";
+import "./interface/IJudgementManagement.sol";
+import "./interface/IDemosManagement.sol";
+import "./interface/IActivitiesManagement.sol";
+import "./interface/IAuthorityManagement.sol";
 
-contract DemosJudgement { 
+contract DemosJudgement{ 
     event DemoJudged(uint256 indexed activityId, uint256 indexed demoId, uint256 totalScore, uint256 numOfJudges);
 
-    PrizesManagement private prizesManagement;
-    JudgementManagement private judgementManagement;
-    DemosManagement private demosManagement;
-    ActivitiesManagement private activitiesManagement;
+    IPrizesManagement private prizesManagement;
+    IJudgementManagement private judgementManagement;
+    IDemosManagement private demosManagement;
+    IActivitiesManagement private activitiesManagement;
+    IAuthorityManagement private authorityManagement;
 
     struct Score{
         uint256 totalScore;
@@ -22,11 +24,12 @@ contract DemosJudgement {
     mapping(uint256 => mapping(uint256 => Score)) public demoScores; // activityId => demoId => totalScore
     mapping(address => mapping(uint256 => mapping( uint256 => bool))) public hasJudged; // judge => activityId => demoId => hasJudged
 
-    constructor(address _prizesManagementAddress, address _judgementManagementAddress, address _demosManagementAddress, address _activitiesManagementAddress) {
-        prizesManagement = PrizesManagement(_prizesManagementAddress);
-        judgementManagement = JudgementManagement(_judgementManagementAddress);
-        demosManagement = DemosManagement(_demosManagementAddress);
-        activitiesManagement = ActivitiesManagement(_activitiesManagementAddress);
+    constructor(address _prizesManagementAddress, address _judgementManagementAddress, address _demosManagementAddress, address _activitiesManagementAddress, address _authorityManagementAddress) {
+        prizesManagement = IPrizesManagement(_prizesManagementAddress);
+        judgementManagement = IJudgementManagement(_judgementManagementAddress);
+        demosManagement = IDemosManagement(_demosManagementAddress);
+        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
+        authorityManagement = IAuthorityManagement(_authorityManagementAddress);
     }
 
     function checkPointsValid(uint256[] memory _pointsOfCriteria, uint256[] memory _pointsOfJudge) internal pure returns(bool) {
@@ -44,7 +47,7 @@ contract DemosJudgement {
     function JudgeDemo(uint256 _activityId, uint256 _demoId, uint256[] memory _pointsOfCriteria) public onlyJudge(_activityId) {
         require(!hasJudged[msg.sender][_activityId][_demoId], "Already judged this demo");
         uint256 cohortId = demosManagement.getDemoCohortId(_activityId, _demoId);
-        PrizesManagement.cohort memory prizeCohort = prizesManagement.getCohort(_activityId, cohortId); 
+        IPrizesManagement.cohort memory prizeCohort = prizesManagement.getCohort(_activityId, cohortId); 
         require(checkPointsValid(prizeCohort.pointsOfCriteria, _pointsOfCriteria), "Invalid points of criteria");
        
         uint256 totscore = 0;
@@ -64,6 +67,24 @@ contract DemosJudgement {
 
     modifier onlyJudgeInValidTime(uint256 _activityId) {
         // You can add time validation logic here if needed
+        _;
+    }
+
+    // 添加更新依赖合约地址的方法
+    function updateDependencies(
+        address _prizesManagementAddress,
+        address _judgementManagementAddress,
+        address _demosManagementAddress,
+        address _activitiesManagementAddress
+    ) public onlyOwner(){
+        prizesManagement = IPrizesManagement(_prizesManagementAddress);
+        judgementManagement = IJudgementManagement(_judgementManagementAddress);
+        demosManagement = IDemosManagement(_demosManagementAddress);
+        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == authorityManagement.getOwner(), "Not the owner");
         _;
     }
 }

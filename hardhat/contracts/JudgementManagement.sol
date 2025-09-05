@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./ActivitiesManagement.sol";
+import "./interface/IActivitiesManagement.sol";
+import "./interface/IJudgementManagement.sol";
+import "./interface/IAuthorityManagement.sol";
 
-contract JudgementManagement { 
+contract JudgementManagement is IJudgementManagement { 
 
-    ActivitiesManagement private activitiesManagement;
+    IActivitiesManagement private activitiesManagement;
+    IAuthorityManagement private authorityManagement;
 
-    constructor(address _activitiesManagementAddress) {
-        activitiesManagement = ActivitiesManagement(_activitiesManagementAddress);
+    constructor(address _activitiesManagementAddress, address _authorityManagementAddress) {
+        authorityManagement = IAuthorityManagement(_authorityManagementAddress);
+        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
     }
     
     mapping(uint256 => mapping(bytes32 => bool)) private isInvitationCodeValid; // activityId => invitationCode => exists
@@ -40,9 +44,19 @@ contract JudgementManagement {
         return isJudge[_activityId][_judge];
     } 
 
-    modifier onlyOrganizer(uint256 _activityId) {
+    // 添加更新 ActivitiesManagement 地址的方法
+    function updateDependencies(address _newActivitiesManagementAddress) public onlyOwner(){
+        activitiesManagement = IActivitiesManagement(_newActivitiesManagementAddress);
+    }
+
+    modifier onlyOrganizer(uint256 _activityId)  {
         address activityCreator = activitiesManagement.getCreatorOfActivity(_activityId);
         require(msg.sender == activityCreator, "Not the organizer of this activity");
+        _;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == authorityManagement.getOwner(), "Not the owner");
         _;
     }
 }

@@ -1,31 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./JudgementManagement.sol";
-import "./ActivitiesManagement.sol";
+import "./interface/IJudgementManagement.sol";
+import "./interface/IActivitiesManagement.sol";
+import "./interface/IDemosManagement.sol";
+import "./interface/IAuthorityManagement.sol";
 
-contract DemosManagement { 
+contract DemosManagement is IDemosManagement { 
 
     event DemoSubmitted(uint256 indexed activityId, Demo demo);
     event DemoUpdated(uint256 indexed activityId, Demo demo);
 
-    JudgementManagement private judgementManagement;
-    ActivitiesManagement private activitiesManagement;
-
-    struct Demo {
-        uint256 demoId;// 从0开始
-        uint256 activityId;
-        uint256 cohortId;
-        string dataCID;
-        string vedioCID;
-        address submitter;
-    }
+    IJudgementManagement private judgementManagement;
+    IActivitiesManagement private activitiesManagement;
+    IAuthorityManagement private authorityManagement;
 
     mapping(uint256 => Demo[]) public demos;// activityId => demoId => Demo
 
-    constructor(address _activitiesManagementAddress, address _judgementManagementAddress) {
-        activitiesManagement = ActivitiesManagement(_activitiesManagementAddress);
-        judgementManagement = JudgementManagement(_judgementManagementAddress);
+    constructor(address _activitiesManagementAddress, address _judgementManagementAddress, address _authorityManagementAddress) {
+        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
+        judgementManagement = IJudgementManagement(_judgementManagementAddress);
+        authorityManagement = IAuthorityManagement(_authorityManagementAddress);
     }
 
     function submitDemo(uint256 _activityId, uint256 _cohortId,string memory _dataCID, string memory _vedioCID) public 
@@ -59,5 +54,16 @@ contract DemosManagement {
         require(_demoId >= 0 && _demoId <= demos[_activityId].length, "Invalid demo ID");
         require(activitiesManagement.isActivityIdValid(_activityId), "Invalid activity ID");
         return demos[_activityId][_demoId].cohortId;
+    }
+
+    // 添加更新依赖合约地址的方法
+    function updateDependencies(address _activitiesManagementAddress, address _judgementManagementAddress) public onlyOwner(){
+        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
+        judgementManagement = IJudgementManagement(_judgementManagementAddress);
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == authorityManagement.getOwner(), "Not the owner");
+        _;
     }
 }
