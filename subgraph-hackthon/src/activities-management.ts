@@ -16,13 +16,11 @@ export function handleActivityCreated(event: ActivityCreated): void {
     Bytes.fromByteArray(Bytes.fromBigInt(event.params.activityId))
   )
   
-
-
-
   // Entity fields can be set based on event parameters
   entity.activityId = event.params.activityId
   entity.activity_dataCID = event.params.activity.dataCID
   entity.activity_topic = event.params.activity.topic
+  entity.activity_participants = BigInt.fromI32(0);
   // Entities can be written to the store with `.save()`
   entity.save()
 
@@ -68,6 +66,22 @@ export function handleActivityUpdated(event: ActivityUpdated): void {
   entity.save();
 }
 
-export function handleParticipantAdded(event: ParticipantAdded): void {}
+export function handleParticipantAdded(event: ParticipantAdded): void {
+  let id = Bytes.fromByteArray(Bytes.fromBigInt(event.params.activityId));
+  let entity = Activity.load(id);
+  if (entity == null) {
+    return;
+  }
+  entity.activity_participants.plus(BigInt.fromI32(1));
+  entity.save();
+}
 
-export function handleParticipantRemoved(event: ParticipantRemoved): void {}
+export function handleParticipantRemoved(event: ParticipantRemoved): void {
+  let id = Bytes.fromByteArray(Bytes.fromBigInt(event.params.activityId));
+  let entity = Activity.load(id);
+  if (entity == null) {
+    return;
+  }
+  entity.activity_participants.minus(BigInt.fromI32(1));
+  entity.save();
+}

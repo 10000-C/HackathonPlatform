@@ -3,4 +3,5 @@ type Activity @entity(immutable: true) {
   activityId: BigInt! # uint256
   activity_dataCID: String! # string
   activity_topic: String!
+  activity_participants: BigInt! # uint256
 }
