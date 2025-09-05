@@ -63,6 +63,17 @@ const HackathonCard = ({ hackathon }) => {
   
   // 检查注册是否已结束
   const registrationEnded = isRegistrationEnded(hackathon.registrationEnd);
+
+  // 状态标签配置
+  const statusConfig = {
+    active: { label: 'Live', color: 'bg-green-500/30' },
+    upcoming: { label: 'Upcoming', color: 'bg-orange-500/30' },
+    ended: { label: 'Ended', color: 'bg-red-500/30' },
+    Unknown: { label: 'Unknown', color: 'bg-gray-500' }
+  };
+
+  const status = statusConfig[calculatedStatus] || statusConfig.Unknown;
+
   
   // 根据状态确定显示文本
   const statusDisplay = {
@@ -86,20 +97,14 @@ const HackathonCard = ({ hackathon }) => {
 
   return (
     <div className="group">
-      <div className="bg-[#2b3640] rounded-lg p-6 flex gap-6 hover:bg-[#3d4654] transition-all">
+      <div className="bg-none rounded-xl p-6 flex gap-6 hover:bg-[#3d4654] transition-all duration-200 border border-[#3d4654] shadow-sm hover:shadow-md">
         {/* Left Content */}
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-white text-lg font-medium">{hackathon.name}</h3>
-            {calculatedStatus === 'active' && (
-              <span className="px-2 py-0.5 bg-[#0092ff] text-white text-xs rounded">Live</span>
-            )}
-            {calculatedStatus === 'upcoming' && (
-              <span className="px-2 py-0.5 bg-[#ff9900] text-white text-xs rounded">Upcoming</span>
-            )}
-            {calculatedStatus === 'ended' && (
-              <span className="px-2 py-0.5 bg-[#949fa8] text-white text-xs rounded">Ended</span>
-            )}
+            <span className={`px-2 py-0.5 ${status.color} text-white text-xs rounded-full`}>
+              {status.label}
+            </span>
           </div>
           <p className="text-[#949fa8] text-sm mb-6 line-clamp-2">{hackathon.description}</p>
           
@@ -126,6 +131,18 @@ const HackathonCard = ({ hackathon }) => {
               <span className="text-[#949fa8] w-20">Total prize</span>
               <span className="text-white">${hackathon.prizePool.toLocaleString()} USD</span>
             </div>
+          </div>
+
+          <div className="flex items-center gap-3 mb-4">
+            {/* Location */}
+            <span className="px-3 py-1 bg-[#ffffff4c] text-white text-xs rounded-2xl font-semibold">
+              {hackathon.location || 'Online'}
+            </span>
+            {/* Participants */}
+            <span className="px-3 py-1 bg-[#ffffff4c] text-white text-xs rounded-2xl font-semibold">
+              {hackathon.participants} Participants
+            </span>
+            
           </div>
 
           <div className="flex items-center gap-4">
