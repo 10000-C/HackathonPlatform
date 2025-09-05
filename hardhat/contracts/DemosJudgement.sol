@@ -44,7 +44,7 @@ contract DemosJudgement{
         return true;
     }
 
-    function JudgeDemo(uint256 _activityId, uint256 _demoId, uint256[] memory _pointsOfCriteria) public onlyJudge(_activityId) {
+    function JudgeDemo(uint256 _activityId, uint256 _demoId, uint256[] memory _pointsOfCriteria) public onlyJudge(_activityId) onlyValidTime(_activityId) {
         require(!hasJudged[msg.sender][_activityId][_demoId], "Already judged this demo");
         uint256 cohortId = demosManagement.getDemoCohortId(_activityId, _demoId);
         IPrizesManagement.cohort memory prizeCohort = prizesManagement.getCohort(_activityId, cohortId); 
@@ -60,16 +60,6 @@ contract DemosJudgement{
         emit DemoJudged(_activityId, _demoId, totscore, demoScores[_activityId][_demoId].numOfJudges);
     }
 
-    modifier onlyJudge(uint256 _activityId) {
-        require(judgementManagement.isJudgeInActivity(_activityId, msg.sender), "Not the judge of this activity");
-        _;
-    }
-
-    modifier onlyJudgeInValidTime(uint256 _activityId) {
-        // You can add time validation logic here if needed
-        _;
-    }
-
     // 添加更新依赖合约地址的方法
     function updateDependencies(
         address _prizesManagementAddress,
@@ -83,8 +73,18 @@ contract DemosJudgement{
         activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
     }
 
+    modifier onlyJudge(uint256 _activityId) {
+        require(judgementManagement.isJudgeInActivity(_activityId, msg.sender), "Not the judge of this activity");
+        _;
+    }
     modifier onlyOwner() {
         require(msg.sender == authorityManagement.getOwner(), "Not the owner");
+        _;
+    }
+
+    modifier onlyValidTime(uint256 _activityId) {
+        require(activitiesManagement.isActivityIdValid(_activityId), "Invalid activity ID");
+        require(activitiesManagement.isJudgementOpen(_activityId), "Not in judgement time");
         _;
     }
 }

@@ -23,7 +23,7 @@ contract DemosManagement is IDemosManagement {
         authorityManagement = IAuthorityManagement(_authorityManagementAddress);
     }
 
-    function submitDemo(uint256 _activityId, uint256 _cohortId,string memory _dataCID, string memory _vedioCID) public 
+    function submitDemo(uint256 _activityId, uint256 _cohortId,string memory _dataCID, string memory _vedioCID) public onlyValidTime(_activityId)
     {
         require(activitiesManagement.isParticipantInActivity(_activityId, msg.sender), "Not a participant of this activity");
         uint256 demoId = demos[_activityId].length; 
@@ -38,8 +38,8 @@ contract DemosManagement is IDemosManagement {
         demos[_activityId].push(newDemo);
         emit DemoSubmitted(_activityId, newDemo);
     }
-    
-    function updateDemo(uint256 _activityId, uint256 _demoId, string memory _dataCID, string memory _vedioCID) public 
+/*    
+    function updateDemo(uint256 _activityId, uint256 _demoId, string memory _dataCID, string memory _vedioCID) public onlyValidTime(_activityId)
     {
         require(activitiesManagement.isParticipantInActivity(_activityId, msg.sender), "Not a participant of this activity");
         require(_demoId >= 0 && _demoId <= demos[_activityId].length, "Invalid demo ID");
@@ -49,7 +49,7 @@ contract DemosManagement is IDemosManagement {
         demoToUpdate.vedioCID = _vedioCID;
         emit DemoUpdated(_activityId, demoToUpdate);
     }
-
+*/
     function getDemoCohortId(uint256 _activityId, uint256 _demoId) public view returns(uint256) {
         require(_demoId >= 0 && _demoId <= demos[_activityId].length, "Invalid demo ID");
         require(activitiesManagement.isActivityIdValid(_activityId), "Invalid activity ID");
@@ -64,6 +64,12 @@ contract DemosManagement is IDemosManagement {
 
     modifier onlyOwner() {
         require(msg.sender == authorityManagement.getOwner(), "Not the owner");
+        _;
+    }
+
+    modifier onlyValidTime(uint256 _activityId) {
+        require(activitiesManagement.isActivityIdValid(_activityId), "Invalid activity ID");
+        require(activitiesManagement.isHackthonOpen(_activityId), "Not in hackthon time");
         _;
     }
 }
