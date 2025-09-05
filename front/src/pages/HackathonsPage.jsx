@@ -8,30 +8,31 @@ import {
 } from '@heroicons/react/24/outline';
 import HackathonCard from '../components/HackathonCard';
 import callSearchService from '../utils/CallSearchService';
+import BannerSection from '../components/BannerSection';
 
 const filters = {
   prizePool: [
-    { value: 'all', label: 'All Prize Pools' },
+    { value: 'all', label: 'All' },
     { value: '10000+', label: '$10,000+' },
     { value: '50000+', label: '$50,000+' },
     { value: '100000+', label: '$100,000+' },
   ],
   ecosystem: [
-    { value: 'all', label: 'All Ecosystems' },
+    { value: 'all', label: 'All' },
     { value: 'ethereum', label: 'Ethereum' },
     { value: 'solana', label: 'Solana' },
     { value: 'polygon', label: 'Polygon' },
     { value: 'binance', label: 'BNB Chain' },
   ],
   techStack: [
-    { value: 'all', label: 'All Tech Stacks' },
+    { value: 'all', label: 'All' },
     { value: 'web3', label: 'Web3' },
     { value: 'ai', label: 'AI/ML' },
     { value: 'defi', label: 'DeFi' },
     { value: 'nft', label: 'NFT' },
   ],
   status: [
-    { value: 'all', label: 'All Status' },
+    { value: 'all', label: 'All' },
     { value: 'upcoming', label: 'Upcoming' },
     { value: 'active', label: 'Active' },
     { value: 'ended', label: 'Ended' },
@@ -236,7 +237,14 @@ export default function HackathonsPage() {
           case 'participants':
             return b.participants - a.participants;
           case 'endingSoon':
-            return new Date(a.registrationEnd) - new Date(b.registrationEnd);
+          //   const now = new Date();
+          // const aIsEnded = new Date(a.registrationEnd) < now;
+          // const bIsEnded = new Date(b.registrationEnd) < now;
+
+          // 1. 未结束的排在前面
+          // if (aIsEnded && !bIsEnded) return 1;
+          // if (!aIsEnded && bIsEnded) return -1;
+            return new Date(b.endDate) - new Date(a.endDate);
           default: // 'latest'
             return new Date(b.registrationEnd) - new Date(a.registrationEnd);
         }
@@ -252,10 +260,13 @@ export default function HackathonsPage() {
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+          className="px-4 py-2 border border-[#3d4654] rounded-lg text-sm font-medium text-[#949fa8] hover:bg-[#3d4654] flex items-center space-x-2"
         >
           <span>
-            {label}: {options.find(opt => opt.value === value)?.label || 'All'}
+            {label}: 
+          </span>
+          <span className='text-white'>
+            {options.find(opt => opt.value === value)?.label || 'All'}
           </span>
           <ChevronDownIcon className="w-4 h-4" />
         </button>
@@ -291,43 +302,9 @@ export default function HackathonsPage() {
   };
 
   return (
-    <div className="flex-1 min-h-screen bg-[#1b1a1d] px-40">
+    <div className="flex-1 min-h-screen bg-[#1B1B1E] px-40">
       {/* Banner Section */}
-      <div className="relative h-[400px] overflow-hidden mb-8">
-        <img
-          src="src/assets/Hero Image.jpg"
-          alt="Open Source Frontier"
-          className="w-full h-full object-cover rounded-lg"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1b1a1d] via-transparent to-transparent" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center px-6">
-            <h1 className="text-5xl font-bold text-white mb-4">Open Source Frontier</h1>
-            <p className="text-[#949fa8] text-lg mb-8">AI x WEB3 x Transparency</p>
-            <div className="flex items-center justify-center gap-8 text-white">
-              <div className="text-center">
-                <div className="font-medium mb-1">Registration Close</div>
-                <div className="text-[#949fa8]">12 days left</div>
-              </div>
-              <div className="text-center">
-                <div className="font-medium mb-1">Tech Stack</div>
-                <div className="text-[#949fa8]">All tech stacks</div>
-              </div>
-              <div className="text-center">
-                <div className="font-medium mb-1">Level</div>
-                <div className="text-[#949fa8]">All levels accepted</div>
-              </div>
-              <div className="text-center">
-                <div className="font-medium mb-1">Total Prize</div>
-                <div className="text-[#949fa8]">50,000.00 USD</div>
-              </div>
-            </div>
-            <button className="mt-8 px-6 py-2 bg-[#0092ff] text-white rounded-lg hover:bg-[#0092ff]/90 transition-colors">
-              Start Register
-            </button>
-          </div>
-        </div>
-      </div>
+      <BannerSection />
 
       <div className="px-8">
         {/* Welcome Text and Host Button */}
@@ -348,15 +325,15 @@ export default function HackathonsPage() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-4 mb-6 text-sm">
+        {/* <div className="flex items-center gap-4 mb-6 text-sm">
           <span className="text-[#0092ff] px-2">Total Prize All</span>
           <span className="text-[#949fa8] hover:text-white px-2">Ecosystem All</span>
           <span className="text-[#949fa8] hover:text-white px-2">Tech Stack All</span>
           <span className="text-[#949fa8] hover:text-white px-2">Status Live, Upcoming</span>
-        </div>
+        </div> */}
         {/* 过滤器栏 */}
         <div className="flex items-center space-x-2 mb-6">
-          <span className="text-sm text-[#949fa8]">Filter:</span>
+          {/* <span className="text-sm text-[#949fa8]">Filter:</span> */}
           <div className="flex items-center space-x-2">
             <FilterButton
               label="Total Prize"

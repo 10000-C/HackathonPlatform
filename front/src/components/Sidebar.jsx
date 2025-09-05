@@ -1,10 +1,38 @@
 import { Link, useLocation } from 'react-router-dom';
+import {
+  TrophyIcon,
+  DocumentCheckIcon,
+  BookOpenIcon,
+  ChartBarIcon,
+  RocketLaunchIcon,
+  ArchiveBoxIcon,
+  CalendarIcon,
+  AcademicCapIcon,
+  ChatBubbleLeftRightIcon,
+  UserGroupIcon,
+  EllipsisHorizontalIcon,
+} from '@heroicons/react/24/outline';
 
 export default function Sidebar() {
   const location = useLocation();
 
+   // 图标映射表（路径 -> 图标组件）
+  const iconMap = {
+    quest: TrophyIcon,
+    certifications: DocumentCheckIcon,
+    course: BookOpenIcon,
+    dashboard: ChartBarIcon,
+    hackathons: RocketLaunchIcon,
+    archive: ArchiveBoxIcon,
+    events: CalendarIcon,
+    camps: AcademicCapIcon,
+    support: ChatBubbleLeftRightIcon,
+    advocate: UserGroupIcon,
+    more: EllipsisHorizontalIcon,
+  };
+
   return (
-    <div className="w-[216px] min-h-screen bg-[#1b1a1d] border-r border-[#2b3640] px-4 py-6">
+    <div className="w-[216px] min-h-screen bg-[#1b1b1e] border-r border-[#2b3640] px-4 py-6">
       {/* Logo */}
       <div className="w-12 h-8 mb-8 ml-2">
         <div className="relative h-8">
@@ -26,10 +54,8 @@ export default function Sidebar() {
               location.pathname === '/quest' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/quest' ? '0092ff' : '949fa8'}/FFFFFF`} 
-              alt="Quest" 
-              className="w-4 h-4" 
+            <iconMap.quest
+              className={`w-4 h-4 ${location.pathname === '/quest' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Quest</span>
           </Link>
@@ -45,10 +71,8 @@ export default function Sidebar() {
               location.pathname === '/certifications' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/certifications' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Certifications" 
-              className="w-4 h-4" 
+            <iconMap.certifications
+              className={`w-4 h-4 ${location.pathname === '/certifications' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">My Certifications</span>
           </Link>
@@ -58,10 +82,8 @@ export default function Sidebar() {
               location.pathname === '/course' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/course' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Course" 
-              className="w-4 h-4" 
+            <iconMap.course
+              className={`w-4 h-4 ${location.pathname === '/course' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Explore Course</span>
           </Link>
@@ -77,10 +99,8 @@ export default function Sidebar() {
               location.pathname === '/dashboard' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/dashboard' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Dashboard" 
-              className="w-4 h-4" 
+            <iconMap.dashboard
+              className={`w-4 h-4 ${location.pathname === '/dashboard' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Dashboard</span>
           </Link>
@@ -90,10 +110,8 @@ export default function Sidebar() {
               location.pathname === '/hackathons' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/hackathons' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Hackathons" 
-              className="w-4 h-4"
+            <iconMap.hackathons
+              className={`w-4 h-4 ${location.pathname === '/hackathons' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Explore Hackathons</span>
           </Link>
@@ -103,10 +121,8 @@ export default function Sidebar() {
               location.pathname === '/archive' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/archive' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Archive" 
-              className="w-4 h-4" 
+            <iconMap.archive
+              className={`w-4 h-4 ${location.pathname === '/archive' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Project Archive</span>
           </Link>
@@ -122,10 +138,8 @@ export default function Sidebar() {
               location.pathname === '/events' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/events' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Events" 
-              className="w-4 h-4" 
+            <iconMap.events
+              className={`w-4 h-4 ${location.pathname === '/events' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Community Events</span>
           </Link>
@@ -135,10 +149,8 @@ export default function Sidebar() {
               location.pathname === '/camps' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/camps' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Camps" 
-              className="w-4 h-4" 
+            <iconMap.camps
+              className={`w-4 h-4 ${location.pathname === '/camps' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Learning Camps</span>
           </Link>
@@ -148,10 +160,8 @@ export default function Sidebar() {
               location.pathname === '/support' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/support' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Support" 
-              className="w-4 h-4" 
+            <iconMap.support
+              className={`w-4 h-4 ${location.pathname === '/support' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Discussion & Support</span>
           </Link>
@@ -161,10 +171,8 @@ export default function Sidebar() {
               location.pathname === '/advocate' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/advocate' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="Advocate" 
-              className="w-4 h-4" 
+            <iconMap.advocate
+              className={`w-4 h-4 ${location.pathname === '/advocate' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">Advocate Program</span>
           </Link>
@@ -174,10 +182,8 @@ export default function Sidebar() {
               location.pathname === '/more' ? 'text-[#0092ff] bg-[#0092ff1a] rounded-md' : ''
             }`}
           >
-            <img 
-              src={`https://placehold.co/16x16/${location.pathname === '/more' ? '0092ff' : '949fa8'}/FFFFFF`}
-              alt="More" 
-              className="w-4 h-4" 
+            <iconMap.more
+              className={`w-4 h-4 ${location.pathname === '/more' ? 'text-[#0092ff]' : 'text-[#949fa8]'}`}
             />
             <span className="text-sm">More</span>
           </Link>
