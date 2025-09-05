@@ -5,6 +5,15 @@ interface IActivitiesManagement {
     function isParticipantInActivity(uint256 _activityId, address _user) external view returns (bool);
     function getCreatorOfActivity(uint256 _activityId) external view returns (address);
     function isActivityIdValid(uint256 _activityId) external view returns (bool);
+    function getActivity(uint256 _activityId) external view returns (Activity memory);
+    function isRegistrationOpen(uint256 _activityId) external view returns (bool);
+    function isJudgementOpen(uint256 _activityId) external view returns (bool);
+    function isHackthonOpen(uint256 _activityId) external view returns (bool);
+
+    struct Duration {
+        uint256 startTime;
+        uint256 endTime;
+    }
     
     struct Activity {
         string dataCID;
@@ -13,7 +22,8 @@ interface IActivitiesManagement {
         uint256 maxParticipants;
         uint256 cuParticipants;
         uint256 activityId;
+        Duration judgementDuration;
+        Duration registerDuration;
+        Duration hackthonDuration;
     }
-    
-    function getActivity(uint256 _activityId) external view returns (Activity memory);
 }
