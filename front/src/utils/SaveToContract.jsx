@@ -1,5 +1,5 @@
 import {ethers} from 'ethers';
-import ActivitiesManagement from './ActivitiesManagement.json'
+import ActivitiesManagement from './contracts/ActivitiesManagement.json';
 
 const saveToContract = async (dataCID,topic,maxParticipants) => {
     const CONTRACT_ADDRESS = "0xC91cfB0Ab5EA34e350bb2cC4Eb360Ddeb05a1552";
