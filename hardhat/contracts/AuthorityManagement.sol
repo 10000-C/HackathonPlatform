@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-contract AuthorityManagement {
+import "./interface/IAuthorityManagement.sol";
+
+contract AuthorityManagement is IAuthorityManagement {
     event AdminAdded(address indexed admin);
     event AdminRemoved(address indexed admin);
     event UserBlocked(address indexed user);
@@ -54,6 +56,10 @@ contract AuthorityManagement {
     }
     function isAnOrganizer(address _organizer) public view returns (bool) {
         return isOrganizer[_organizer];
+    }
+
+    function getOwner() public view returns (address) {
+        return owner;
     }
 
     modifier onlyOwner() {

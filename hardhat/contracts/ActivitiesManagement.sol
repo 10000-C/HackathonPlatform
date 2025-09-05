@@ -1,31 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./AuthorityManagement.sol";
+import "./interface/IAuthorityManagement.sol";
+import "./interface/IActivitiesManagement.sol";
 
-contract ActivitiesManagement { 
+contract ActivitiesManagement is IActivitiesManagement { 
     event ActivityCreated(uint256 indexed activityId, Activity activity);
     event ActivityUpdated(uint256 indexed activityId, Activity activity);
     event ParticipantAdded(uint256 indexed activityId, address participant);
     event ParticipantRemoved(uint256 indexed activityId, address participant);
     event ActivityDeleted(uint256 indexed activityId, address user);
     
-    struct Activity {
-        string dataCID; //IPFS CID for JSON metadata
-        string topic;
-        address creator;
-        uint256 maxParticipants;
-        uint256 cuParticipants;
-        uint256 activityId;// from 1 start
-    }
+
     mapping(uint256 => mapping(address => bool)) public isParticipant;
-    AuthorityManagement private authorityManagement;
+    IAuthorityManagement private authorityManagement;
     
     mapping(uint256 => Activity) public activities;
     uint256 public activityCount; 
     
     constructor(address _authorityManagementAddress) {
-        authorityManagement = AuthorityManagement(_authorityManagementAddress);
+        authorityManagement = IAuthorityManagement(_authorityManagementAddress);
     }
 
     function compareStrings(string memory a, string memory b) internal pure returns (bool) {
@@ -121,6 +115,11 @@ contract ActivitiesManagement {
         return _activityId > 0 && _activityId <= activityCount;
     }
 
+    // 添加更新 AuthorityManagement 地址的方法
+    function updateDependencies(address _newAuthorityManagementAddress) public onlyOwner{
+        authorityManagement = IAuthorityManagement(_newAuthorityManagementAddress);
+    }
+
     modifier onlyOrganizer() {
         require(authorityManagement.isAnOrganizer(msg.sender), "Not an organizer");
         _;
@@ -133,6 +132,11 @@ contract ActivitiesManagement {
 
     modifier onlyAdmin() {
         require(authorityManagement.isAdmin(msg.sender), "Not an admin");
+        _;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == authorityManagement.getOwner(), "Not the owner");
         _;
     }
 }
