@@ -22,7 +22,7 @@ export default function CreateHackathonPage() {
     techStack: '',
     experienceLevel: '',
     location: '',
-    socialLinks: [{ platform: '.com', link: '' }],
+    socialLinks: [{ domain: '.com', url: '' }],
     prizeCorhots: [],
     judges: [],
     schedule: [],

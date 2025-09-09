@@ -1,86 +1,78 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export default function PrizesStep({ formData, updateFormData }) {
-  const [prizeCohorts, setPrizeCohorts] = useState([{
-    id: 1,
-    name: '',
-    numberOfWinners: '',
-    prizeAmount: '',
-    description: '',
-    evaluationCriteria: [{
-      name: '',
-      points: '',
-      description: ''
-    }],
-    judgingMode: 'Judges Only',
-    showDetails: false
-  }]);
-
-  const ShowPrizeDetails = formData.showPrizeDetails || false;
+  // 使用 useEffect 确保初始数据
+  useEffect(() => {
+    if (!formData.prizeCorhots || formData.prizeCorhots.length === 0) {
+      updateFormData({
+        prizeCorhots: [{
+          id: 1,
+          name: '',
+          numberOfWinners: '',
+          prizeAmount: '',
+          description: '',
+          evaluationCriteria: [{
+            name: '',
+            points: '',
+            description: ''
+          }],
+          judgingMode: 'Judges Only',
+          showDetails: false
+        }]
+      });
+    }
+  }, []);
 
   const handleInputChange = (cohortIndex, field, value) => {
-    setPrizeCohorts(prev => {
-      const newCohorts = [...prev];
-      newCohorts[cohortIndex] = { ...newCohorts[cohortIndex], [field]: value };
-      updateFormData({ prizeCohorts: newCohorts });
-      return newCohorts;
-    });
+    const newCohorts = [...formData.prizeCorhots];
+    newCohorts[cohortIndex] = { ...newCohorts[cohortIndex], [field]: value };
+    updateFormData({ prizeCorhots: newCohorts });
   };
 
   const handleEvaluationCriteriaChange = (cohortIndex, criteriaIndex, field, value) => {
-    setPrizeCohorts(prev => {
-      const newCohorts = [...prev];
-      const newCriteria = [...newCohorts[cohortIndex].evaluationCriteria];
-      newCriteria[criteriaIndex] = { ...newCriteria[criteriaIndex], [field]: value };
-      newCohorts[cohortIndex] = { ...newCohorts[cohortIndex], evaluationCriteria: newCriteria };
-      updateFormData({ prizeCohorts: newCohorts });
-      return newCohorts;
-    });
+    const newCohorts = [...formData.prizeCorhots];
+    const newCriteria = [...newCohorts[cohortIndex].evaluationCriteria];
+    newCriteria[criteriaIndex] = { ...newCriteria[criteriaIndex], [field]: value };
+    newCohorts[cohortIndex] = { ...newCohorts[cohortIndex], evaluationCriteria: newCriteria };
+    updateFormData({ prizeCorhots: newCohorts });
   };
 
   const handleAddEvaluationCriteria = (cohortIndex) => {
-    const newCohorts = [...prizeCohorts];
+    const newCohorts = [...formData.prizeCorhots];
     newCohorts[cohortIndex].evaluationCriteria.push({
       name: '',
       points: '',
       description: ''
     });
-    setPrizeCohorts(newCohorts);
-    updateFormData({ prizeCohorts: newCohorts });
+    updateFormData({ prizeCorhots: newCohorts });
   };
 
   const handleAddPrizeCohort = () => {
-    setPrizeCohorts(prev => {
-      const newCohorts = [...prev, {
-        id: prev.length + 1,
+    const newCohorts = [...formData.prizeCorhots, {
+      id: formData.prizeCorhots.length + 1,
+      name: '',
+      numberOfWinners: '',
+      prizeAmount: '',
+      description: '',
+      evaluationCriteria: [{
         name: '',
-        numberOfWinners: '',
-        prizeAmount: '',
-        description: '',
-        evaluationCriteria: [{
-          name: '',
-          points: '',
-          description: ''
-        }],
-        judgingMode: 'Judges Only',
-        showDetails: false
-      }];
-      updateFormData({ prizeCohorts: newCohorts });
-      return newCohorts;
-    });
+        points: '',
+        description: ''
+      }],
+      judgingMode: 'Judges Only',
+      showDetails: false
+    }];
+    updateFormData({ prizeCorhots: newCohorts });
   };
 
   const toggleShowDetails = (cohortIndex) => {
-    setPrizeCohorts(prev => {
-      const newCohorts = [...prev];
-      newCohorts[cohortIndex] = { 
-        ...newCohorts[cohortIndex], 
-        showDetails: !newCohorts[cohortIndex].showDetails 
-      };
-      return newCohorts;
-    });
+    const newCohorts = [...formData.prizeCorhots];
+    newCohorts[cohortIndex] = { 
+      ...newCohorts[cohortIndex], 
+      showDetails: !newCohorts[cohortIndex].showDetails 
+    };
+    updateFormData({ prizeCorhots: newCohorts });
   };
 
   const handleDeleteCohort = (cohortIndex) => {
@@ -97,7 +89,7 @@ export default function PrizesStep({ formData, updateFormData }) {
 
   return (
     <div className="p-6">
-      {prizeCohorts.map((cohort, cohortIndex) => (
+      {formData.prizeCorhots?.map((cohort, cohortIndex) => (
         <div key={cohort.id} className="mb-8 p-4 border border-[#242425] rounded">
           <div className="border-b border-gray-700 pb-4">
             <div className="flex justify-between items-start mb-4">
@@ -111,7 +103,7 @@ export default function PrizesStep({ formData, updateFormData }) {
                   onChange={(e) => handleInputChange(cohortIndex, 'name', e.target.value)}
                 />
               </div>
-              {prizeCohorts.length > 1 && (
+              {formData.prizeCorhots?.length > 1 && (
                 <button 
                   onClick={() => handleDeleteCohort(cohortIndex)}
                   className="text-red-400 hover:text-red-300 mt-8"
@@ -208,10 +200,9 @@ export default function PrizesStep({ formData, updateFormData }) {
                 <button
                   className="text-red-400 hover:text-red-300 text-sm"
                   onClick={() => {
-                    const newCohorts = [...prizeCohorts];
+                    const newCohorts = [...formData.prizeCorhots];
                     newCohorts[cohortIndex].evaluationCriteria = cohort.evaluationCriteria.filter((_, i) => i !== criteriaIndex);
-                    setPrizeCohorts(newCohorts);
-                    updateFormData({ prizeCohorts: newCohorts });
+                    updateFormData({ prizeCorhots: newCohorts });
                   }}
                 >
                   Remove this criteria

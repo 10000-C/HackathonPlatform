@@ -1,15 +1,21 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload, Plus, X, Users, Link } from 'lucide-react';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import MDEditor from '@uiw/react-md-editor';
 
 export default function CreateHackathonForm({ formData, updateFormData }) {
   const fileInputRef = useRef(null);
-  const [socialLinks, setSocialLinks] = useState([{ domain: '.com', url: '' }]);
   
   const handleInputChange = (field, value) => {
     updateFormData({ [field]: value });
   };
+
+  // 确保formData中总是有socialLinks
+  useEffect(() => {
+    if (!formData.socialLinks || formData.socialLinks.length === 0) {
+      updateFormData({ socialLinks: [{ domain: '.com', url: '' }] });
+    }
+  }, []);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -250,16 +256,15 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
 
       <div>
         <label className="block text-white mb-2">Social links</label>
-        {socialLinks.map((link, index) => (
+        {formData.socialLinks?.map((link, index) => (
           <div key={index} className="flex space-x-2 mb-2">
             <select 
               className="bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
               value={link.domain}
               onChange={(e) => {
-                const newLinks = [...socialLinks];
+                const newLinks = [...formData.socialLinks];
                 newLinks[index].domain = e.target.value;
-                setSocialLinks(newLinks);
-                handleInputChange('socialLinks', newLinks);
+                updateFormData({ socialLinks: newLinks });
               }}
             >
               <option>.com</option>
@@ -271,19 +276,17 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
               placeholder="Enter link to x.com"
               value={link.url}
               onChange={(e) => {
-                const newLinks = [...socialLinks];
+                const newLinks = [...formData.socialLinks];
                 newLinks[index].url = e.target.value;
-                setSocialLinks(newLinks);
-                handleInputChange('socialLinks', newLinks);
+                updateFormData({ socialLinks: newLinks });
               }}
               className="flex-1 bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
             />
             {index > 0 && (
               <button
                 onClick={() => {
-                  const newLinks = socialLinks.filter((_, i) => i !== index);
-                  setSocialLinks(newLinks);
-                  handleInputChange('socialLinks', newLinks);
+                  const newLinks = formData.socialLinks.filter((_, i) => i !== index);
+                  updateFormData({ socialLinks: newLinks });
                 }}
                 className="p-3 text-red-400 hover:text-red-300"
               >
@@ -295,8 +298,8 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
         <button 
           type="button"
           onClick={() => {
-            setSocialLinks([...socialLinks, { domain: '.com', url: '' }]);
-            handleInputChange('socialLinks', [...socialLinks, { domain: '.com', url: '' }]);
+            const newLinks = [...(formData.socialLinks || []), { domain: '.com', url: '' }];
+            updateFormData({ socialLinks: newLinks });
           }}
           className="text-blue-400 text-sm mt-2 hover:text-blue-300"
         >
