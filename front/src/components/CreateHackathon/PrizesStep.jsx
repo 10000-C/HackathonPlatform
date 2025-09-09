@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 export default function PrizesStep({ formData, updateFormData }) {
   const [prizeCohorts, setPrizeCohorts] = useState([{
@@ -82,24 +83,49 @@ export default function PrizesStep({ formData, updateFormData }) {
     });
   };
 
+  const handleDeleteCohort = (cohortIndex) => {
+    setPrizeCohorts(prev => {
+      // 如果只剩一个cohort，不允许删除
+      if (prev.length <= 1) {
+        return prev;
+      }
+      const newCohorts = prev.filter((_, index) => index !== cohortIndex);
+      updateFormData({ prizeCohorts: newCohorts });
+      return newCohorts;
+    });
+  };
+
   return (
     <div className="p-6">
       {prizeCohorts.map((cohort, cohortIndex) => (
         <div key={cohort.id} className="mb-8 p-4 border border-[#242425] rounded">
-          <div className="mb-6">
-            <label className="block text-white mb-2">Enter Prize Cohort Name</label>
-            <input
-              type="text"
-              placeholder="Enter Prize Cohort Name"
-              className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-              value={cohort.name}
-              onChange={(e) => handleInputChange(cohortIndex, 'name', e.target.value)}
-            />
+          <div className="border-b border-gray-700 pb-4">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex-1 pr-4">
+                <label className="block text-white mb-2">Enter Prize Cohort Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter Prize Cohort Name"
+                  className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                  value={cohort.name}
+                  onChange={(e) => handleInputChange(cohortIndex, 'name', e.target.value)}
+                />
+              </div>
+              {prizeCohorts.length > 1 && (
+                <button 
+                  onClick={() => handleDeleteCohort(cohortIndex)}
+                  className="text-red-400 hover:text-red-300 mt-8"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
             <button 
-              className="text-blue-400 hover:text-blue-300 flex items-center mt-2"
+              className="text-blue-400 hover:text-blue-300 flex items-center"
               onClick={() => toggleShowDetails(cohortIndex)}
             >
-              <span className="mr-1">{cohort.showDetails ? '◢' : '▷'}</span> details
+              <ChevronDown className={`mr-1 transform ${cohort.showDetails ? 'rotate-180' : ''} transition-transform duration-200`} />
+              details
             </button>
           </div>
 
