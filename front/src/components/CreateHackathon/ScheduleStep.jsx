@@ -1,101 +1,181 @@
 import React, { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
-const ScheduleStep = () => {
+const ScheduleStep = ({ formData, updateFormData }) => {
+    const [timeSlots, setTimeSlots] = useState(formData.timeSlots || [{
+        title: '',
+        startDate: '',
+        startTime: '',
+        endDate: '',
+        endTime: '',
+        description: '',
+        location: '',
+        speaker: '',
+        notes: '',
+        showDetails: false
+    }]);
+
+    const handleTimeSlotChange = (index, field, value) => {
+        const newTimeSlots = [...timeSlots];
+        newTimeSlots[index] = { ...newTimeSlots[index], [field]: value };
+        setTimeSlots(newTimeSlots);
+        updateFormData({ timeSlots: newTimeSlots });
+    };
+
+    const handleAddTimeSlot = () => {
+        setTimeSlots([...timeSlots, {
+            title: '',
+            startDate: '',
+            startTime: '',
+            endDate: '',
+            endTime: '',
+            description: '',
+            location: '',
+            speaker: '',
+            notes: '',
+            showDetails: false
+        }]);
+    };
+
+    const toggleDetails = (index) => {
+        const newTimeSlots = [...timeSlots];
+        newTimeSlots[index] = { ...newTimeSlots[index], showDetails: !newTimeSlots[index].showDetails };
+        setTimeSlots(newTimeSlots);
+    };
+
+    const handleDeleteTimeSlot = (index) => {
+        const newTimeSlots = timeSlots.filter((_, i) => i !== index);
+        setTimeSlots(newTimeSlots);
+        updateFormData({ timeSlots: newTimeSlots });
+    };
+
     return (
         <div className="p-6">
-            <div className="mb-6">
-                <h2 className="text-white text-lg mb-2">Jun 17, 2025 19:00 - Jul 19, 2025 19:00</h2>
-                <div className="border-b border-gray-700 pb-4">
-                    <h3 className="text-white font-medium mb-4">June 21, 2025 16:00</h3>
-                    <button className="text-blue-400 hover:text-blue-300 flex items-center">
-                        <span className="mr-1">◢</span> details
-                    </button>
-                </div>
-            </div>
+            {timeSlots.map((slot, index) => (
+                <div key={index} className="mb-6">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1 pr-4">
+                            <label className="block text-white mb-2">Title</label>
+                            <input 
+                                type="text"
+                                value={slot.title}
+                                onChange={(e) => handleTimeSlotChange(index, 'title', e.target.value)}
+                                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                placeholder="Enter event title"
+                            />
+                        </div>
+                        { (
+                            <button 
+                                onClick={() => handleDeleteTimeSlot(index)}
+                                className="text-red-400 hover:text-red-300 mt-8"
+                            >
+                                Delete
+                            </button>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-white mb-2">Start Time</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <input
+                                    type="date"
+                                    value={slot.startDate}
+                                    onChange={(e) => handleTimeSlotChange(index, 'startDate', e.target.value)}
+                                    className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                />
+                                <input
+                                    type="time"
+                                    value={slot.startTime}
+                                    onChange={(e) => handleTimeSlotChange(index, 'startTime', e.target.value)}
+                                    className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-white mb-2">End Time</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <input
+                                    type="date"
+                                    value={slot.endDate}
+                                    onChange={(e) => handleTimeSlotChange(index, 'endDate', e.target.value)}
+                                    className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                />
+                                <input
+                                    type="time"
+                                    value={slot.endTime}
+                                    onChange={(e) => handleTimeSlotChange(index, 'endTime', e.target.value)}
+                                    className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="border-b border-gray-700 pb-4">
+                        <button 
+                            className="text-blue-400 hover:text-blue-300 flex items-center"
+                            onClick={() => toggleDetails(index)}
+                        >
+                            <ChevronDown className={`mr-1 transform ${slot.showDetails ? 'rotate-180' : ''} transition-transform duration-200`} />
+                            details
+                        </button>
+                        
+                        {slot.showDetails && (
+                            <div className="mt-4 space-y-4 animate-fadeIn">
+                                <div>
+                                    <label className="block text-white mb-2">Description</label>
+                                    <textarea
+                                        value={slot.description || ''}
+                                        onChange={(e) => handleTimeSlotChange(index, 'description', e.target.value)}
+                                        placeholder="Enter event description"
+                                        rows={4}
+                                        className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                    />
+                                </div>
 
-            <div className="space-y-6">
-                <div>
-                    <label className="block text-white mb-2">Hackathon Name</label>
-                    <input
-                        type="text"
-                        placeholder="Enter hackathon name"
-                        className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                    />
-                </div>
+                                <div>
+                                    <label className="block text-white mb-2">Location</label>
+                                    <input
+                                        type="text"
+                                        value={slot.location || ''}
+                                        onChange={(e) => handleTimeSlotChange(index, 'location', e.target.value)}
+                                        placeholder="Enter event location"
+                                        className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                    />
+                                </div>
 
-                <div>
-                    <label className="block text-white mb-2">Short Description</label>
-                    <textarea
-                        placeholder="Short description that goes under key visual"
-                        className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none h-32"
-                    />
-                </div>
+                                <div>
+                                    <label className="block text-white mb-2">Speaker</label>
+                                    <input
+                                        type="text"
+                                        value={slot.speaker || ''}
+                                        onChange={(e) => handleTimeSlotChange(index, 'speaker', e.target.value)}
+                                        placeholder="Enter speaker name"
+                                        className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                    />
+                                </div>
 
-                <div className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        id="include-speaker"
-                        className="w-4 h-4 text-blue-600 bg-[#0f1011] border-gray-600 rounded focus:ring-blue-500"
-                        defaultChecked
-                    />
-                    <label htmlFor="include-speaker" className="text-white">Include Speaker</label>
-                </div>
-
-                <div>
-                    <label className="block text-white mb-2">Speaker Picture</label>
-                    <div className="bg-[#0f1011] border border-solid border-[#242425] rounded p-4 w-24 h-24 flex flex-col items-center justify-center">
-                        <Upload className="text-gray-500 w-6 h-6 mb-1" />
-                        <p className="text-gray-500 text-xs mb-1">Drag/drop a project</p>
-                        <p className="text-gray-500 text-xs mb-1">logo here or</p>
-                        <button className="text-blue-400 text-xs hover:text-blue-300">Click to browse</button>
+                                <div>
+                                    <label className="block text-white mb-2">Additional Notes</label>
+                                    <textarea
+                                        value={slot.notes || ''}
+                                        onChange={(e) => handleTimeSlotChange(index, 'notes', e.target.value)}
+                                        placeholder="Enter any additional notes"
+                                        rows={3}
+                                        className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-white mb-2">Speaker x.com name</label>
-                        <input
-                            type="text"
-                            placeholder="Enter speaker x.com name"
-                            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-white mb-2">Speaker x.com link</label>
-                        <input
-                            type="text"
-                            placeholder="Enter speaker x.com link"
-                            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-white mb-2">Speaker real name</label>
-                        <input
-                            type="text"
-                            placeholder="Enter speaker real name"
-                            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-white mb-2">Speaker work place & position</label>
-                        <input
-                            type="text"
-                            placeholder="Enter speaker details"
-                            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <button className="text-blue-400 hover:text-blue-300 text-sm mt-6">
+            ))}
+            <button 
+                className="text-blue-400 hover:text-blue-300 text-sm mt-6"
+                onClick={handleAddTimeSlot}
+            >
                 + add another time slot
             </button>
         </div>
-
     );
 };
+
 export default ScheduleStep;
