@@ -1,78 +1,142 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 export default function PrizesStep({ formData, updateFormData }) {
-  const [prizeData, setPrizeData] = useState({
-    name: '',
-    numberOfWinners: '',
-    prizeAmount: '',
-    description: '',
-    evaluationCriteria: {
+  // 使用 useEffect 确保初始数据
+  useEffect(() => {
+    if (!formData.prizeCorhots || formData.prizeCorhots.length === 0) {
+      updateFormData({
+        prizeCorhots: [{
+          id: 1,
+          name: '',
+          numberOfWinners: '',
+          prizeAmount: '',
+          description: '',
+          evaluationCriteria: [{
+            name: '',
+            points: '',
+            description: ''
+          }],
+          judgingMode: 'Judges Only',
+          showDetails: false
+        }]
+      });
+    }
+  }, []);
+
+  const handleInputChange = (cohortIndex, field, value) => {
+    const newCohorts = [...formData.prizeCorhots];
+    newCohorts[cohortIndex] = { ...newCohorts[cohortIndex], [field]: value };
+    updateFormData({ prizeCorhots: newCohorts });
+  };
+
+  const handleEvaluationCriteriaChange = (cohortIndex, criteriaIndex, field, value) => {
+    const newCohorts = [...formData.prizeCorhots];
+    const newCriteria = [...newCohorts[cohortIndex].evaluationCriteria];
+    newCriteria[criteriaIndex] = { ...newCriteria[criteriaIndex], [field]: value };
+    newCohorts[cohortIndex] = { ...newCohorts[cohortIndex], evaluationCriteria: newCriteria };
+    updateFormData({ prizeCorhots: newCohorts });
+  };
+
+  const handleAddEvaluationCriteria = (cohortIndex) => {
+    const newCohorts = [...formData.prizeCorhots];
+    newCohorts[cohortIndex].evaluationCriteria.push({
       name: '',
       points: '',
       description: ''
-    },
-    judgingMode: 'Judges Only',
-    votingMode: 'Project Scoring',
-    maxVotePerJudge: ''
-  });
-
-  const ShowPrizeDetails = formData.showPrizeDetails || false;
-
-  const handleInputChange = (field, value) => {
-    setPrizeData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleEvaluationCriteriaChange = (field, value) => {
-    setPrizeData(prev => ({
-      ...prev,
-      evaluationCriteria: { ...prev.evaluationCriteria, [field]: value }
-    }));
-  };
-
-  const handleShowDetails = () => {
-    updateFormData({ showPrizeDetails: !ShowPrizeDetails });
+    });
+    updateFormData({ prizeCorhots: newCohorts });
   };
 
   const handleAddPrizeCohort = () => {
-    // 添加新的奖项组逻辑
-    console.log('Adding new prize cohort');
+    const newCohorts = [...formData.prizeCorhots, {
+      id: formData.prizeCorhots.length + 1,
+      name: '',
+      numberOfWinners: '',
+      prizeAmount: '',
+      description: '',
+      evaluationCriteria: [{
+        name: '',
+        points: '',
+        description: ''
+      }],
+      judgingMode: 'Judges Only',
+      showDetails: false
+    }];
+    updateFormData({ prizeCorhots: newCohorts });
+  };
+
+  const toggleShowDetails = (cohortIndex) => {
+    const newCohorts = [...formData.prizeCorhots];
+    newCohorts[cohortIndex] = { 
+      ...newCohorts[cohortIndex], 
+      showDetails: !newCohorts[cohortIndex].showDetails 
+    };
+    updateFormData({ prizeCorhots: newCohorts });
+  };
+
+  const handleDeleteCohort = (cohortIndex) => {
+    setPrizeCohorts(prev => {
+      // 如果只剩一个cohort，不允许删除
+      if (prev.length <= 1) {
+        return prev;
+      }
+      const newCohorts = prev.filter((_, index) => index !== cohortIndex);
+      updateFormData({ prizeCohorts: newCohorts });
+      return newCohorts;
+    });
   };
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <label className="block text-white mb-2">Enter Prize Cohort Name</label>
-        <input
-          type="text"
-          placeholder="Enter Prize Cohort Name"
-          className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-          value={prizeData.name}
-          onChange={(e) => handleInputChange('name', e.target.value)}
-        />
-        <button 
-          className="text-blue-400 hover:text-blue-300 flex items-center mt-2"
-          onClick={handleShowDetails}
-        >
-          <span className="mr-1">{ShowPrizeDetails ? '◢' : '▷'}</span> details
-        </button>
-      </div>
+      {formData.prizeCorhots?.map((cohort, cohortIndex) => (
+        <div key={cohort.id} className="mb-8 p-4 border border-[#242425] rounded">
+          <div className="border-b border-gray-700 pb-4">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex-1 pr-4">
+                <label className="block text-white mb-2">Enter Prize Cohort Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter Prize Cohort Name"
+                  className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                  value={cohort.name}
+                  onChange={(e) => handleInputChange(cohortIndex, 'name', e.target.value)}
+                />
+              </div>
+              {formData.prizeCorhots?.length > 1 && (
+                <button 
+                  onClick={() => handleDeleteCohort(cohortIndex)}
+                  className="text-red-400 hover:text-red-300 mt-8"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+            <button 
+              className="text-blue-400 hover:text-blue-300 flex items-center"
+              onClick={() => toggleShowDetails(cohortIndex)}
+            >
+              <ChevronDown className={`mr-1 transform ${cohort.showDetails ? 'rotate-180' : ''} transition-transform duration-200`} />
+              details
+            </button>
+          </div>
 
-      {/* 显示详细信息 */}
-      {ShowPrizeDetails && (
+          {/* 显示详细信息 */}
+          {cohort.showDetails && (
         <div className="space-y-6 mt-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-white mb-2">Number of winners</label>
               <select
                 className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.numberOfWinners}
-                onChange={(e) => handleInputChange('numberOfWinners', e.target.value)}
+                value={cohort.numberOfWinners}
+                onChange={(e) => handleInputChange(cohortIndex, 'numberOfWinners', e.target.value)}
               >
                 <option value="">Number of winners</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
+                <option value="4">4</option>
                 <option value="5">5</option>
               </select>
             </div>
@@ -82,8 +146,8 @@ export default function PrizesStep({ formData, updateFormData }) {
                 type="text"
                 placeholder="USD/tokens per winner"
                 className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.prizeAmount}
-                onChange={(e) => handleInputChange('prizeAmount', e.target.value)}
+                value={cohort.prizeAmount}
+                onChange={(e) => handleInputChange(cohortIndex, 'prizeAmount', e.target.value)}
               />
             </div>
           </div>
@@ -93,101 +157,85 @@ export default function PrizesStep({ formData, updateFormData }) {
             <textarea
               placeholder="Prize cohort description"
               className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none h-32"
-              value={prizeData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              value={cohort.description}
+              onChange={(e) => handleInputChange(cohortIndex, 'description', e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white mb-2">Evaluation criteria name</label>
-              <input
-                type="text"
-                placeholder="Enter evaluation criteria name"
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.evaluationCriteria.name}
-                onChange={(e) => handleEvaluationCriteriaChange('name', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-white mb-2">Number of points</label>
-              <input
-                type="text"
-                placeholder="Enter evaluation criteria name"
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.evaluationCriteria.points}
-                onChange={(e) => handleEvaluationCriteriaChange('points', e.target.value)}
-              />
-            </div>
-          </div>
+          {cohort.evaluationCriteria.map((criteria, criteriaIndex) => (
+            <div key={criteriaIndex} className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-white mb-2">Evaluation criteria name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter evaluation criteria name"
+                    className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                    value={criteria.name}
+                    onChange={(e) => handleEvaluationCriteriaChange(cohortIndex, criteriaIndex, 'name', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-white mb-2">Number of points</label>
+                  <input
+                    type="text"
+                    placeholder="Enter evaluation criteria points"
+                    className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                    value={criteria.points}
+                    onChange={(e) => handleEvaluationCriteriaChange(cohortIndex, criteriaIndex, 'points', e.target.value)}
+                  />
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-white mb-2">Evaluation criteria description</label>
-            <textarea
-              placeholder="Enter evaluation criteria description"
-              className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none h-24"
-              value={prizeData.evaluationCriteria.description}
-              onChange={(e) => handleEvaluationCriteriaChange('description', e.target.value)}
-            />
-          </div>
+              <div>
+                <label className="block text-white mb-2">Evaluation criteria description</label>
+                <textarea
+                  placeholder="Enter evaluation criteria description"
+                  className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none h-24"
+                  value={criteria.description}
+                  onChange={(e) => handleEvaluationCriteriaChange(cohortIndex, criteriaIndex, 'description', e.target.value)}
+                />
+              </div>
+              {criteriaIndex > 0 && (
+                <button
+                  className="text-red-400 hover:text-red-300 text-sm"
+                  onClick={() => {
+                    const newCohorts = [...formData.prizeCorhots];
+                    newCohorts[cohortIndex].evaluationCriteria = cohort.evaluationCriteria.filter((_, i) => i !== criteriaIndex);
+                    updateFormData({ prizeCorhots: newCohorts });
+                  }}
+                >
+                  Remove this criteria
+                </button>
+              )}
+              <hr className="border-[#242425] my-4" />
+            </div>
+          ))}
 
           <button
             className="text-blue-400 hover:text-blue-300 text-sm"
-            onClick={() => alert('Add evaluation criteria')}
+            onClick={() => handleAddEvaluationCriteria(cohortIndex)}
           >
             + add evaluation criteria
           </button>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white mb-2">Judging mode</label>
-              <select
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.judgingMode}
-                onChange={(e) => handleInputChange('judgingMode', e.target.value)}
-              >
-                <option value="Judges Only">Judges Only</option>
-                <option value="Public Voting">Public Voting</option>
-                <option value="Mixed">Mixed</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-white mb-2">Voting Mode</label>
-              <select
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.votingMode}
-                onChange={(e) => handleInputChange('votingMode', e.target.value)}
-              >
-                <option value="Project Scoring">Project Scoring</option>
-                <option value="Ranked Voting">Ranked Voting</option>
-                <option value="Binary Voting">Binary Voting</option>
-              </select>
-            </div>
-          </div>
-
           <div>
-            <label className="block text-white mb-2">Max vote per judge</label>
-            <select
-              className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none max-w-xs"
-              value={prizeData.maxVotePerJudge}
-              onChange={(e) => handleInputChange('maxVotePerJudge', e.target.value)}
-            >
-              <option value="">Enter points</option>
-              <option value="1">1 point</option>
-              <option value="5">5 points</option>
-              <option value="10">10 points</option>
-              <option value="100">100 points</option>
-            </select>
+            <label className="block text-white mb-2">Judging mode</label>
+            <div className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425]">
+              Judges Only
+            </div>
           </div>
         </div>
       )}
+      </div>
+    ))}
 
-      <button 
-        className="text-blue-400 hover:text-blue-300 text-sm mt-4"
-        onClick={handleAddPrizeCohort}
-      >
-        + add another prize cohort
-      </button>
-    </div>
+    <button 
+      className="text-blue-400 hover:text-blue-300 text-sm mt-4"
+      onClick={handleAddPrizeCohort}
+    >
+      + add another prize cohort
+    </button>
+  </div>
   );
 }
