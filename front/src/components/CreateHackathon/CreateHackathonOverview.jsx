@@ -1,12 +1,47 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Calendar, Upload, Plus, X, Users, Link } from 'lucide-react';
 export default function CreateHackathonForm({ formData, updateFormData }) {
+  const fileInputRef = useRef(null);
+  
   const handleInputChange = (field, value) => {
     updateFormData({ [field]: value });
   };
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     handleInputChange(name, value);
+  };
+
+  const handleBannerClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // 检查文件类型
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedExtensions = /\.(jpg|jpeg|png|gif|webp)$/i;
+      
+      if (!allowedTypes.includes(file.type) && !allowedExtensions.test(file.name)) {
+        alert('请上传有效的图片文件 (jpg, jpeg, png, gif, webp)');
+        return;
+      }
+      
+      // 检查文件大小 (限制为5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('文件大小不能超过5MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        // 将图片数据保存到formData中
+        handleInputChange('banner', event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -29,11 +64,40 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
 
         <div className="space-y-2">
           <label className="block text-white mb-2">Hackathon Banner</label>
-          <div className="bg-[#0f1011] border border-solid border-[#242425] rounded px-4 py-20 min-h-32 flex flex-col items-center justify-center">
-            <Upload className="text-gray-500 w-8 h-8 mb-2" />
-            <p className="text-gray-400 text-sm mb-1">Drag/drop a hackathon</p>
-            <p className="text-gray-500 text-xs mb-2">- Just here as -</p>
-            <button className="text-blue-400 text-sm hover:text-blue-300">Click to browse</button>
+          <div 
+            className="bg-[#0f1011] border border-solid border-[#242425] rounded px-4 py-20 min-h-32 flex flex-col items-center justify-center cursor-pointer hover:border-[#0092ff]"
+            onClick={handleBannerClick}
+          >
+            {formData.banner ? (
+              <img 
+                src={formData.banner} 
+                alt="Banner preview" 
+                className="max-h-40 rounded"
+              />
+            ) : (
+              <>
+                <Upload className="text-gray-500 w-8 h-8 mb-2" />
+                <p className="text-gray-400 text-sm mb-1">Click to select a graph</p>
+                <p className="text-gray-500 text-xs mb-2">Supports: JPG, PNG, GIF, WEBP (Max 5MB)</p>
+                <button 
+                  type="button"
+                  className="text-blue-400 text-sm hover:text-blue-300"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleBannerClick();
+                  }}
+                >
+                  Click to browse
+                </button>
+              </>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/jpeg, image/png, image/gif, image/webp"
+              className="hidden"
+            />
           </div>
         </div>
 
