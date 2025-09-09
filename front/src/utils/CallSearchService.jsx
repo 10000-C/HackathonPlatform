@@ -13,6 +13,7 @@ const callSearchService = async (searchTerm, target) => {
       activityId
       activity_dataCID
       activity_topic
+      activity_participants
      }
     }`
 
