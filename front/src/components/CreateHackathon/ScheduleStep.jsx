@@ -1,29 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 const ScheduleStep = ({ formData, updateFormData }) => {
-    const [timeSlots, setTimeSlots] = useState(formData.timeSlots || [{
-        title: '',
-        startDate: '',
-        startTime: '',
-        endDate: '',
-        endTime: '',
-        description: '',
-        location: '',
-        speaker: '',
-        notes: '',
-        showDetails: false
-    }]);
+    useEffect(() => {
+        if (!formData.schedule || formData.schedule.length === 0) {
+            updateFormData({
+                schedule: [{
+                    title: '',
+                    startDate: '',
+                    startTime: '',
+                    endDate: '',
+                    endTime: '',
+                    description: '',
+                    location: '',
+                    speaker: '',
+                    notes: '',
+                    showDetails: false
+                }]
+            });
+        }
+    }, []);
 
     const handleTimeSlotChange = (index, field, value) => {
-        const newTimeSlots = [...timeSlots];
-        newTimeSlots[index] = { ...newTimeSlots[index], [field]: value };
-        setTimeSlots(newTimeSlots);
-        updateFormData({ timeSlots: newTimeSlots });
+        const newSchedule = [...(formData.schedule || [])];
+        newSchedule[index] = { ...newSchedule[index], [field]: value };
+        updateFormData({ schedule: newSchedule });
     };
 
     const handleAddTimeSlot = () => {
-        setTimeSlots([...timeSlots, {
+        const newSchedule = [...(formData.schedule || []), {
             title: '',
             startDate: '',
             startTime: '',
@@ -34,24 +39,27 @@ const ScheduleStep = ({ formData, updateFormData }) => {
             speaker: '',
             notes: '',
             showDetails: false
-        }]);
+        }];
+        updateFormData({ schedule: newSchedule });
     };
 
     const toggleDetails = (index) => {
-        const newTimeSlots = [...timeSlots];
-        newTimeSlots[index] = { ...newTimeSlots[index], showDetails: !newTimeSlots[index].showDetails };
-        setTimeSlots(newTimeSlots);
+        const newSchedule = [...(formData.schedule || [])];
+        newSchedule[index] = { ...newSchedule[index], showDetails: !newSchedule[index].showDetails };
+        updateFormData({ schedule: newSchedule });
     };
 
     const handleDeleteTimeSlot = (index) => {
-        const newTimeSlots = timeSlots.filter((_, i) => i !== index);
-        setTimeSlots(newTimeSlots);
-        updateFormData({ timeSlots: newTimeSlots });
+        if (formData.schedule.length <= 1) {
+            return;
+        }
+        const newSchedule = formData.schedule.filter((_, i) => i !== index);
+        updateFormData({ schedule: newSchedule });
     };
 
     return (
         <div className="p-6">
-            {timeSlots.map((slot, index) => (
+            {formData.schedule?.map((slot, index) => (
                 <div key={index} className="mb-6">
                     <div className="flex justify-between items-start mb-4">
                         <div className="flex-1 pr-4">

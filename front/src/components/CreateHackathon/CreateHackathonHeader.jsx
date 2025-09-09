@@ -52,17 +52,20 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
     }
 
     // 验证时间安排
-    if (formData.schedule && formData.schedule.length > 0) {
-      for (const slot of formData.schedule) {
-        if (!slot.title?.trim() || 
-            !slot.startDate || 
-            !slot.startTime || 
-            !slot.endDate || 
-            !slot.endTime || 
-            !slot.description?.trim()) {
-          alert("Please complete all information for the added schedule items");
-          return false;
-        }
+    if (!formData.schedule || formData.schedule.length === 0) {
+      alert("Please add at least one schedule item");
+      return false;
+    }
+
+    for (const slot of formData.schedule) {
+      if (!slot.title?.trim() || 
+          !slot.startDate || 
+          !slot.startTime || 
+          !slot.endDate || 
+          !slot.endTime || 
+          !slot.description?.trim()) {
+        alert("Please complete all information for the added schedule items");
+        return false;
       }
     }
 
