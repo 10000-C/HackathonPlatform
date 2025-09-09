@@ -12,9 +12,7 @@ export default function PrizesStep({ formData, updateFormData }) {
       points: '',
       description: ''
     },
-    judgingMode: 'Judges Only',
-    votingMode: 'Project Scoring',
-    maxVotePerJudge: ''
+    judgingMode: 'Judges Only'
   });
 
   const ShowPrizeDetails = formData.showPrizeDetails || false;
@@ -73,6 +71,7 @@ export default function PrizesStep({ formData, updateFormData }) {
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
+                <option value="5">4</option>
                 <option value="5">5</option>
               </select>
             </div>
@@ -138,46 +137,11 @@ export default function PrizesStep({ formData, updateFormData }) {
             + add evaluation criteria
           </button>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white mb-2">Judging mode</label>
-              <select
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.judgingMode}
-                onChange={(e) => handleInputChange('judgingMode', e.target.value)}
-              >
-                <option value="Judges Only">Judges Only</option>
-                <option value="Public Voting">Public Voting</option>
-                <option value="Mixed">Mixed</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-white mb-2">Voting Mode</label>
-              <select
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-                value={prizeData.votingMode}
-                onChange={(e) => handleInputChange('votingMode', e.target.value)}
-              >
-                <option value="Project Scoring">Project Scoring</option>
-                <option value="Ranked Voting">Ranked Voting</option>
-                <option value="Binary Voting">Binary Voting</option>
-              </select>
-            </div>
-          </div>
-
           <div>
-            <label className="block text-white mb-2">Max vote per judge</label>
-            <select
-              className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none max-w-xs"
-              value={prizeData.maxVotePerJudge}
-              onChange={(e) => handleInputChange('maxVotePerJudge', e.target.value)}
-            >
-              <option value="">Enter points</option>
-              <option value="1">1 point</option>
-              <option value="5">5 points</option>
-              <option value="10">10 points</option>
-              <option value="100">100 points</option>
-            </select>
+            <label className="block text-white mb-2">Judging mode</label>
+            <div className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425]">
+              Judges Only
+            </div>
           </div>
         </div>
       )}
