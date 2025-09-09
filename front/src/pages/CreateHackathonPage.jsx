@@ -30,9 +30,7 @@ export default function CreateHackathonPage() {
   });
 
   const [judges, setJudges] = useState([
-    { email: 'user@example.com', status: 'Judge', type: 'confirmed' },
-    { email: 'judgemail@exmpl.com', status: 'Judge', type: 'confirmed' },
-    { email: 'usernameimail@domain.com', status: 'Invite pending', type: 'pending' }
+   
   ]);
 
   const progressRef = useRef(0);
