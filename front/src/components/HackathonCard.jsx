@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-
+import registerToHackthon from '../utils/RegisterToHackthon';
 // 根据日期确定活动状态的辅助函数
 const calculateStatus = (startDate, registrationEnd, endDate) => {
   const now = new Date();
@@ -95,6 +95,16 @@ const HackathonCard = ({ hackathon }) => {
     daysLeftDisplay = 'Ended';
   }
 
+  const handleRegister = async() => {
+    try{
+      const activityId = hackathon.id;
+      const response = await registerToHackthon(activityId);
+      console.log("Register response:",response);
+    }catch(error){
+      console.error("Error registering to hackathon:",error);
+    }
+  }
+
   return (
     <div className="group">
       <div className="bg-none rounded-xl p-6 flex gap-6 hover:bg-[#3d4654] transition-all duration-200 border border-[#3d4654] shadow-sm hover:shadow-md">
@@ -159,6 +169,7 @@ const HackathonCard = ({ hackathon }) => {
                   ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
                   : 'bg-[#0092ff] text-white hover:bg-[#0092ff]/90'
               }`}
+              onClick={handleRegister}
             >
               {calculatedStatus === 'ended' || registrationEnded ? 'Registration Closed' : 'Get Involved'}
             </button>

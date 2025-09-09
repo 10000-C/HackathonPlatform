@@ -72,7 +72,7 @@ export function handleParticipantAdded(event: ParticipantAdded): void {
   if (entity == null) {
     return;
   }
-  entity.activity_participants.plus(BigInt.fromI32(1));
+  entity.activity_participants = entity.activity_participants.plus(BigInt.fromI32(1));
   entity.save();
 }
 
@@ -82,6 +82,6 @@ export function handleParticipantRemoved(event: ParticipantRemoved): void {
   if (entity == null) {
     return;
   }
-  entity.activity_participants.minus(BigInt.fromI32(1));
+  entity.activity_participants = entity.activity_participants.minus(BigInt.fromI32(1));
   entity.save();
 }
