@@ -4,8 +4,8 @@ import { ClipboardIcon, TrophyIcon, UserGroupIcon, CalendarIcon } from '@heroico
 const navItems = [
   { id: 'overview', icon: ClipboardIcon, label: 'Overview' },
   { id: 'prizes', icon: TrophyIcon, label: 'Prizes' },
-  { id: 'judges', icon: UserGroupIcon, label: 'Judges' },
-  { id: 'schedule', icon: CalendarIcon, label: 'Schedule' }
+  { id: 'schedule', icon: CalendarIcon, label: 'Schedule' },
+  { id: 'judges', icon: UserGroupIcon, label: 'Judges' }
 ];
 
 export default function CreateHackathonSidebar({currentStep, setCurrentStep}) {

@@ -29,9 +29,8 @@ export default function CreateHackathonPage() {
     showPrizeDetails: false
   });
 
-  const [judges, setJudges] = useState([
-   
-  ]);
+  const [judges, setJudges] = useState([]);
+  const [isPublished, setIsPublished] = useState(false);
 
   const progressRef = useRef(0);
 
@@ -39,11 +38,31 @@ export default function CreateHackathonPage() {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
+  // 验证是否可以访问评委页面
+  const canAccessJudges = () => {
+    if (!isPublished) {
+      alert('Please publish hackathon in Schedule step before proceeding to Judges.');
+      return false;
+    }
+    return true;
+  };
+
+  // 处理步骤变更
+  const handleStepChange = (newStep) => {
+    if (newStep === 'judges' && !canAccessJudges()) {
+      return;
+    }
+    setCurrentStep(newStep);
+  };
+
   const renderCurrentStep = () => {
     const commonProps = {
       formData,
       updateFormData,
-      setCurrentStep
+      setCurrentStep: handleStepChange,
+      isPublished,
+      setIsPublished,
+      currentStep
     };
 
     switch (currentStep) {
@@ -61,7 +80,7 @@ export default function CreateHackathonPage() {
   };
 
   const getStepProgress = () => {
-    const steps = ['overview', 'prizes', 'judges', 'schedule'];
+    const steps = ['overview', 'prizes', 'schedule', 'judges'];
     return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
   };
 
@@ -96,11 +115,18 @@ export default function CreateHackathonPage() {
     <div className="flex h-screen bg-[#1b1b1e]">
       <div className="flex flex-col flex-1">
         {/* 顶部全宽导航栏 */}
-        <CreateHackathonHeader />
+        <CreateHackathonHeader 
+          currentStep={currentStep}
+          isPublished={isPublished}
+          setIsPublished={setIsPublished}
+          formData={formData}
+        />
         <div className="flex flex-1 overflow-hidden">
           {/* 左侧步骤导航栏 */}
           <CreateHackathonSidebar 
-            currentStep={currentStep} setCurrentStep={setCurrentStep}
+            currentStep={currentStep} 
+            setCurrentStep={handleStepChange}
+            isPublished={isPublished}
           />
           <div className="flex-1 flex flex-col">
             {/* 顶部进度条 */}
