@@ -1,5 +1,8 @@
 import { useState, useRef } from 'react';
-import { Calendar, Upload, Plus, X, Users, Link } from 'lucide-react';
+import { Upload, Plus, X, Users, Link } from 'lucide-react';
+import { CalendarIcon } from '@heroicons/react/24/outline';
+import MDEditor from '@uiw/react-md-editor';
+
 export default function CreateHackathonForm({ formData, updateFormData }) {
   const fileInputRef = useRef(null);
   
@@ -119,49 +122,85 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-white mb-2">Registration duration</label>
-            <div className="relative">
-              <input
-                type="date"
-                id="registrationStart"
-                name="registrationStart"
-                value={formData.registrationStart}
-                onChange={handleChange}
-                placeholder='From — to dates'
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none pr-10"
-              />
-              <Calendar className="absolute right-3 top-3 text-gray-400 w-5 h-5" />
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <input
+                  type="date"
+                  name="registrationStart"
+                  value={formData.registrationStart}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-[#0f1011] text-white rounded-lg border border-[#242425] focus:border-[#0092ff] focus:outline-none focus:ring-1 focus:ring-[#0092ff]"
+                  required
+                />
+                <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              </div>
+              <div className="relative">
+                <input
+                  type="date"
+                  name="registrationEnd"
+                  value={formData.registrationEnd}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-[#0f1011] text-white rounded-lg border border-[#242425] focus:border-[#0092ff] focus:outline-none focus:ring-1 focus:ring-[#0092ff]"
+                  required
+                />
+                <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
           </div>
 
           <div>
             <label className="block text-white mb-2">Hackathon duration</label>
-            <div className="relative">
-              <input
-                type="date"
-                id="hackathonEnd"
-                name="hackathonEnd"
-                value={formData.hackathonEnd}
-                onChange={handleChange}
-                placeholder='From — to dates'
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none pr-10"
-              />
-              <Calendar className="absolute right-3 top-3 text-gray-400 w-5 h-5" />
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <input
+                  type="date"
+                  name="hackathonStart"
+                  value={formData.hackathonStart}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-[#0f1011] text-white rounded-lg border border-[#242425] focus:border-[#0092ff] focus:outline-none focus:ring-1 focus:ring-[#0092ff]"
+                  required
+                />
+                <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              </div>
+              <div className="relative">
+                <input
+                  type="date"
+                  name="hackathonEnd"
+                  value={formData.hackathonEnd}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-[#0f1011] text-white rounded-lg border border-[#242425] focus:border-[#0092ff] focus:outline-none focus:ring-1 focus:ring-[#0092ff]"
+                  required
+                />
+                <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
           </div>
 
           <div>
             <label className="block text-white mb-2">Voting duration</label>
-            <div className="relative">
-              <input
-                type="date"
-                id="votingDate"
-                name="votingDate"
-                value={formData.votingStart}
-                onChange={handleChange}
-                placeholder='From — to dates'
-                className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none pr-10"
-              />
-              <Calendar className="absolute right-3 top-3 text-gray-400 w-5 h-5" />
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <input
+                  type="date"
+                  name="votingStart"
+                  value={formData.votingStart}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-[#0f1011] text-white rounded-lg border border-[#242425] focus:border-[#0092ff] focus:outline-none focus:ring-1 focus:ring-[#0092ff]"
+                  required
+                />
+                <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              </div>
+              <div className="relative">
+                <input
+                  type="date"
+                  name="votingEnd"
+                  value={formData.votingEnd}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-[#0f1011] text-white rounded-lg border border-[#242425] focus:border-[#0092ff] focus:outline-none focus:ring-1 focus:ring-[#0092ff]"
+                  required
+                />
+                <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
           </div>
         </div>
@@ -227,25 +266,16 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
 
       <div>
         <label className="block text-white mb-2">Full Description</label>
-        <div className="bg-[#0f1011] border border-solid border-[#242425] rounded">
-          <div className="border-b border-gray-700 p-3">
-            <select className="bg-gray-700 text-white text-sm rounded px-2 py-1 mr-3">
-              <option>Paragraph text</option>
-            </select>
-            <div className="inline-flex items-center space-x-2 text-sm">
-              <span className="px-2">14</span>
-              <button className="p-1 hover:bg-gray-700 rounded">B</button>
-              <button className="p-1 hover:bg-gray-700 rounded">I</button>
-              <button className="p-1 hover:bg-gray-700 rounded">U</button>
-              <button className="p-1 hover:bg-gray-700 rounded">S</button>
-            </div>
-          </div>
-          <textarea
-            name="fullDescription"
+        <div data-color-mode="dark">
+          <MDEditor
             value={formData.fullDescription}
-            onChange={handleChange}
-            className="w-full bg-[#0f1011] text-white p-3 border-0 focus:outline-none h-32 resize-none"
-            placeholder="Enter full description..."
+            onChange={(value) => handleInputChange('fullDescription', value)}
+            preview="edit"
+            height={320}
+            className="bg-[#0f1011] border border-solid border-[#242425] rounded overflow-hidden"
+            textareaProps={{
+              placeholder: "Enter full description in Markdown format..."
+            }}
           />
         </div>
       </div>
