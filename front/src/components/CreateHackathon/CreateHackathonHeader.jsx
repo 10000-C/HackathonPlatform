@@ -45,6 +45,17 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
         return false;
       }
 
+      // 验证prizeAmount为正整数
+      const prizeAmount = cohort.prizeAmount?.trim();
+      if (prizeAmount) {
+        // 检查是否为正整数
+        const prizeAmountNum = parseInt(prizeAmount, 10);
+        if (isNaN(prizeAmountNum) || prizeAmountNum <= 0 || prizeAmountNum.toString() !== prizeAmount) {
+          alert(`Prize amount for "${cohort.name}" must be a positive integer`);
+          return false;
+        }
+      }
+
       // 验证评分标准
       for (const criteria of cohort.evaluationCriteria) {
         if (!criteria.name?.trim() || 
