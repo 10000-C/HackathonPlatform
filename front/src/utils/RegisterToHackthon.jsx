@@ -2,7 +2,7 @@ import {ethers} from 'ethers';
 import ActivitiesManagement from './contracts/ActivitiesManagement.json';
 
 const registerToHackthon = async (activityId) => {
-    const CONTRACT_ADDRESS = "0xC91cfB0Ab5EA34e350bb2cC4Eb360Ddeb05a1552";
+    const CONTRACT_ADDRESS = "0x1c2318b7415e369FeF9f66Af29E08DF51B5FFdDd";
 
     try{
        const {ethereum} = window;
