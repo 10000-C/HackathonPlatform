@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import SaveToIPFS from '../../utils/SaveToIPFS';
 
 export default function CreateHackathonHeader({ currentStep, isPublished, setIsPublished, formData }) {
+  const [uploading, setUploading] = useState(false);
   const validateForm = () => {
     // 验证概览信息
     if (!formData.name?.trim() || 
@@ -72,12 +76,51 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
     return true;
   };
 
-  const handlePublish = () => {
+  const handleSaveImage = async (file) => {
+    try {
+      const imageCID = await SaveToIPFS(file);
+      return imageCID;
+    } catch (error) {
+      console.error('保存图片失败:', error);
+      throw error;
+    }
+  };
+
+  const handlePublish = async () => {
     if (currentStep === 'schedule') {
       if (validateForm()) {
-        setIsPublished(true);
-        alert("Hackathon successfully published!");
-        // TODO: 添加数据上传逻辑
+        try {
+          setUploading(true);
+          
+          // 确保banner存在且包含文件对象
+          if (!formData.banner?.file) {
+            throw new Error('No banner image selected');
+          }
+
+          // 1. 先上传图片到IPFS
+          const imageCID = await handleSaveImage(formData.banner.file);
+          
+          const hackathonData = {
+            ...formData,
+            // 移除原始banner数据，只保留CID
+            banner: imageCID
+          };
+  
+          // 从hackathonData中删除预览URL
+          delete hackathonData.banner.previewUrl;
+          delete hackathonData.banner.file;
+          
+          const dataBlob = new Blob([JSON.stringify(hackathonData)], { type: 'application/json' });
+          const dataCID = await SaveToIPFS(dataBlob);
+          
+          setIsPublished(true);
+          alert("Hackathon successfully published!");
+        } catch (error) {
+          console.error('发布失败:', error);
+          alert('Failed to publish hackathon. Please try again.');
+        } finally {
+          setUploading(false);
+        }
       }
     }
   };
@@ -91,14 +134,23 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
       <div className="flex items-center gap-4">
         <button 
           onClick={handlePublish}
-          disabled={currentStep !== 'schedule' || isPublished}
+          disabled={currentStep !== 'schedule' || isPublished || uploading}
           className={`${
             currentStep === 'schedule' && !isPublished
               ? 'bg-[#0092ff] hover:bg-[#0092ff]/90'
               : 'bg-gray-500 cursor-not-allowed'
-          } text-white px-4 py-2 rounded-lg transition-colors`}
+          } text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center`}
         >
-          {isPublished ? 'Published' : 'Publish Hackathon'}
+          {uploading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Publishing...
+            </>
+          ) : isPublished ? (
+            'Published'
+          ) : (
+            'Publish Hackathon'
+          )}
         </button>
       </div>
     </div>
