@@ -126,6 +126,23 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
     return timestamps;
   };
 
+  const countPrizePool = (prizeCorhots) => {
+    if (!prizeCorhots || prizeCorhots.length === 0) {
+      return 0;
+    }
+
+    let totalPrizePool = 0;
+    
+    for (const cohort of prizeCorhots) {
+      const prizeAmount = parseInt(cohort.prizeAmount, 10) || 0;
+      const numberOfWinners = parseInt(cohort.numberOfWinners, 10) || 0;
+      
+      totalPrizePool += prizeAmount * numberOfWinners;
+    }
+    
+    return totalPrizePool;
+  };
+
   const handlePublish = async () => {
     if (currentStep === 'schedule') {
       if (validateForm()) {
@@ -140,10 +157,15 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
           // 1. 先上传图片到IPFS
           const imageCID = await handleSaveImage(formData.banner.file);
           
+          // 计算总奖金池
+          const totalPrizePool = countPrizePool(formData.prizeCorhots);
+          
           const hackathonData = {
             ...formData,
             // 移除原始banner数据，只保留CID
-            banner: imageCID
+            banner: imageCID,
+            // 添加计算得出的总奖金池
+            prizePool: totalPrizePool
           };
   
           // 从hackathonData中删除预览URL
