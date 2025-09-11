@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import SaveToIPFS from '../../utils/SaveToIPFS';
+import saveActivityToContract from '../../utils/SaveActivityToContract';
 
 export default function CreateHackathonHeader({ currentStep, isPublished, setIsPublished, formData }) {
+  const [uploading, setUploading] = useState(false);
   const validateForm = () => {
     // 验证概览信息
     if (!formData.name?.trim() || 
@@ -40,6 +45,17 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
         return false;
       }
 
+      // 验证prizeAmount为正整数
+      const prizeAmount = cohort.prizeAmount?.trim();
+      if (prizeAmount) {
+        // 检查是否为正整数
+        const prizeAmountNum = parseInt(prizeAmount, 10);
+        if (isNaN(prizeAmountNum) || prizeAmountNum <= 0 || prizeAmountNum.toString() !== prizeAmount) {
+          alert(`Prize amount for "${cohort.name}" must be a positive integer`);
+          return false;
+        }
+      }
+
       // 验证评分标准
       for (const criteria of cohort.evaluationCriteria) {
         if (!criteria.name?.trim() || 
@@ -72,12 +88,116 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
     return true;
   };
 
-  const handlePublish = () => {
+  const handleSaveImage = async (file) => {
+    try {
+      const imageCID = await SaveToIPFS(file);
+      return imageCID;
+    } catch (error) {
+      console.error('保存图片失败:', error);
+      throw error;
+    }
+  };
+
+  const convertDateToTimestamp = (dateStr) => {
+    if (!dateStr) {
+      console.warn('Empty date string provided');
+      return 0; // 返回0而不是null，因为智能合约可能不接受null
+    }
+    try {
+      const timestamp = Math.floor(new Date(dateStr).getTime() / 1000);
+      console.log(`Converting ${dateStr} to ${timestamp}`);
+      return timestamp;
+    } catch (error) {
+      console.error('Error converting date:', dateStr, error);
+      return 0;
+    }
+  };
+
+  const convertTimestampsToJson = (formData) => {
+    const timestamps = {
+      registrationStart: convertDateToTimestamp(formData.registrationStart),
+      registrationEnd: convertDateToTimestamp(formData.registrationEnd),
+      hackthonStart: convertDateToTimestamp(formData.hackathonStart),
+      hackthonEnd: convertDateToTimestamp(formData.hackathonEnd),
+      votingStart: convertDateToTimestamp(formData.votingStart),
+      votingEnd: convertDateToTimestamp(formData.votingEnd)
+    };
+    
+    return timestamps;
+  };
+
+  const countPrizePool = (prizeCorhots) => {
+    if (!prizeCorhots || prizeCorhots.length === 0) {
+      return 0;
+    }
+
+    let totalPrizePool = 0;
+    
+    for (const cohort of prizeCorhots) {
+      const prizeAmount = parseInt(cohort.prizeAmount, 10) || 0;
+      const numberOfWinners = parseInt(cohort.numberOfWinners, 10) || 0;
+      
+      totalPrizePool += prizeAmount * numberOfWinners;
+    }
+    
+    return totalPrizePool;
+  };
+
+  const handlePublish = async () => {
     if (currentStep === 'schedule') {
       if (validateForm()) {
-        setIsPublished(true);
-        alert("Hackathon successfully published!");
-        // TODO: 添加数据上传逻辑
+        try {
+          setUploading(true);
+          
+          // 确保banner存在且包含文件对象
+          if (!formData.banner?.file) {
+            throw new Error('No banner image selected');
+          }
+
+          // 1. 先上传图片到IPFS
+          const imageCID = await handleSaveImage(formData.banner.file);
+          
+          // 计算总奖金池
+          const totalPrizePool = countPrizePool(formData.prizeCorhots);
+          
+          const hackathonData = {
+            ...formData,
+            // 移除原始banner数据，只保留CID
+            banner: imageCID,
+            // 添加计算得出的总奖金池
+            prizePool: totalPrizePool
+          };
+  
+          // 从hackathonData中删除预览URL
+          delete hackathonData.banner.previewUrl;
+          delete hackathonData.banner.file;
+          
+          const dataBlob = new Blob([JSON.stringify(hackathonData)], { type: 'application/json' });
+          const dataCID = await SaveToIPFS(dataBlob);
+
+          // 获取时间戳对象
+          const timeStamps = convertTimestampsToJson(formData);
+          
+          // 提供maxParticipants参数，如果formData中没有则使用默认值
+          const maxParticipants = formData.maxParticipants || 100;
+          
+          console.log("Publishing with data:", {
+            dataCID,
+            name: hackathonData.name,
+            maxParticipants,
+            timeStamps
+          });
+          //目前没有设置最大参加人数的选项
+          await saveActivityToContract(dataCID, hackathonData.name, 9999, timeStamps);
+          console.log('Activity saved to contract');
+          setIsPublished(true);
+          alert("Hackathon successfully published!");
+        } catch (error) {
+          console.error('发布失败:', error);
+          alert('Failed to publish hackathon. Please try again.');
+        } finally {
+          setUploading(false);
+        }
       }
     }
   };
@@ -91,14 +211,23 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
       <div className="flex items-center gap-4">
         <button 
           onClick={handlePublish}
-          disabled={currentStep !== 'schedule' || isPublished}
+          disabled={currentStep !== 'schedule' || isPublished || uploading}
           className={`${
             currentStep === 'schedule' && !isPublished
               ? 'bg-[#0092ff] hover:bg-[#0092ff]/90'
               : 'bg-gray-500 cursor-not-allowed'
-          } text-white px-4 py-2 rounded-lg transition-colors`}
+          } text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center`}
         >
-          {isPublished ? 'Published' : 'Publish Hackathon'}
+          {uploading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Publishing...
+            </>
+          ) : isPublished ? (
+            'Published'
+          ) : (
+            'Publish Hackathon'
+          )}
         </button>
       </div>
     </div>

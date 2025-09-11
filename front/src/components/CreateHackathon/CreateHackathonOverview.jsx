@@ -16,6 +16,15 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
       updateFormData({ socialLinks: [{ domain: '.com', url: '' }] });
     }
   }, []);
+
+  // 在组件卸载时清理预览URL
+  useEffect(() => {
+    return () => {
+      if (formData.banner?.previewUrl) {
+        URL.revokeObjectURL(formData.banner.previewUrl);
+      }
+    };
+  }, [formData.banner?.previewUrl]);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,13 +53,15 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
         alert('文件大小不能超过5MB');
         return;
       }
+
+      // 创建临时URL以供预览
+      const previewUrl = URL.createObjectURL(file);
       
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        // 将图片数据保存到formData中
-        handleInputChange('banner', event.target.result);
-      };
-      reader.readAsDataURL(file);
+      // 保存文件对象和预览URL
+      handleInputChange('banner', {
+        file: file,
+        previewUrl: previewUrl
+      });
     }
   };
 
@@ -78,9 +89,9 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
             className="bg-[#0f1011] border border-solid border-[#242425] rounded px-4 py-20 min-h-32 flex flex-col items-center justify-center cursor-pointer hover:border-[#0092ff]"
             onClick={handleBannerClick}
           >
-            {formData.banner ? (
+            {formData.banner?.previewUrl ? (
               <img 
-                src={formData.banner} 
+                src={formData.banner.previewUrl} 
                 alt="Banner preview" 
                 className="max-h-40 rounded"
               />

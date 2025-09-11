@@ -1,8 +1,8 @@
 import {ethers} from 'ethers';
 import ActivitiesManagement from './contracts/ActivitiesManagement.json';
 
-const saveToContract = async (dataCID,topic,maxParticipants) => {
-    const CONTRACT_ADDRESS = "0xC91cfB0Ab5EA34e350bb2cC4Eb360Ddeb05a1552";
+const saveActivityToContract = async (dataCID,topic,maxParticipants,timestamps) => {
+    const CONTRACT_ADDRESS = "0x1c2318b7415e369FeF9f66Af29E08DF51B5FFdDd";
 
     try{
         const {ethereum} = window;
@@ -19,7 +19,13 @@ const saveToContract = async (dataCID,topic,maxParticipants) => {
             dataCID,
             topic,
             maxParticipants,
-            0
+            0,
+            timestamps.hackthonStart,
+            timestamps.hackthonEnd,
+            timestamps.votingStart,
+            timestamps.votingEnd,
+            timestamps.registrationStart,
+            timestamps.registrationEnd
         );
         await response.wait();
         console.log("response:",response);
@@ -28,4 +34,4 @@ const saveToContract = async (dataCID,topic,maxParticipants) => {
         throw error;
     }
 }
-export default saveToContract;
+export default saveActivityToContract;

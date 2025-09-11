@@ -56,9 +56,9 @@ const formatDateDifference = (targetDate) => {
 const HackathonCard = ({ hackathon }) => {
   // 计算活动状态
   const calculatedStatus = calculateStatus(
-    hackathon.startDate,
+    hackathon.hackathonStart || hackathon.startDate,
     hackathon.registrationEnd,
-    hackathon.endDate
+    hackathon.hackathonEnd || hackathon.endDate
   );
   
   // 检查注册是否已结束
@@ -135,7 +135,7 @@ const HackathonCard = ({ hackathon }) => {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#949fa8] w-20">Level</span>
-              <span className="text-white">{hackathon.level || 'Not specified'}</span>
+              <span className="text-white">{hackathon.experienceLevel || 'Not specified'}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#949fa8] w-20">Total prize</span>
@@ -196,11 +196,14 @@ HackathonCard.propTypes = {
     description: PropTypes.string.isRequired,
     logo: PropTypes.string,
     techStack: PropTypes.arrayOf(PropTypes.string).isRequired,
-    startDate: PropTypes.string,
+    hackathonStart: PropTypes.string,
+    startDate: PropTypes.string, // 保持向后兼容
     registrationEnd: PropTypes.string.isRequired,
-    endDate: PropTypes.string,
+    hackathonEnd: PropTypes.string,
+    endDate: PropTypes.string, // 保持向后兼容
     prizePool: PropTypes.number.isRequired,
-    level: PropTypes.string.isRequired,
+    experienceLevel: PropTypes.string,
+    level: PropTypes.string, // 保持向后兼容
     participants: PropTypes.number.isRequired,
     ecosystem: PropTypes.string.isRequired,
     onViewDetails: PropTypes.func

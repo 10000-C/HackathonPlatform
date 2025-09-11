@@ -101,6 +101,13 @@ export default function HackathonsPage() {
             hackathonData.maxParticipants = maxParticipants;
             hackathonData.participants = activity.activity_participants;
 
+            // 将banner CID转换为完整的IPFS URL
+            if (hackathonData.banner && typeof hackathonData.banner === 'string') {
+              hackathonData.logo = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${hackathonData.banner}`;
+            } else {
+              hackathonData.logo = "https://placehold.co/400";
+            }
+
             return {
               id: activity.activityId,
               dataCID: activity.activity_dataCID,
