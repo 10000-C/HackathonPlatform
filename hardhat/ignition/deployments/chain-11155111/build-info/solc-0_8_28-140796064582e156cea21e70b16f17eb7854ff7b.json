@@ -1,0 +1,54 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-140796064582e156cea21e70b16f17eb7854ff7b",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/DemosJudgement.sol": "project/contracts/DemosJudgement.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/DemosJudgement.sol": {
+        "content": "//SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nimport \"./interface/IPrizesManagement.sol\";\r\nimport \"./interface/IJudgementManagement.sol\";\r\nimport \"./interface/IDemosManagement.sol\";\r\nimport \"./interface/IActivitiesManagement.sol\";\r\nimport \"./interface/IAuthorityManagement.sol\";\r\n\r\ncontract DemosJudgement{ \r\n    event DemoJudged(uint256 indexed activityId, uint256 indexed demoId, uint256 totalScore, uint256 numOfJudges);\r\n\r\n    IPrizesManagement private prizesManagement;\r\n    IJudgementManagement private judgementManagement;\r\n    IDemosManagement private demosManagement;\r\n    IActivitiesManagement private activitiesManagement;\r\n    IAuthorityManagement private authorityManagement;\r\n\r\n    struct Score{\r\n        uint256 totalScore;\r\n        uint256 numOfJudges;\r\n    }\r\n\r\n    mapping(uint256 => mapping(uint256 => Score)) public demoScores; // activityId => demoId => totalScore\r\n    mapping(address => mapping(uint256 => mapping( uint256 => bool))) public hasJudged; // judge => activityId => demoId => hasJudged\r\n\r\n    constructor(address _prizesManagementAddress, address _judgementManagementAddress, address _demosManagementAddress, address _activitiesManagementAddress, address _authorityManagementAddress) {\r\n        prizesManagement = IPrizesManagement(_prizesManagementAddress);\r\n        judgementManagement = IJudgementManagement(_judgementManagementAddress);\r\n        demosManagement = IDemosManagement(_demosManagementAddress);\r\n        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);\r\n        authorityManagement = IAuthorityManagement(_authorityManagementAddress);\r\n    }\r\n\r\n    function checkPointsValid(uint256[] memory _pointsOfCriteria, uint256[] memory _pointsOfJudge) internal pure returns(bool) {\r\n        if(_pointsOfCriteria.length != _pointsOfJudge.length) {\r\n            return false;\r\n        }\r\n        for(uint256 i = 0; i < _pointsOfCriteria.length; i++) {\r\n            if(_pointsOfJudge[i] > _pointsOfCriteria[i]) {\r\n                return false;\r\n            }\r\n        }\r\n        return true;\r\n    }\r\n\r\n    function JudgeDemo(uint256 _activityId, uint256 _demoId, uint256[] memory _pointsOfCriteria) public onlyJudge(_activityId) onlyValidTime(_activityId) {\r\n        require(!hasJudged[msg.sender][_activityId][_demoId], \"Already judged this demo\");\r\n        uint256 cohortId = demosManagement.getDemoCohortId(_activityId, _demoId);\r\n        IPrizesManagement.cohort memory prizeCohort = prizesManagement.getCohort(_activityId, cohortId); \r\n        require(checkPointsValid(prizeCohort.pointsOfCriteria, _pointsOfCriteria), \"Invalid points of criteria\");\r\n       \r\n        uint256 totscore = 0;\r\n        for(uint256 i=0; i < _pointsOfCriteria.length; i++){\r\n            totscore += _pointsOfCriteria[i];\r\n        }\r\n        demoScores[_activityId][_demoId].totalScore += totscore;\r\n        demoScores[_activityId][_demoId].numOfJudges += 1;\r\n        hasJudged[msg.sender][_activityId][_demoId] = true;\r\n        emit DemoJudged(_activityId, _demoId, totscore, demoScores[_activityId][_demoId].numOfJudges);\r\n    }\r\n\r\n    // 添加更新依赖合约地址的方法\r\n    function updateDependencies(\r\n        address _prizesManagementAddress,\r\n        address _judgementManagementAddress,\r\n        address _demosManagementAddress,\r\n        address _activitiesManagementAddress\r\n    ) public onlyOwner(){\r\n        prizesManagement = IPrizesManagement(_prizesManagementAddress);\r\n        judgementManagement = IJudgementManagement(_judgementManagementAddress);\r\n        demosManagement = IDemosManagement(_demosManagementAddress);\r\n        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);\r\n    }\r\n\r\n    modifier onlyJudge(uint256 _activityId) {\r\n        require(judgementManagement.isJudgeInActivity(_activityId, msg.sender), \"Not the judge of this activity\");\r\n        _;\r\n    }\r\n    modifier onlyOwner() {\r\n        require(msg.sender == authorityManagement.getOwner(), \"Not the owner\");\r\n        _;\r\n    }\r\n\r\n    modifier onlyValidTime(uint256 _activityId) {\r\n        require(activitiesManagement.isActivityIdValid(_activityId), \"Invalid activity ID\");\r\n        require(activitiesManagement.isJudgementOpen(_activityId), \"Not in judgement time\");\r\n        _;\r\n    }\r\n}"
+      },
+      "project/contracts/interface/IActivitiesManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IActivitiesManagement {\r\n    function isParticipantInActivity(uint256 _activityId, address _user) external view returns (bool);\r\n    function getCreatorOfActivity(uint256 _activityId) external view returns (address);\r\n    function isActivityIdValid(uint256 _activityId) external view returns (bool);\r\n    function getActivity(uint256 _activityId) external view returns (Activity memory);\r\n    function isRegistrationOpen(uint256 _activityId) external view returns (bool);\r\n    function isJudgementOpen(uint256 _activityId) external view returns (bool);\r\n    function isHackthonOpen(uint256 _activityId) external view returns (bool);\r\n\r\n    struct Duration {\r\n        uint256 startTime;\r\n        uint256 endTime;\r\n    }\r\n    \r\n    struct Activity {\r\n        string dataCID;\r\n        string topic;\r\n        address creator;\r\n        uint256 maxParticipants;\r\n        uint256 cuParticipants;\r\n        uint256 activityId;\r\n        Duration judgementDuration;\r\n        Duration registerDuration;\r\n        Duration hackthonDuration;\r\n    }\r\n}"
+      },
+      "project/contracts/interface/IAuthorityManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IAuthorityManagement {\r\n    function isAdmin(address _admin) external view returns (bool);\r\n    function isBlockedUser(address _user) external view returns (bool);\r\n    function isAnOrganizer(address _organizer) external view returns (bool);\r\n    function getOwner() external view returns (address);\r\n}"
+      },
+      "project/contracts/interface/IDemosManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IDemosManagement {\r\n    struct Demo {\r\n        uint256 demoId;\r\n        uint256 activityId;\r\n        uint256 cohortId;\r\n        string dataCID;\r\n        string vedioCID;\r\n        address submitter;\r\n    }\r\n    \r\n    function getDemoCohortId(uint256 _activityId, uint256 _demoId) external view returns(uint256);\r\n}"
+      },
+      "project/contracts/interface/IJudgementManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IJudgementManagement {\r\n    function isJudgeInActivity(uint256 _activityId, address _judge) external view returns (bool);\r\n}"
+      },
+      "project/contracts/interface/IPrizesManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IPrizesManagement {\r\n    struct cohort {\r\n        uint256 numOfWinners;\r\n        string[] criteria;\r\n        uint256[] pointsOfCriteria;\r\n        uint256 bonusAmount;\r\n    }\r\n    \r\n    function getCohort(uint256 _activityId, uint256 _cohortId) external view returns (cohort memory);\r\n}"
+      }
+    }
+  }
+}

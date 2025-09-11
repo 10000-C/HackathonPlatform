@@ -1,0 +1,42 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-3c131435e80c730884b7f72c209652f45262f9af",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/AuthorityManagement.sol": "project/contracts/AuthorityManagement.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/AuthorityManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nimport \"./interface/IAuthorityManagement.sol\";\r\n\r\ncontract AuthorityManagement is IAuthorityManagement {\r\n    event AdminAdded(address indexed admin);\r\n    event AdminRemoved(address indexed admin);\r\n    event UserBlocked(address indexed user);\r\n    event UserUnblocked(address indexed user);\r\n\r\n    address public owner;\r\n    mapping(address => bool) private authority;// admin\r\n    mapping(address => bool) private isBlocked;\r\n    mapping(address => bool) private isOrganizer;\r\n\r\n    constructor() {\r\n        owner = msg.sender;\r\n        authority[msg.sender] = true;\r\n    }\r\n    //manage admin\r\n    function addAdmin(address _admin) public onlyOwner {\r\n        authority[_admin] = true;\r\n        emit AdminAdded(_admin);\r\n    }\r\n\r\n    function removeAdmin(address _admin) public onlyOwner {\r\n        authority[_admin] = false;\r\n        emit AdminRemoved(_admin);\r\n    }\r\n\r\n    function isAdmin(address _admin) public view returns (bool) {\r\n        return authority[_admin];\r\n    }\r\n    //manage blocked user\r\n    function blockUser(address _user) public onlyAdmin {\r\n        isBlocked[_user] = true;\r\n        emit UserBlocked(_user);\r\n    }\r\n\r\n    function unblockUser(address _user) public onlyAdmin {\r\n        isBlocked[_user] = false;\r\n        emit UserUnblocked(_user);\r\n    } \r\n\r\n    function isBlockedUser(address _user) public view returns (bool) {\r\n        return isBlocked[_user];\r\n    }\r\n\r\n    //manage organizer\r\n    function addOrganizer(address _organizer) public onlyAdmin {\r\n        isOrganizer[_organizer] = true;\r\n    }\r\n    function removeOrganizer(address _organizer) public onlyAdmin {\r\n        isOrganizer[_organizer] = false;\r\n    }\r\n    function isAnOrganizer(address _organizer) public view returns (bool) {\r\n        return isOrganizer[_organizer];\r\n    }\r\n\r\n    function getOwner() public view returns (address) {\r\n        return owner;\r\n    }\r\n\r\n    modifier onlyOwner() {\r\n        require(msg.sender == owner, \"Not the owner\");\r\n        _;\r\n    }\r\n\r\n    modifier onlyAdmin() {\r\n        require(authority[msg.sender], \"Not the admin\");\r\n        _;\r\n    }\r\n}"
+      },
+      "project/contracts/interface/IAuthorityManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IAuthorityManagement {\r\n    function isAdmin(address _admin) external view returns (bool);\r\n    function isBlockedUser(address _user) external view returns (bool);\r\n    function isAnOrganizer(address _organizer) external view returns (bool);\r\n    function getOwner() external view returns (address);\r\n}"
+      }
+    }
+  }
+}

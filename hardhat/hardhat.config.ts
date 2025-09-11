@@ -35,7 +35,7 @@ const config: HardhatUserConfig = {
       type: "http",
       chainType: "l1",
       url: process.env.SEPOLIA_URL || "",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts: process.env.SEPOLIA_PRIVATE_KEY ? [process.env.SEPOLIA_PRIVATE_KEY] : [],
     },
   },
 };
