@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import SaveToIPFS from '../../utils/SaveToIPFS';
+import saveActivityToContract from '../../utils/SaveActivityToContract';
 
 export default function CreateHackathonHeader({ currentStep, isPublished, setIsPublished, formData }) {
   const [uploading, setUploading] = useState(false);
@@ -86,6 +87,34 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
     }
   };
 
+  const convertDateToTimestamp = (dateStr) => {
+    if (!dateStr) {
+      console.warn('Empty date string provided');
+      return 0; // 返回0而不是null，因为智能合约可能不接受null
+    }
+    try {
+      const timestamp = Math.floor(new Date(dateStr).getTime() / 1000);
+      console.log(`Converting ${dateStr} to ${timestamp}`);
+      return timestamp;
+    } catch (error) {
+      console.error('Error converting date:', dateStr, error);
+      return 0;
+    }
+  };
+
+  const convertTimestampsToJson = (formData) => {
+    const timestamps = {
+      registrationStart: convertDateToTimestamp(formData.registrationStart),
+      registrationEnd: convertDateToTimestamp(formData.registrationEnd),
+      hackthonStart: convertDateToTimestamp(formData.hackathonStart),
+      hackthonEnd: convertDateToTimestamp(formData.hackathonEnd),
+      votingStart: convertDateToTimestamp(formData.votingStart),
+      votingEnd: convertDateToTimestamp(formData.votingEnd)
+    };
+    
+    return timestamps;
+  };
+
   const handlePublish = async () => {
     if (currentStep === 'schedule') {
       if (validateForm()) {
@@ -112,7 +141,22 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
           
           const dataBlob = new Blob([JSON.stringify(hackathonData)], { type: 'application/json' });
           const dataCID = await SaveToIPFS(dataBlob);
+
+          // 获取时间戳对象
+          const timeStamps = convertTimestampsToJson(formData);
           
+          // 提供maxParticipants参数，如果formData中没有则使用默认值
+          const maxParticipants = formData.maxParticipants || 100;
+          
+          console.log("Publishing with data:", {
+            dataCID,
+            name: hackathonData.name,
+            maxParticipants,
+            timeStamps
+          });
+          //目前没有设置最大参加人数的选项
+          await saveActivityToContract(dataCID, hackathonData.name, 9999, timeStamps);
+          console.log('Activity saved to contract');
           setIsPublished(true);
           alert("Hackathon successfully published!");
         } catch (error) {
