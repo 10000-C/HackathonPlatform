@@ -1,0 +1,232 @@
+{
+  "_format": "hh3-artifact-1",
+  "contractName": "AuthorityManagement",
+  "sourceName": "contracts/AuthorityManagement.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "AdminAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "AdminRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "UserBlocked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "UserUnblocked",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_admin",
+          "type": "address"
+        }
+      ],
+      "name": "addAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_organizer",
+          "type": "address"
+        }
+      ],
+      "name": "addOrganizer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "blockUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_admin",
+          "type": "address"
+        }
+      ],
+      "name": "isAdmin",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_organizer",
+          "type": "address"
+        }
+      ],
+      "name": "isAnOrganizer",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "isBlockedUser",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_admin",
+          "type": "address"
+        }
+      ],
+      "name": "removeAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_organizer",
+          "type": "address"
+        }
+      ],
+      "name": "removeOrganizer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "unblockUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600e575f5ffd5b505f80546001600160a01b0319163390811782558152600160208190526040909120805460ff1916909117905561052f806100485f395ff3fe608060405234801561000f575f5ffd5b50600436106100a6575f3560e01c80633da013251161006e5780633da013251461016857806344ade56d1461017b578063704802751461018e578063893d20e8146101a15780638da5cb5b146101c5578063e4725f02146101d7575f5ffd5b8063028a395b146100aa5780631785f53c146100ea5780631ad7a6c0146100ff57806324d7806c1461012a57806339d319e514610155575b5f5ffd5b6100d56100b83660046104a5565b6001600160a01b03165f9081526003602052604090205460ff1690565b60405190151581526020015b60405180910390f35b6100fd6100f83660046104a5565b6101ea565b005b6100d561010d3660046104a5565b6001600160a01b03165f9081526002602052604090205460ff1690565b6100d56101383660046104a5565b6001600160a01b03165f9081526001602052604090205460ff1690565b6100fd6101633660046104a5565b610280565b6100fd6101763660046104a5565b6102f6565b6100fd6101893660046104a5565b61036f565b6100fd61019c3660046104a5565b6103bd565b5f546001600160a01b03165b6040516001600160a01b0390911681526020016100e1565b5f546101ad906001600160a01b031681565b6100fd6101e53660046104a5565b610454565b5f546001600160a01b031633146102385760405162461bcd60e51b815260206004820152600d60248201526c2737ba103a34329037bbb732b960991b60448201526064015b60405180910390fd5b6001600160a01b0381165f81815260016020526040808220805460ff19169055517fa3b62bc36326052d97ea62d63c3d60308ed4c3ea8ac079dd8499f1e9c4f80c0f9190a250565b335f9081526001602052604090205460ff166102ae5760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b0381165f81815260026020526040808220805460ff19169055517f798117ec059ab8d319461ef2502b1f9d8a47cd966bfd1f3e23b6f26c30bebb779190a250565b335f9081526001602052604090205460ff166103245760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b0381165f81815260026020526040808220805460ff19166001179055517fca86d8c91ca6d00afd863578cc633a0901fad724592f89649629fe65f61410d29190a250565b335f9081526001602052604090205460ff1661039d5760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b03165f908152600360205260409020805460ff19169055565b5f546001600160a01b031633146104065760405162461bcd60e51b815260206004820152600d60248201526c2737ba103a34329037bbb732b960991b604482015260640161022f565b6001600160a01b0381165f818152600160208190526040808320805460ff1916909217909155517f44d6d25963f097ad14f29f06854a01f575648a1ef82f30e562ccd3889717e3399190a250565b335f9081526001602052604090205460ff166104825760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b03165f908152600360205260409020805460ff19166001179055565b5f602082840312156104b5575f5ffd5b81356001600160a01b03811681146104cb575f5ffd5b9392505050565b6020808252600d908201526c2737ba103a34329030b236b4b760991b60408201526060019056fea264697066735822122046db36f9a1e32b7cbcaaf869fc1a3707c192c07a407399ea1ae5f587bc8bd5fb64736f6c634300081c0033",
+  "deployedBytecode": "0x608060405234801561000f575f5ffd5b50600436106100a6575f3560e01c80633da013251161006e5780633da013251461016857806344ade56d1461017b578063704802751461018e578063893d20e8146101a15780638da5cb5b146101c5578063e4725f02146101d7575f5ffd5b8063028a395b146100aa5780631785f53c146100ea5780631ad7a6c0146100ff57806324d7806c1461012a57806339d319e514610155575b5f5ffd5b6100d56100b83660046104a5565b6001600160a01b03165f9081526003602052604090205460ff1690565b60405190151581526020015b60405180910390f35b6100fd6100f83660046104a5565b6101ea565b005b6100d561010d3660046104a5565b6001600160a01b03165f9081526002602052604090205460ff1690565b6100d56101383660046104a5565b6001600160a01b03165f9081526001602052604090205460ff1690565b6100fd6101633660046104a5565b610280565b6100fd6101763660046104a5565b6102f6565b6100fd6101893660046104a5565b61036f565b6100fd61019c3660046104a5565b6103bd565b5f546001600160a01b03165b6040516001600160a01b0390911681526020016100e1565b5f546101ad906001600160a01b031681565b6100fd6101e53660046104a5565b610454565b5f546001600160a01b031633146102385760405162461bcd60e51b815260206004820152600d60248201526c2737ba103a34329037bbb732b960991b60448201526064015b60405180910390fd5b6001600160a01b0381165f81815260016020526040808220805460ff19169055517fa3b62bc36326052d97ea62d63c3d60308ed4c3ea8ac079dd8499f1e9c4f80c0f9190a250565b335f9081526001602052604090205460ff166102ae5760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b0381165f81815260026020526040808220805460ff19169055517f798117ec059ab8d319461ef2502b1f9d8a47cd966bfd1f3e23b6f26c30bebb779190a250565b335f9081526001602052604090205460ff166103245760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b0381165f81815260026020526040808220805460ff19166001179055517fca86d8c91ca6d00afd863578cc633a0901fad724592f89649629fe65f61410d29190a250565b335f9081526001602052604090205460ff1661039d5760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b03165f908152600360205260409020805460ff19169055565b5f546001600160a01b031633146104065760405162461bcd60e51b815260206004820152600d60248201526c2737ba103a34329037bbb732b960991b604482015260640161022f565b6001600160a01b0381165f818152600160208190526040808320805460ff1916909217909155517f44d6d25963f097ad14f29f06854a01f575648a1ef82f30e562ccd3889717e3399190a250565b335f9081526001602052604090205460ff166104825760405162461bcd60e51b815260040161022f906104d2565b6001600160a01b03165f908152600360205260409020805460ff19166001179055565b5f602082840312156104b5575f5ffd5b81356001600160a01b03811681146104cb575f5ffd5b9392505050565b6020808252600d908201526c2737ba103a34329030b236b4b760991b60408201526060019056fea264697066735822122046db36f9a1e32b7cbcaaf869fc1a3707c192c07a407399ea1ae5f587bc8bd5fb64736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "immutableReferences": {},
+  "inputSourceName": "project/contracts/AuthorityManagement.sol",
+  "buildInfoId": "solc-0_8_28-3c131435e80c730884b7f72c209652f45262f9af"
+}
