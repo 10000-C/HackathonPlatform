@@ -26,12 +26,12 @@ export default function DashboardNav({ onSearch }) {
   return (
     <div className="h-16 bg-[#1b1b1e] border-b border-[#2b3640] flex items-center px-6 justify-between">
       {/* 左侧搜索框 */}
-      <div className="w-[360px] relative">
+      <div className="w-[560px] relative">
         <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#949fa8]" />
         <input
           type="text"
           placeholder="Search for researchers and audits on HackM"
-          className="w-full pl-9 pr-4 py-2 bg-[#2b3640] text-white rounded-lg border-none focus:outline-none focus:ring-1 focus:ring-[#0092ff] placeholder-[#949fa8] text-sm"
+          className="w-full pl-9 pr-4 py-2 bg-[#0f1011] text-white rounded-lg border-none focus:outline-none focus:ring-1 focus:ring-[#0092ff] placeholder-[#949fa8] text-sm"
           value={searchQuery}
           onChange={handleSearch}
         />
