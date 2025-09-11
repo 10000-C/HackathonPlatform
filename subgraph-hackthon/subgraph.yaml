@@ -8,9 +8,9 @@ dataSources:
     name: ActivitiesManagement
     network: sepolia
     source:
-      address: "0xC91cfB0Ab5EA34e350bb2cC4Eb360Ddeb05a1552"
+      address: "0x1c2318b7415e369FeF9f66Af29E08DF51B5FFdDd"
       abi: ActivitiesManagement
-      startBlock: 9083030
+      startBlock: 9179900
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -25,11 +25,11 @@ dataSources:
         - name: ActivitiesManagement
           file: ./abis/ActivitiesManagement.json
       eventHandlers:
-        - event: ActivityCreated(indexed uint256,(string,string,address,uint256,uint256,uint256))
+        - event: ActivityCreated(indexed uint256,(string,string,address,uint256,uint256,uint256,(uint256,uint256),(uint256,uint256),(uint256,uint256)))
           handler: handleActivityCreated
         - event: ActivityDeleted(indexed uint256,address)
           handler: handleActivityDeleted
-        - event: ActivityUpdated(indexed uint256,(string,string,address,uint256,uint256,uint256))
+        - event: ActivityUpdated(indexed uint256,(string,string,address,uint256,uint256,uint256,(uint256,uint256),(uint256,uint256),(uint256,uint256)))
           handler: handleActivityUpdated
         - event: ParticipantAdded(indexed uint256,address)
           handler: handleParticipantAdded

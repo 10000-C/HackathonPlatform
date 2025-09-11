@@ -47,63 +47,6 @@ const filters = {
 
 
 
-// 模拟数据
-const mockHackathons = [
-  {
-    id: 1,
-    name: "Web3 Innovation Challenge",
-    description: "Build the next generation of decentralized applications with cutting-edge blockchain technology.",
-    logo: "",  // 留空以使用占位图
-    techStack: ["Solidity", "React", "Node.js"],
-    registrationEnd: "Sep 30, 2025",
-    prizePool: 50000,
-    level: "Advanced",
-    participants: 248,
-    status: "Active",
-    ecosystem: "ethereum"
-  },
-  {
-    id: 2,
-    name: "AI + Blockchain Hackathon",
-    description: "Combine artificial intelligence with blockchain to create innovative solutions for real-world problems.",
-    logo: "",  // 留空以使用占位图
-    techStack: ["Python", "TensorFlow", "Ethereum"],
-    registrationEnd: "Oct 15, 2025",
-    prizePool: 75000,
-    level: "Intermediate",
-    participants: 186,
-    status: "Upcoming",
-    ecosystem: "solana"
-  },
-  {
-    id: 3,
-    name: "DeFi Protocol Challenge",
-    description: "Create innovative DeFi solutions on Polygon network.",
-    logo: "",  // 留空以使用占位图
-    techStack: ["Solidity", "Web3.js", "React"],
-    registrationEnd: "Nov 1, 2025",
-    prizePool: 100000,
-    level: "Advanced",
-    participants: 312,
-    status: "Active",
-    ecosystem: "polygon"
-  },
-  {
-    id: 4,
-    name: "NFT Gaming Hackathon",
-    description: "Build the next generation of blockchain games with NFT integration.",
-    logo: "",  // 留空以使用占位图
-    techStack: ["Unity", "Solidity", "NFT"],
-    registrationEnd: "Sep 15, 2025",
-    prizePool: 30000,
-    level: "Intermediate",
-    participants: 156,
-    status: "Ended",
-    ecosystem: "binance"
-  },
-];
-
-
 export default function HackathonsPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -155,7 +98,15 @@ export default function HackathonsPage() {
 
             hackathonData.techStack = techStack;
             hackathonData.prizePool = prizePool;
-            hackathonData.participants = maxParticipants;
+            hackathonData.maxParticipants = maxParticipants;
+            hackathonData.participants = activity.activity_participants;
+
+            // 将banner CID转换为完整的IPFS URL
+            if (hackathonData.banner && typeof hackathonData.banner === 'string') {
+              hackathonData.logo = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${hackathonData.banner}`;
+            } else {
+              hackathonData.logo = "https://placehold.co/400";
+            }
 
             return {
               id: activity.activityId,

@@ -30,7 +30,13 @@ contract ActivitiesManagement is IActivitiesManagement {
         string memory _dataCID,
         string memory _topic,
         uint256 _maxParticipants,
-        uint256 _cuParticipants
+        uint256 _cuParticipants,
+        uint256 _hackthonStartTime,
+        uint256 _hackthonEndTime,
+        uint256 _judgeStartTime,
+        uint256 _judgeEndTime,
+        uint256 _registerStartTime,
+        uint256 _registerEndTime
     ) public onlyOrganizer {
         activityCount++;
         Activity memory newActivity = Activity({
@@ -39,12 +45,15 @@ contract ActivitiesManagement is IActivitiesManagement {
             maxParticipants: _maxParticipants,
             cuParticipants: _cuParticipants,
             activityId: activityCount,
-            topic: _topic
+            topic: _topic,
+            registerDuration: Duration(_registerStartTime, _registerEndTime),
+            judgementDuration: Duration(_judgeStartTime, _judgeEndTime),
+            hackthonDuration: Duration(_hackthonStartTime, _hackthonEndTime)
         });
         activities[activityCount] = newActivity;
         emit ActivityCreated(activityCount, newActivity);
     }
-
+/*
     function updateActivity(
         uint256 _activityId,
         string memory _dataCID,
@@ -67,7 +76,7 @@ contract ActivitiesManagement is IActivitiesManagement {
         delete activities[_activityId];
         emit ActivityDeleted(_activityId, msg.sender);
     } 
-
+*/
     function deleteActivityForAdmin(uint256 _activityId) public onlyAdmin {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
         require(activities[_activityId].creator != address(0), "Activity does not exist");
@@ -85,6 +94,7 @@ contract ActivitiesManagement is IActivitiesManagement {
         require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
         require(isParticipant[_activityId][msg.sender] == false, "Already participated in this activity");
         require(activities[_activityId].cuParticipants<activities[_activityId].maxParticipants, "Activity is full");
+        require(isRegistrationOpen(_activityId), "Registration is not open");
         
         isParticipant[_activityId][msg.sender] = true;
         activities[_activityId].cuParticipants++;
@@ -118,6 +128,27 @@ contract ActivitiesManagement is IActivitiesManagement {
     // 添加更新 AuthorityManagement 地址的方法
     function updateDependencies(address _newAuthorityManagementAddress) public onlyOwner{
         authorityManagement = IAuthorityManagement(_newAuthorityManagementAddress);
+    }
+
+    function isRegistrationOpen(uint256 _activityId) public view returns (bool) {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        Activity memory activity = activities[_activityId];
+        uint256 currentTime = block.timestamp;
+        return currentTime >= activity.registerDuration.startTime && currentTime <= activity.registerDuration.endTime;
+    }
+
+    function isJudgementOpen(uint256 _activityId) public view returns (bool) {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        Activity memory activity = activities[_activityId];
+        uint256 currentTime = block.timestamp;
+        return currentTime >= activity.judgementDuration.startTime && currentTime <= activity.judgementDuration.endTime;
+    }
+
+    function isHackthonOpen(uint256 _activityId) public view returns (bool) {
+        require(_activityId > 0 && _activityId <= activityCount, "Invalid activity ID");
+        Activity memory activity = activities[_activityId];
+        uint256 currentTime = block.timestamp;
+        return currentTime >= activity.hackthonDuration.startTime && currentTime <= activity.hackthonDuration.endTime;
     }
 
     modifier onlyOrganizer() {

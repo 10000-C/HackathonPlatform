@@ -27,7 +27,9 @@ contract PrizesManagement is IPrizesManagement {
         activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);
     }
     
-    function addPrizeInfo(uint256 _activityId, uint256 _numOfCohorts, uint256[] memory _numOfWinners, string[][] memory _criteria, uint256[][] memory _pointsOfCriteria, uint256[] memory _bonusAmounts) public onlyOrganizer(_activityId){
+    function addPrizeInfo(uint256 _activityId, uint256 _numOfCohorts, uint256[] memory _numOfWinners, string[][] memory _criteria, uint256[][] memory _pointsOfCriteria, uint256[] memory _bonusAmounts) 
+    public onlyOrganizer(_activityId) onlyValidTime(_activityId)
+    {
         require(prizes[_activityId].activityId == 0, "Prize info already added for this activity");
         require(_numOfCohorts == _criteria.length &&_criteria.length == _numOfWinners.length && _criteria.length == _bonusAmounts.length && _criteria.length == _pointsOfCriteria.length, "Mismatched cohorts data");
         cohort[] storage cohorts = prizes[_activityId].cohorts;
@@ -59,6 +61,12 @@ contract PrizesManagement is IPrizesManagement {
 
     modifier onlyOwner() {
         require(msg.sender == authorityManagement.getOwner(), "Not the owner");
+        _;
+    }
+
+    modifier onlyValidTime(uint256 _activityId) {
+        require(activitiesManagement.isActivityIdValid(_activityId), "Invalid activity ID");
+        require(activitiesManagement.isHackthonOpen(_activityId), "Not in hackthon time");
         _;
     }
 }
