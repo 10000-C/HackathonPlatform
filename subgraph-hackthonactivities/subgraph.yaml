@@ -5,12 +5,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: ActivitiesManagement
+    name: Contract
     network: sepolia
     source:
       address: "0x1c2318b7415e369FeF9f66Af29E08DF51B5FFdDd"
-      abi: ActivitiesManagement
-      startBlock: 9179900
+      abi: Contract
+      startBlock: 9179431
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -22,8 +22,8 @@ dataSources:
         - ParticipantAdded
         - ParticipantRemoved
       abis:
-        - name: ActivitiesManagement
-          file: ./abis/ActivitiesManagement.json
+        - name: Contract
+          file: ./abis/Contract.json
       eventHandlers:
         - event: ActivityCreated(indexed uint256,(string,string,address,uint256,uint256,uint256,(uint256,uint256),(uint256,uint256),(uint256,uint256)))
           handler: handleActivityCreated
@@ -35,4 +35,4 @@ dataSources:
           handler: handleParticipantAdded
         - event: ParticipantRemoved(indexed uint256,address)
           handler: handleParticipantRemoved
-      file: ./src/activities-management.ts
+      file: ./src/contract.ts
