@@ -8,9 +8,9 @@ import {
 } from "matchstick-as/assembly/index"
 import { BigInt, Address } from "@graphprotocol/graph-ts"
 import { ExampleEntity } from "../generated/schema"
-import { ActivityCreated } from "../generated/Contract/Contract"
-import { handleActivityCreated } from "../src/contract"
-import { createActivityCreatedEvent } from "./contract-utils"
+import { ActivityCreated } from "../generated/ActivitiesManagement/ActivitiesManagement"
+import { handleActivityCreated } from "../src/activities-management"
+import { createActivityCreatedEvent } from "./activities-management-utils"
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/subgraphs/developing/creating/unit-testing-framework/#tests-structure

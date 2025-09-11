@@ -1,12 +1,12 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts"
 import {
-  Contract,
+  ActivitiesManagement,
   ActivityCreated,
   ActivityDeleted,
   ActivityUpdated,
   ParticipantAdded,
   ParticipantRemoved
-} from "../generated/Contract/Contract"
+} from "../generated/ActivitiesManagement/ActivitiesManagement"
 import { ExampleEntity } from "../generated/schema"
 
 export function handleActivityCreated(event: ActivityCreated): void {

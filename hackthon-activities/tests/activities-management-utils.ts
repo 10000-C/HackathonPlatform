@@ -6,7 +6,7 @@ import {
   ActivityUpdated,
   ParticipantAdded,
   ParticipantRemoved
-} from "../generated/Contract/Contract"
+} from "../generated/ActivitiesManagement/ActivitiesManagement"
 
 export function createActivityCreatedEvent(
   activityId: BigInt,
