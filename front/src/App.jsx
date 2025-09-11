@@ -7,6 +7,7 @@ import { WalletProvider, useWallet } from './utils/WalletContext'
 import HackathonLayout from './components/HackathonLayout'
 import Test from './pages/test'
 import JudgeDashboard from './pages/JudgeDashboard';
+import HackathonDetailPage from './pages/HackathonDetailPage';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/my-projects" element={<div>My Projects Page</div>} />
             <Route path="/resources" element={<div>Resources Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} />
+            <Route path="/hackathon/:id/:tab?" element={<HackathonDetailPage />} />
           </Route>
         </Routes>
       </Router>

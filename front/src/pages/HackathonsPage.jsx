@@ -249,17 +249,18 @@ export default function HackathonsPage() {
   };
 
   const handleViewDetails = (hackathonId) => {
-    navigate(`/hackathons/${hackathonId}`);
+    navigate(`/hackathon/${hackathonId}`);
   };
 
   return (
     <div className="flex-1 min-h-screen bg-[#1B1B1E] px-40">
       {/* Banner Section */}
       <BannerSection />
-
-      <div className="px-8">
+      
+      {/* Main content wrapper */}
+      <div className="max-w-[1440px] mx-auto px-8 pt-8 pb-16">
         {/* Welcome Text and Host Button */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
           <div>
             <h2 className="text-white text-lg font-medium mb-2">Explore Hackathons</h2>
             <p className="text-[#949fa8] text-sm">
@@ -282,8 +283,8 @@ export default function HackathonsPage() {
           <span className="text-[#949fa8] hover:text-white px-2">Tech Stack All</span>
           <span className="text-[#949fa8] hover:text-white px-2">Status Live, Upcoming</span>
         </div> */}
-        {/* 过滤器栏 */}
-        <div className="flex items-center space-x-2 mb-6">
+        {/* Filters and Sort */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           {/* <span className="text-sm text-[#949fa8]">Filter:</span> */}
           <div className="flex items-center space-x-2">
             <FilterButton
@@ -291,40 +292,44 @@ export default function HackathonsPage() {
               options={filters.prizePool}
               value={activeFilters.prizePool}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, prizePool: value }))}
+              className="min-w-[140px]"
             />
             <FilterButton
               label="Ecosystem"
               options={filters.ecosystem}
               value={activeFilters.ecosystem}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, ecosystem: value }))}
+              className="min-w-[140px]"
             />
             <FilterButton
               label="Tech Stack"
               options={filters.techStack}
               value={activeFilters.techStack}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, techStack: value }))}
+              className="min-w-[140px]"
             />
             <FilterButton
               label="Status"
               options={filters.status}
               value={activeFilters.status}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, status: value }))}
+              className="min-w-[140px]"
             />
           </div>
-          <div className="flex-1"></div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mt-4 sm:mt-0">
             <span className="text-sm text-[#949fa8]">Sort by:</span>
             <FilterButton
               label="Sort"
               options={filters.sortBy}
               value={activeFilters.sortBy}
               onChange={(value) => setActiveFilters(prev => ({ ...prev, sortBy: value }))}
+              className="min-w-[140px]"
             />
           </div>
         </div>
 
         {/* Hackathon Cards */}
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-6">
           {filteredHackathons.length > 0 ? (
             filteredHackathons.map(hackathon => (
               <HackathonCard

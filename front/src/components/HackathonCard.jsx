@@ -107,7 +107,10 @@ const HackathonCard = ({ hackathon }) => {
 
   return (
     <div className="group">
-      <div className="bg-none rounded-xl p-6 flex gap-6 hover:bg-[#3d4654] transition-all duration-200 border border-[#3d4654] shadow-sm hover:shadow-md">
+      <div 
+      className="bg-[#1b1b1e] rounded-xl p-4 flex gap-6 hover:bg-[#3d4654] transition-all duration-200 border border-[#3d4654] shadow-sm hover:shadow-md cursor-pointer"
+      onClick={() => hackathon.onViewDetails?.(hackathon.id)}
+      >
         {/* Left Content */}
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -155,25 +158,7 @@ const HackathonCard = ({ hackathon }) => {
             
           </div>
 
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => hackathon.onViewDetails?.(hackathon.id)}
-              className="text-[#949fa8] hover:text-white"
-            >
-              Details
-            </button>
-            <button 
-              disabled={calculatedStatus === 'ended' || registrationEnded}
-              className={`px-6 py-1.5 rounded transition-colors ${
-                (calculatedStatus === 'ended' || registrationEnded)
-                  ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
-                  : 'bg-[#0092ff] text-white hover:bg-[#0092ff]/90'
-              }`}
-              onClick={handleRegister}
-            >
-              {calculatedStatus === 'ended' || registrationEnded ? 'Registration Closed' : 'Get Involved'}
-            </button>
-          </div>
+          
         </div>
 
         {/* Right Image */}
