@@ -2,127 +2,30 @@ import React, { useState } from 'react';
 import HackathonSidebar from './HackathonSidebar';
 
 const ScheduleTab = ({ hackathon }) => {
-  // 从hackathon对象获取日程数据，如果不存在则使用默认数据
-  const schedule = hackathon.schedule || [
-    {
-      id: 1,
-      title: 'Registration',
-      date: 'Jun 17, 2025 19:00 - Jul 19, 2025 19:00',
-      description: 'Participants can start registering for the hackathon.',
-      status: 'active'
-    },
-    {
-      id: 2,
-      title: 'Online Course 1',
-      subtitle: 'How to Build a Web3 Project from 0 to 1',
-      date: 'Jun 26, 2025 15:00',
-      speaker: {
-        name: 'Tom White Adressen',
-        position: 'Founder & CEO at A16Z',
-        avatar: '/path/to/avatar.jpg',
-        username: '@WizzyOnChain'
-      },
-      description: 'Learn how to plan, design, and launch your own Web3 project from scratch, covering everything from smart contracts and tokenomics to community building and go-to-market strategy.',
-      status: 'upcoming'
-    },
-    {
-      id: 3,
-      title: 'Technical Workshop I',
-      date: 'Jun. 28, 2025; 15:00',
-      description: 'Blockchain technology basics and smart contract development workshop.',
-      status: 'upcoming'
-    },
-    {
-      id: 4,
-      title: 'Technical Workshop II',
-      date: 'Jun. 30, 2025; 15:00',
-      description: 'Decentralized application architecture and frontend development workshop.',
-      status: 'upcoming'
-    },
-    {
-      id: 5,
-      title: 'Project Submission Period',
-      date: 'Jul 19, 2025 19:00 - Jul 30, 2025 19:00',
-      description: 'All projects must be submitted by this date.',
-      status: 'upcoming'
-    },
-    {
-      id: 6,
-      title: 'Winners Announced',
-      date: 'Aug 3, 2025 19:00',
-      description: 'Online award ceremony, announcing the winning projects.',
-      status: 'upcoming'
-    }
-  ];
+  // 从hackathon对象获取日程数据
+  const schedule = (hackathon.schedule || []).map((event, index) => ({
+    id: index + 1,
+    ...event,
+    status: 'upcoming' // 初始设置为upcoming，后面会根据日期计算实际状态
+  }));
 
   // 根据当前日期判断事件状态
   const now = new Date();
   const updatedSchedule = schedule.map(event => {
-    // 格式化日期
-    const formatDate = (dateStr) => {
-      const date = new Date(dateStr);
-      if (isNaN(date)) return dateStr; // 如果日期无效，返回原始字符串
-
-      const month = date.toLocaleString('en-US', { month: 'short' });
-      const day = date.getDate();
-      const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-
-      return `${month} ${day}, ${year} ${hours}:${minutes}`;
-    };
-
-    // 处理日期范围或单个日期
-    let formattedDate = event.date;
-    if (event.date.includes(' - ')) {
-      const [startDate, endDate] = event.date.split(' - ').map(d => d.trim());
-      formattedDate = `${formatDate(startDate)} - ${formatDate(endDate)}`;
-    } else {
-      formattedDate = formatDate(event.date);
-    }
-
-    // 保存原始日期用于状态判断
-    const dateParts = event.date.split(' - ');
-    const eventDateStr = dateParts[0].trim();
-    let eventDate, eventEndDate;
-
-    try {
-      // 尝试解析日期
-      eventDate = new Date(eventDateStr);
-      // 如果有结束日期，也解析它
-      if (dateParts.length > 1) {
-        eventEndDate = new Date(dateParts[1].trim());
-      }
-    } catch (e) {
-      // 如果解析失败，使用当前日期
-      eventDate = new Date();
-      if (dateParts.length > 1) {
-        eventEndDate = new Date();
-      }
-    }
+    // 解析开始和结束时间
+    const eventStartDate = new Date(`${event.startDate} ${event.startTime}`);
+    const eventEndDate = new Date(`${event.endDate} ${event.endTime}`);
 
     let status;
-    // 如果有日期范围，判断当前日期是否在范围内
-    if (dateParts.length > 1 && eventEndDate) {
-      if (now >= eventDate && now <= eventEndDate) {
-        status = 'active';
-      } else if (now > eventEndDate) {
-        status = 'completed';
-      } else {
-        status = 'upcoming';
-      }
+    if (now >= eventStartDate && now <= eventEndDate) {
+      status = 'active';
+    } else if (now > eventEndDate) {
+      status = 'completed';
     } else {
-      // 单一日期的判断逻辑保持不变
-      if (eventDate < now) {
-        status = 'completed';
-      } else if (Math.abs(eventDate - now) < 86400000) { // 如果在24小时内
-        status = 'active';
-      } else {
-        status = 'upcoming';
-      }
+      status = 'upcoming';
     }
 
-    return { ...event, status, formattedDate };
+    return { ...event, status };
   });
 
   // 获取"Live"事件（当前活跃的事件）
@@ -143,77 +46,69 @@ const ScheduleTab = ({ hackathon }) => {
 
   // 渲染事件卡片
   const renderEvent = (event) => {
-    // 如果是带有讲师信息的事件（如在线课程）
-    if (event.subtitle && event.speaker) {
-      return (
-        <div key={event.id} className="px-10 py-8">
-          <h3 className="text-xl font-semibold text-white mb-3">{event.title}</h3>
-          <h4 className="text-lg font-medium text-white mb-4">{event.subtitle}</h4>
-          <p className="text-white/80 mb-10 leading-relaxed">{event.description}</p>
+    return (
+      <div key={event.id} className="px-10 py-8">
+        <h3 className="text-xl font-semibold text-white mb-3">{event.title}</h3>
+        <p className="text-white/80 mb-10 leading-relaxed">{event.description}</p>
 
-          <div className="w-full h-[1px] bg-[#2b3640] opacity-70 mb-8"></div>
+        <div className="w-full h-[1px] bg-[#2b3640] opacity-70 mb-8"></div>
 
-          <div className="flex flex-row space-y-6">
-
-
-            <div className="flex items-start flex-col">
-              <div className="flex items-center">
-                <div className="w-5 h-5 opacity-60 mr-1 mt-1">
+        <div className="flex flex-row space-x-16">
+          {event.speaker && (
+            <div className="flex flex-col min-w-[200px]">
+              <div className="flex items-center mb-4">
+                <div className="w-5 h-5 opacity-60 mr-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                 </div>
-                <span className="text-white/60 w-[100px] mt-1">Speaker</span>
+                <span className="text-white/60">Speaker</span>
               </div>
-              <div className="flex-1">
-                <div className="flex items-start flex-col">
-                  {event.speaker.avatar && (
-                    <div className='flex flex-row items-center'>
-                      <div className="w-15 h-15 rounded-full overflow-hidden mr-4 flex-shrink-0 my-2">
-                        <img src={`https://placehold.co/400x400/2b3640/white?text=${event.speaker.name}`} alt={event.speaker.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-white text-md">{event.speaker.username}</span>
-                        <span className="text-white/60 text-sm">{event.speaker.email}</span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex flex-col">
-                    <div className="flex mb-1">
-                      <span className="text-white/60 w-[60px] text-sm">Name:</span>
-                      <span className="text-white text-sm ml-1">{event.speaker.name}</span>
-                    </div>
-                    <div className="flex">
-                      <span className="text-white/60 w-[60px] text-sm">Position:</span>
-                      <span className="text-white text-sm ml-1">{event.speaker.position}</span>
-                    </div>
-                  </div>
+              <div className="flex flex-row items-center">
+                <div className="w-10 h-10 rounded-full overflow-hidden mr-3 flex-shrink-0">
+                  <img src={`https://placehold.co/400x400/2b3640/white?text=${event.speaker}`} alt={event.speaker} className="w-full h-full object-cover" />
                 </div>
+                <span className="text-white text-sm">{event.speaker}</span>
               </div>
             </div>
-            <div className="flex items-center flex-col">
-              <div className="flex items-center">
-                <div className="w-5 h-5 opacity-60 mr-1">
+          )}
+
+          <div className="flex flex-col min-w-[150px]">
+            <div className="flex items-center mb-4">
+              <div className="w-5 h-5 opacity-60 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <span className="text-white/60">Time</span>
+            </div>
+            <span className="text-white text-sm">{`${event.startTime} - ${event.endTime}`}</span>
+          </div>
+
+          {event.location && (
+            <div className="flex flex-col min-w-[150px]">
+              <div className="flex items-center mb-4">
+                <div className="w-5 h-5 opacity-60 mr-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
                   </svg>
                 </div>
-                <span className="text-white/60 w-[100px]">Date & Time</span>
+                <span className="text-white/60">Location</span>
               </div>
-              <span className="text-white">{event.formattedDate}</span>
+              <span className="text-white text-sm">{event.location}</span>
             </div>
-          </div>
+          )}
         </div>
-      );
-    }
-
-    // 标准事件（显示标题和描述）
-    return (
-      <div key={event.id} className="px-10 py-8">
-        <h3 className="text-xl font-semibold text-white mb-4">{event.title}</h3>
-        <p className="text-white/80 leading-relaxed">{event.description}</p>
+        
+        {event.notes && (
+          <div className="mt-6">
+            <span className="text-white/60 text-sm">Notes:</span>
+            <p className="text-white/80 text-sm mt-1">{event.notes}</p>
+          </div>
+        )}
       </div>
     );
   };
@@ -240,15 +135,15 @@ const ScheduleTab = ({ hackathon }) => {
                           onClick={() => handleTimeClick(event)}
                         >
                           <div className="text-white py-4 px-6 text-sm md:text-base flex items-center h-full">
-                            {event.formattedDate.includes(' - ') ? (
-                              <div className="whitespace-pre-line leading-relaxed">
-                                <span className="opacity-90 whitespace-nowrap">{event.formattedDate.split(' - ')[0]}</span>
-                                <span className="font-medium my-1">-</span>
-                                <span className="opacity-90 whitespace-nowrap">{event.formattedDate.split(' - ')[1]}</span>
-                              </div>
-                            ) : (
-                              <div className="opacity-90 whitespace-nowrap">{event.formattedDate}</div>
-                            )}
+                            <div className="whitespace-pre-line leading-relaxed">
+                              <span className="opacity-90 whitespace-nowrap">{event.startDate}</span>
+                              {event.endDate && (
+                                <>
+                                  <span className="font-medium my-1">-</span>
+                                  <span className="opacity-90 whitespace-nowrap">{event.endDate}</span>
+                                </>
+                              )}
+                            </div>
                           </div>
                           {index < updatedSchedule.length - 1 && <div className="border-b border-[#2b3640] w-full"></div>}
                         </div>

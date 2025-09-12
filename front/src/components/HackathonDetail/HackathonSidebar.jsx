@@ -86,7 +86,7 @@ const HackathonSidebar = ({ hackathon }) => {
         <div className="border-b border-[#0092ff1a] mb-4"></div>
         
         <div className="space-y-5">
-          {hackathon.quests.map((quest, index) => (
+          {(hackathon.quests || []).map((quest, index) => (
             <div key={quest.id} className="flex justify-between items-center">
               <span className="text-white text-sm">{quest.title}</span>
               {quest.completed ? (
