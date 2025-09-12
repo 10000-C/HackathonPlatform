@@ -100,11 +100,11 @@ const OverviewTab = ({ hackathon }) => {
                   <h3 className="text-xl font-semibold text-white">Important Dates</h3>
                 </div>
                 <div className="space-y-3 text-white/80">
-                  <p><span className="font-medium text-white">Registration Opens:</span> {new Date(hackathon.startDate).toLocaleDateString()}</p>
-                  <p><span className="font-medium text-white">Registration Closes:</span> {new Date(hackathon.registrationEndDate).toLocaleDateString()}</p>
-                  <p><span className="font-medium text-white">Project Submission Deadline:</span> {new Date(hackathon.endDate).toLocaleDateString()}</p>
-                  <p><span className="font-medium text-white">Judging Period:</span> {new Date(new Date(hackathon.endDate).getTime() + 86400000).toLocaleDateString()} - {new Date(new Date(hackathon.endDate).getTime() + 86400000 * 5).toLocaleDateString()}</p>
-                  <p><span className="font-medium text-white">Winners Announced:</span> {new Date(new Date(hackathon.endDate).getTime() + 86400000 * 10).toLocaleDateString()}</p>
+                  <p><span className="font-medium text-white">Registration Opens:</span> {new Date(hackathon.registrationStart).toLocaleDateString()}</p>
+                  <p><span className="font-medium text-white">Registration Closes:</span> {new Date(hackathon.registrationEnd).toLocaleDateString()}</p>
+                  <p><span className="font-medium text-white">Hackathon Start:</span> {new Date(hackathon.hackathonStart).toLocaleDateString()}</p>
+                  <p><span className="font-medium text-white">Project Submission Deadline:</span> {new Date(hackathon.hackathonEnd).toLocaleDateString()}</p>
+                  <p><span className="font-medium text-white">Voting Period:</span> {new Date(hackathon.votingStart).toLocaleDateString()} - {new Date(hackathon.votingEnd).toLocaleDateString()}</p>
                 </div>
                 <div className="border-b border-[#2b3640] my-10 w-full"></div>
               </section>

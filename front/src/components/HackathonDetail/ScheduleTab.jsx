@@ -2,104 +2,51 @@ import React, { useState } from 'react';
 import HackathonSidebar from './HackathonSidebar';
 
 const ScheduleTab = ({ hackathon }) => {
-  // 从hackathon对象获取日程数据，如果不存在则使用默认数据
-  const schedule = hackathon.schedule || [
-    {
-      id: 1,
-      title: 'Registration',
-      date: 'Jun 17, 2025 19:00 - Jul 19, 2025 19:00',
-      description: 'Participants can start registering for the hackathon.',
-      status: 'active'
-    },
-    {
-      id: 2,
-      title: 'Online Course 1',
-      subtitle: 'How to Build a Web3 Project from 0 to 1',
-      date: 'Jun 26, 2025 15:00',
-      speaker: {
-        name: 'Tom White Adressen',
-        position: 'Founder & CEO at A16Z',
-        avatar: '/path/to/avatar.jpg',
-        username: '@WizzyOnChain'
-      },
-      description: 'Learn how to plan, design, and launch your own Web3 project from scratch, covering everything from smart contracts and tokenomics to community building and go-to-market strategy.',
-      status: 'upcoming'
-    },
-    {
-      id: 3,
-      title: 'Technical Workshop I',
-      date: 'Jun. 28, 2025; 15:00',
-      description: 'Blockchain technology basics and smart contract development workshop.',
-      status: 'upcoming'
-    },
-    {
-      id: 4,
-      title: 'Technical Workshop II',
-      date: 'Jun. 30, 2025; 15:00',
-      description: 'Decentralized application architecture and frontend development workshop.',
-      status: 'upcoming'
-    },
-    {
-      id: 5,
-      title: 'Project Submission Period',
-      date: 'Jul 19, 2025 19:00 - Jul 30, 2025 19:00',
-      description: 'All projects must be submitted by this date.',
-      status: 'upcoming'
-    },
-    {
-      id: 6,
-      title: 'Winners Announced',
-      date: 'Aug 3, 2025 19:00',
-      description: 'Online award ceremony, announcing the winning projects.',
-      status: 'upcoming'
-    }
-  ];
+  // 从hackathon对象获取日程数据
+  const schedule = (hackathon.schedule || []).map((event, index) => ({
+    id: index + 1,
+    title: event.title,
+    date: `${event.startDate} ${event.startTime} - ${event.endDate} ${event.endTime}`,
+    description: event.description,
+    status: 'upcoming', // 初始设置为upcoming，后面会根据日期计算实际状态
+    speaker: event.speaker ? {
+      name: event.speaker,
+      position: '',
+      avatar: '',
+      username: ''
+    } : undefined,
+    location: event.location,
+    notes: event.notes
+  }));
 
   // 根据当前日期判断事件状态
   const now = new Date();
   const updatedSchedule = schedule.map(event => {
     // 格式化日期
-    const formatDate = (dateStr) => {
+    const formatDate = (dateStr, timeStr = '') => {
       const date = new Date(dateStr);
       if (isNaN(date)) return dateStr; // 如果日期无效，返回原始字符串
 
       const month = date.toLocaleString('en-US', { month: 'short' });
       const day = date.getDate();
       const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
 
-      return `${month} ${day}, ${year} ${hours}:${minutes}`;
+      if (timeStr) {
+        return `${month} ${day}, ${year} ${timeStr}`;
+      }
+      return `${month} ${day}, ${year}`;
     };
 
     // 处理日期范围或单个日期
-    let formattedDate = event.date;
-    if (event.date.includes(' - ')) {
-      const [startDate, endDate] = event.date.split(' - ').map(d => d.trim());
-      formattedDate = `${formatDate(startDate)} - ${formatDate(endDate)}`;
-    } else {
-      formattedDate = formatDate(event.date);
+    const [startDate, startTime, endDate, endTime] = event.date.split(' - ').join(' ').split(' ');
+    let formattedDate = formatDate(startDate, startTime);
+    if (endDate && endTime) {
+      formattedDate += ` - ${formatDate(endDate, endTime)}`;
     }
 
-    // 保存原始日期用于状态判断
-    const dateParts = event.date.split(' - ');
-    const eventDateStr = dateParts[0].trim();
-    let eventDate, eventEndDate;
-
-    try {
-      // 尝试解析日期
-      eventDate = new Date(eventDateStr);
-      // 如果有结束日期，也解析它
-      if (dateParts.length > 1) {
-        eventEndDate = new Date(dateParts[1].trim());
-      }
-    } catch (e) {
-      // 如果解析失败，使用当前日期
-      eventDate = new Date();
-      if (dateParts.length > 1) {
-        eventEndDate = new Date();
-      }
-    }
+    // 解析开始和结束时间
+    const eventDate = new Date(`${startDate} ${startTime}`);
+    const eventEndDate = endDate && endTime ? new Date(`${endDate} ${endTime}`) : undefined;
 
     let status;
     // 如果有日期范围，判断当前日期是否在范围内
@@ -240,15 +187,15 @@ const ScheduleTab = ({ hackathon }) => {
                           onClick={() => handleTimeClick(event)}
                         >
                           <div className="text-white py-4 px-6 text-sm md:text-base flex items-center h-full">
-                            {event.formattedDate.includes(' - ') ? (
-                              <div className="whitespace-pre-line leading-relaxed">
-                                <span className="opacity-90 whitespace-nowrap">{event.formattedDate.split(' - ')[0]}</span>
-                                <span className="font-medium my-1">-</span>
-                                <span className="opacity-90 whitespace-nowrap">{event.formattedDate.split(' - ')[1]}</span>
-                              </div>
-                            ) : (
-                              <div className="opacity-90 whitespace-nowrap">{event.formattedDate}</div>
-                            )}
+                            <div className="whitespace-pre-line leading-relaxed">
+                              <span className="opacity-90 whitespace-nowrap">{formatDate(event.startDate)}</span>
+                              {event.endDate && (
+                                <>
+                                  <span className="font-medium my-1">-</span>
+                                  <span className="opacity-90 whitespace-nowrap">{formatDate(event.endDate)}</span>
+                                </>
+                              )}
+                            </div>
                           </div>
                           {index < updatedSchedule.length - 1 && <div className="border-b border-[#2b3640] w-full"></div>}
                         </div>
