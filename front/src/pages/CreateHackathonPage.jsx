@@ -31,6 +31,7 @@ export default function CreateHackathonPage() {
 
   const [judges, setJudges] = useState([]);
   const [isPublished, setIsPublished] = useState(false);
+  const [activityId, setActivityId] = useState(null);
 
   const progressRef = useRef(0);
 
@@ -120,6 +121,7 @@ export default function CreateHackathonPage() {
           isPublished={isPublished}
           setIsPublished={setIsPublished}
           formData={formData}
+          setActivityId={setActivityId}
         />
         <div className="flex flex-1 overflow-hidden">
           {/* 左侧步骤导航栏 */}

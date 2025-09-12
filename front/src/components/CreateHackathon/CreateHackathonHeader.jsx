@@ -4,7 +4,13 @@ import { Loader2 } from 'lucide-react';
 import SaveToIPFS from '../../utils/SaveToIPFS';
 import saveActivityToContract from '../../utils/SaveActivityToContract';
 
-export default function CreateHackathonHeader({ currentStep, isPublished, setIsPublished, formData }) {
+export default function CreateHackathonHeader({ 
+  currentStep, 
+  isPublished, 
+  setIsPublished, 
+  formData,
+  setActivityId  // 添加新的 prop
+}) {
   const [uploading, setUploading] = useState(false);
   const validateForm = () => {
     // 验证概览信息
@@ -188,8 +194,13 @@ export default function CreateHackathonHeader({ currentStep, isPublished, setIsP
             timeStamps
           });
           //目前没有设置最大参加人数的选项
-          await saveActivityToContract(dataCID, hackathonData.name, 9999, timeStamps);
-          console.log('Activity saved to contract');
+          //调用合约并获取返回值
+          const result = await saveActivityToContract(dataCID, hackathonData.name, 9999, timeStamps);
+          console.log('Activity saved to contract with ID:', result.activityId);
+          
+          // 设置 activityId
+          setActivityId(result.activityId);
+          
           setIsPublished(true);
           alert("Hackathon successfully published!");
         } catch (error) {

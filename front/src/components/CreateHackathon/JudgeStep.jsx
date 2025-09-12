@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users } from 'lucide-react';
 
-const JudgesStep = ({ judges, setJudges }) => {
+const JudgesStep = ({ judges, setJudges, activityId }) => {
   const [inviteEmail, setInviteEmail] = useState('');
+
+  // 在组件开始时验证 activityId
+  useEffect(() => {
+    if (!activityId) {
+      alert("Pleadse publish the activity first");
+    }
+  }, [activityId]);
 
   const handleGenerateInviteCode = () => {
     if (inviteEmail.trim()) {
