@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users } from 'lucide-react';
+import generateJudgeCode from '../../utils/GenerateJudgeCode';
 
 const JudgesStep = ({ judges, setJudges, activityId }) => {
   const [inviteEmail, setInviteEmail] = useState('');
@@ -13,12 +14,12 @@ const JudgesStep = ({ judges, setJudges, activityId }) => {
 
   const handleGenerateInviteCode = () => {
     if (inviteEmail.trim()) {
-      const mockInviteCode = 'JUDGE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      const judgeIvitation = generateJudgeCode(activityId, inviteEmail);
       const newJudge = {
         email: inviteEmail,
         status: 'Code generated',
         type: 'pending',
-        inviteCode: mockInviteCode
+        inviteCode: judgeIvitation,
       };
       setJudges(prev => [...prev, newJudge]);
       setInviteEmail('');
