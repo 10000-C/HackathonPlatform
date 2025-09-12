@@ -21,9 +21,19 @@ const saveActivityToContract = async (dataCID,topic,maxParticipants,timestamps) 
             try {
                 // 设置事件监听器
                 const eventFilter = contract.filters.ActivityCreated();
-                const listener = (activityId, activity, event) => {
-                    console.log("检测到 ActivityCreated 事件：");
-                    console.log("活动 ID:", activityId.toString());
+                const listener = (eventPayload) => {
+                    console.log("检测到 ActivityCreated 事件，原始参数：", eventPayload);
+                    
+                    // 从 args 中获取事件参数
+                    const args = eventPayload.args;
+                    console.log("事件参数：", args);
+                    
+                    // activityId 是第一个参数
+                    const activityId = args[0];  // BigNumber
+                    // activity 结构是第二个参数
+                    const activity = args[1];    // Activity struct
+                    
+                    console.log("活动 ID:", activityId ? activityId.toString() : 'undefined');
                     console.log("活动数据:", activity);
 
                     // 清除超时定时器
@@ -36,16 +46,16 @@ const saveActivityToContract = async (dataCID,topic,maxParticipants,timestamps) 
 
                     // 返回结果
                     resolve({
-                        activityId: activityId,
-                        activity: {
-                            dataCID: activity.dataCID,
-                            topic: activity.topic,
-                            creator: activity.creator,
-                            maxParticipants: activity.maxParticipants.toString(),
-                            cuParticipants: activity.cuParticipants.toString()
-                        },
-                        transactionHash: event.transactionHash,
-                        blockNumber: event.blockNumber
+                        activityId: activityId ,
+                        activity: activity ? {
+                            dataCID: activity.dataCID || '',
+                            topic: activity.topic || '',
+                            creator: activity.creator || '',
+                            maxParticipants: activity.maxParticipants ? activity.maxParticipants.toString() : '0',
+                            cuParticipants: activity.cuParticipants ? activity.cuParticipants.toString() : '0'
+                        } : null,
+                        transactionHash: eventPayload.log.transactionHash,
+                        blockNumber: eventPayload.log.blockNumber
                     });
                 };
 
@@ -77,9 +87,12 @@ const saveActivityToContract = async (dataCID,topic,maxParticipants,timestamps) 
                 }, 60000); // 60秒超时
             } catch (error) {
                 console.error("合约调用出错:", error);
+                // 清理定时器
                 if (timeoutId) {
                     clearTimeout(timeoutId);
                 }
+                // 确保移除事件监听器
+                contract.off(eventFilter, listener);
                 reject(error);
             }
         });
