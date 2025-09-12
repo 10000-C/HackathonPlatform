@@ -2,7 +2,7 @@ import { gql, request } from 'graphql-request'
 
 const callSearchService = async (searchTerm, target) => {
     let queryString = "";
-    if(target === "topic"){
+    if(target === "topic" || target === "activityId"){
       queryString = `, where: {${target}: "${searchTerm}"}`;
     }else if(target === "all"){
         queryString = "";

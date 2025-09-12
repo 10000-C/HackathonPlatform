@@ -5,16 +5,30 @@ import OverviewTab from '../components/HackathonDetail/OverviewTab';
 import PrizesTab from '../components/HackathonDetail/PrizesTab';
 import ScheduleTab from '../components/HackathonDetail/ScheduleTab';
 import SubmissionsTab from '../components/HackathonDetail/SubmissionsTab';
+import callSearchService from '../utils/CallSearchService';
 
 // 从IPFS获取黑客松详情
 const fetchHackathonById = async (hackathonId) => {
   try {
     // 构建IPFS URL
-    const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${hackathonId}`;
+    const dataFromGraph = await callSearchService(hackathonId, "activityId");
+    console.log("GraphQL response:", dataFromGraph);
+    
+    const activityData = dataFromGraph.activities[0];
+    if (!activityData || !activityData.activity_dataCID) {
+      throw new Error('No data CID found for the hackathon');
+    }
+
+    const dataCID = activityData.activity_dataCID;
+    if (!dataCID) {
+      throw new Error('No data CID found for the hackathon');
+    }
+    const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${dataCID}`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error('Failed to fetch hackathon data');
     }
+    console.log("pinata response",response);
     const data = await response.json();
     
     // 转换数据格式
@@ -44,27 +58,28 @@ const fetchHackathonById = async (hackathonId) => {
       description: data.fullDescription || data.shortDescription,
       startDate: data.hackathonStart,
       endDate: data.hackathonEnd,
-      registrationEndDate: data.registrationEnd,
-      prizePool: `${data.prizePool} USD`,
+      registrationEnd: data.registrationEnd,
+      prizePool: `${data.prizePool || 0} USD`,
       location: data.location || 'Online',
-      level: data.experienceLevel,
-      techStack,
+      level: data.experienceLevel || 'All Levels',
+      techStack: techStack.length > 0 ? techStack.join(', ') : 'All Tech Stacks',
       status: 'active', // 根据日期计算状态
-      bannerImage: `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${data.banner}`,
-      links,
+      bannerImage: data.banner ? `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${data.banner}` : 'https://placehold.co/1600x400/121820/0092ff?text=Hackathon',
+      links: links.twitter || links.discord ? links : { twitter: '#', discord: '#' },
       schedule: data.schedule || [],
       prizes: data.prizeCorhots?.map(cohort => ({
         id: cohort.id,
         title: cohort.name,
-        winners: parseInt(cohort.numberOfWinners),
-        amount: `${cohort.prizeAmount} USD`,
-        description: cohort.description,
+        winners: parseInt(cohort.numberOfWinners) || 0,
+        amount: `${cohort.prizeAmount || 0} USD`,
+        description: cohort.description || '',
         criteria: cohort.evaluationCriteria?.map(criteria => ({
           name: criteria.name,
           description: criteria.description,
-          maxScore: parseInt(criteria.points)
+          maxScore: parseInt(criteria.points) || 0
         })) || []
-      })) || []
+      })) || [],
+      quests: [] // 添加空的任务列表
     };
   } catch (error) {
     console.error("Error fetching hackathon details:", error);
@@ -104,7 +119,7 @@ const HackathonDetailPage = () => {
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
         
-        console.log('Time left calculated:', { days, hours, minutes, seconds });
+        //console.log('Time left calculated:', { days, hours, minutes, seconds });
         
         return { days, hours, minutes, seconds };
       } catch (error) {
