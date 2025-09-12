@@ -20,9 +20,6 @@ const fetchHackathonById = async (hackathonId) => {
     }
 
     const dataCID = activityData.activity_dataCID;
-    if (!dataCID) {
-      throw new Error('No data CID found for the hackathon');
-    }
     const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${dataCID}`;
     let response = await fetch(url);
     
