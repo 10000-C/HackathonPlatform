@@ -1,9 +1,8 @@
 import CreateProjectHeader from '../components/CreateProject/CreateProjectHeader';
 import CreateProjectOverview from '../components/CreateProject/CreateProjectOverview';
 import CreateProjectSidebar from '../components/CreateProject/CreateProjectSidebar';
-import PrizesStep from '../components/CreateProject/PrizesStep';
-import JudgesStep from '../components/CreateProject/JudgeStep';
-import ScheduleStep from '../components/CreateProject/ScheduleStep';
+import TechStackStep from '../components/CreateProject/TechStackStep';
+// import HackathonStep from '../components/CreateProject/HackathonStep';
 import { useState, useEffect, useRef } from 'react';
 
 export default function CreateProjectPage() {
@@ -11,26 +10,27 @@ export default function CreateProjectPage() {
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
+    logo: null,
     shortDescription: '',
     fullDescription: '',
-    registrationStart: '',
-    registrationEnd: '',
-    hackathonStart: '',
-    hackathonEnd: '',
-    votingStart: '',
-    votingEnd: '',
-    techStack: '',
-    experienceLevel: '',
-    location: '',
-    socialLinks: [{ domain: '.com', url: '' }],
-    prizeCorhots: [],
-    judges: [],
-    schedule: [],
-    showPrizeDetails: false
+    progressDescription: '',
+    fundraisingStatus: '',
+    githubLink: '',
+    techStack: [],
+    techStackDescription: '',
+    sectors: [],
+    startDate: '',
+    endDate: '',
+    rewards: [],
+    hackathonDescription: '',
+    participationRequirements: '',
+    video: {
+      type: '', // 'upload' 或 'link'
+      file: null,
+      url: ''
+    },
+    socialLinks: [{ domain: '.com', url: '' }]
   });
-
-  const [judges, setJudges] = useState([]);
-  const [isPublished, setIsPublished] = useState(false);
 
   const progressRef = useRef(0);
 
@@ -38,20 +38,8 @@ export default function CreateProjectPage() {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
-  // 验证是否可以访问评委页面
-  const canAccessJudges = () => {
-    if (!isPublished) {
-      alert('Please publish hackathon in Schedule step before proceeding to Judges.');
-      return false;
-    }
-    return true;
-  };
-
   // 处理步骤变更
   const handleStepChange = (newStep) => {
-    if (newStep === 'judges' && !canAccessJudges()) {
-      return;
-    }
     setCurrentStep(newStep);
   };
 
@@ -60,27 +48,23 @@ export default function CreateProjectPage() {
       formData,
       updateFormData,
       setCurrentStep: handleStepChange,
-      isPublished,
-      setIsPublished,
       currentStep
     };
 
     switch (currentStep) {
       case 'overview':
         return <CreateProjectOverview {...commonProps} />;
-      case 'prizes':
-        return <PrizesStep {...commonProps} />;
-      case 'judges':
-        return <JudgesStep {...commonProps} judges={judges} setJudges={setJudges} />;
-      case 'schedule':
-        return <ScheduleStep {...commonProps} />;
+      case 'techstack':
+        return <TechStackStep {...commonProps} />;
+      // case 'hackathon':
+      //   return <HackathonStep {...commonProps} />;
       default:
         return <CreateProjectOverview {...commonProps} />;
     }
   };
 
   const getStepProgress = () => {
-    const steps = ['overview', 'prizes', 'schedule', 'judges'];
+    const steps = ['overview', 'techstack'];
     return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
   };
 
@@ -117,8 +101,6 @@ export default function CreateProjectPage() {
         {/* 顶部全宽导航栏 */}
         <CreateProjectHeader 
           currentStep={currentStep}
-          isPublished={isPublished}
-          setIsPublished={setIsPublished}
           formData={formData}
         />
         <div className="flex flex-1 overflow-hidden">
@@ -126,7 +108,6 @@ export default function CreateProjectPage() {
           <CreateProjectSidebar 
             currentStep={currentStep} 
             setCurrentStep={handleStepChange}
-            isPublished={isPublished}
           />
           <div className="flex-1 flex flex-col">
             {/* 顶部进度条 */}
@@ -136,7 +117,7 @@ export default function CreateProjectPage() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto hide-scrollbar mx-30">
               {renderCurrentStep()}
             </div>
           </div>

@@ -136,7 +136,7 @@ export default function CreateHackathonPage() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto hide-scrollbar">
               {renderCurrentStep()}
             </div>
           </div>

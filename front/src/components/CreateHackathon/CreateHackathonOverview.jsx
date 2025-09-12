@@ -3,9 +3,9 @@ import { Upload, Plus, X, Users, Link } from 'lucide-react';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import MDEditor from '@uiw/react-md-editor';
 
-export default function CreateHackathonForm({ formData, updateFormData }) {
+export default function CreateHackathonOverview({ formData, updateFormData }) {
   const fileInputRef = useRef(null);
-  
+
   const handleInputChange = (field, value) => {
     updateFormData({ [field]: value });
   };
@@ -25,7 +25,7 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
       }
     };
   }, [formData.banner?.previewUrl]);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     handleInputChange(name, value);
@@ -41,12 +41,12 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
       // 检查文件类型
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       const allowedExtensions = /\.(jpg|jpeg|png|gif|webp)$/i;
-      
+
       if (!allowedTypes.includes(file.type) && !allowedExtensions.test(file.name)) {
         alert('请上传有效的图片文件 (jpg, jpeg, png, gif, webp)');
         return;
       }
-      
+
       // 检查文件大小 (限制为5MB)
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
@@ -56,7 +56,7 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
 
       // 创建临时URL以供预览
       const previewUrl = URL.createObjectURL(file);
-      
+
       // 保存文件对象和预览URL
       handleInputChange('banner', {
         file: file,
@@ -64,6 +64,9 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
       });
     }
   };
+
+  // 为 MDEditor 添加默认值，防止 undefined 导致的错误
+  const editorValue = formData.fullDescription || '';
 
   return (
     <div className="p-6">
@@ -85,14 +88,14 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
 
         <div className="space-y-2">
           <label className="block text-white mb-2">Hackathon Banner</label>
-          <div 
+          <div
             className="bg-[#0f1011] border border-solid border-[#242425] rounded px-4 py-20 min-h-32 flex flex-col items-center justify-center cursor-pointer hover:border-[#0092ff]"
             onClick={handleBannerClick}
           >
             {formData.banner?.previewUrl ? (
-              <img 
-                src={formData.banner.previewUrl} 
-                alt="Banner preview" 
+              <img
+                src={formData.banner.previewUrl}
+                alt="Banner preview"
                 className="max-h-40 rounded"
               />
             ) : (
@@ -100,7 +103,7 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
                 <Upload className="text-gray-500 w-8 h-8 mb-2" />
                 <p className="text-gray-400 text-sm mb-1">Click to select a graph</p>
                 <p className="text-gray-500 text-xs mb-2">Supports: JPG, PNG, GIF, WEBP (Max 5MB)</p>
-                <button 
+                <button
                   type="button"
                   className="text-blue-400 text-sm hover:text-blue-300"
                   onClick={(e) => {
@@ -224,115 +227,115 @@ export default function CreateHackathonForm({ formData, updateFormData }) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-white mb-2">Tech stack</label>
-          <select 
-            name="techStack"
-            value={formData.techStack}
-            onChange={handleChange}
-            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none">
-            <option value="">Select tech stack</option>
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-            <option value="react">React</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-white mb-2">Experience Level</label>
-          <select 
-            name="experienceLevel"
-            value={formData.experienceLevel}
-            onChange={handleChange}
-            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none">
-            <option value="">Select experience level</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-white mb-2">Hackathon location</label>
-        <input
-          type="text"
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          placeholder="Enter hackathon location"
-          className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-        />
-      </div>
-
-      <div>
-        <label className="block text-white mb-2">Social links</label>
-        {formData.socialLinks?.map((link, index) => (
-          <div key={index} className="flex space-x-2 mb-2">
-            <select 
-              className="bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-              value={link.domain}
-              onChange={(e) => {
-                const newLinks = [...formData.socialLinks];
-                newLinks[index].domain = e.target.value;
-                updateFormData({ socialLinks: newLinks });
-              }}
-            >
-              <option>.com</option>
-              <option>.org</option>
-              <option>.net</option>
+          <div>
+            <label className="block text-white mb-2">Tech stack</label>
+            <select
+              name="techStack"
+              value={formData.techStack}
+              onChange={handleChange}
+              className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none">
+              <option value="">Select tech stack</option>
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="react">React</option>
             </select>
-            <input
-              type="text"
-              placeholder="Enter link to x.com"
-              value={link.url}
-              onChange={(e) => {
-                const newLinks = [...formData.socialLinks];
-                newLinks[index].url = e.target.value;
-                updateFormData({ socialLinks: newLinks });
-              }}
-              className="flex-1 bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
-            />
-            {index > 0 && (
-              <button
-                onClick={() => {
-                  const newLinks = formData.socialLinks.filter((_, i) => i !== index);
-                  updateFormData({ socialLinks: newLinks });
-                }}
-                className="p-3 text-red-400 hover:text-red-300"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
           </div>
-        ))}
-        <button 
-          type="button"
-          onClick={() => {
-            const newLinks = [...(formData.socialLinks || []), { domain: '.com', url: '' }];
-            updateFormData({ socialLinks: newLinks });
-          }}
-          className="text-blue-400 text-sm mt-2 hover:text-blue-300"
-        >
-          + add another link
-        </button>
-      </div>
+          <div>
+            <label className="block text-white mb-2">Experience Level</label>
+            <select
+              name="experienceLevel"
+              value={formData.experienceLevel}
+              onChange={handleChange}
+              className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none">
+              <option value="">Select experience level</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
 
-      <div>
-        <label className="block text-white mb-2">Full Description</label>
-        <div data-color-mode="dark">
-          <MDEditor
-            value={formData.fullDescription}
-            onChange={(value) => handleInputChange('fullDescription', value)}
-            preview="edit"
-            height={320}
-            className="bg-[#0f1011] border border-solid border-[#242425] rounded overflow-hidden"
-            textareaProps={{
-              placeholder: "Enter full description in Markdown format..."
-            }}
+        <div>
+          <label className="block text-white mb-2">Hackathon location</label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="Enter hackathon location"
+            className="w-full bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
           />
         </div>
-      </div>
+
+        <div>
+          <label className="block text-white mb-2">Social links</label>
+          {formData.socialLinks?.map((link, index) => (
+            <div key={index} className="flex space-x-2 mb-2">
+              <select
+                className="bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+                value={link.domain}
+                onChange={(e) => {
+                  const newLinks = [...formData.socialLinks];
+                  newLinks[index].domain = e.target.value;
+                  updateFormData({ socialLinks: newLinks });
+                }}
+              >
+                <option>.com</option>
+                <option>.org</option>
+                <option>.net</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Enter link to x.com"
+                value={link.url}
+                onChange={(e) => {
+                  const newLinks = [...formData.socialLinks];
+                  newLinks[index].url = e.target.value;
+                  updateFormData({ socialLinks: newLinks });
+                }}
+                className="flex-1 bg-[#0f1011] text-white p-3 rounded border border-solid border-[#242425] focus:border-blue-500 focus:outline-none"
+              />
+              {index > 0 && (
+                <button
+                  onClick={() => {
+                    const newLinks = formData.socialLinks.filter((_, i) => i !== index);
+                    updateFormData({ socialLinks: newLinks });
+                  }}
+                  className="p-3 text-red-400 hover:text-red-300"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              const newLinks = [...(formData.socialLinks || []), { domain: '.com', url: '' }];
+              updateFormData({ socialLinks: newLinks });
+            }}
+            className="text-blue-400 text-sm mt-2 hover:text-blue-300"
+          >
+            + add another link
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-white mb-2">Full Description</label>
+          <div data-color-mode="dark">
+            <MDEditor
+              value={formData.fullDescription}
+              onChange={(value) => handleInputChange('fullDescription', value)}
+              preview="edit"
+              height={320}
+              className="bg-[#0f1011] border border-solid border-[#242425] rounded overflow-hidden"
+              textareaProps={{
+                placeholder: "Enter full description in Markdown format..."
+              }}
+            />
+          </div>
+        </div>
       </form>
     </div>
   );
