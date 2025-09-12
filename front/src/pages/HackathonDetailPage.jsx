@@ -93,7 +93,7 @@ const fetchHackathonById = async (hackathonId) => {
         criteria: cohort.evaluationCriteria?.map(criteria => ({
           name: criteria.name,
           description: criteria.description,
-          maxScore: parseInt(criteria.points) || 0
+          points: parseInt(criteria.points) || 0
         })) || []
       })) || [],
       quests: [] // 添加空的任务列表

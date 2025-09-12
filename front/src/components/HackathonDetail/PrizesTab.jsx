@@ -42,7 +42,7 @@ const PrizesTab = ({ prizes, hackathon }) => {
                   <div className="p-6 border-b border-[#2b3640]">
                     <h3 className="text-lg font-semibold text-white mb-4">Evaluation Criteria</h3>
                     
-                    {prize.evaluationCriteria && prize.evaluationCriteria.length > 0 && (
+                    {prize.criteria && prize.criteria.length > 0 && (
                       <>
                         {/* 列头 */}
                         <div className="grid grid-cols-12 mb-2 text-sm">
@@ -55,14 +55,14 @@ const PrizesTab = ({ prizes, hackathon }) => {
                         <div className="h-px w-full bg-[#2b3640] my-2"></div>
                         
                         {/* 评分标准行 */}
-                        {prize.evaluationCriteria.map((criterion, idx) => (
+                        {prize.criteria.map((criterion, idx) => (
                           <React.Fragment key={idx}>
                             <div className="grid grid-cols-12 py-3 text-sm">
                               <div className="col-span-3 text-white font-normal">{criterion.name}</div>
                               <div className="col-span-7 text-white/90 font-normal">{criterion.description}</div>
                               <div className="col-span-2 text-right text-white font-normal">{criterion.points}</div>
                             </div>
-                            {idx < prize.evaluationCriteria.length - 1 && (
+                            {idx < prize.criteria.length - 1 && (
                               <div className="h-px w-full bg-[#2b3640]"></div>
                             )}
                           </React.Fragment>
@@ -79,7 +79,7 @@ const PrizesTab = ({ prizes, hackathon }) => {
                     <div className="grid grid-cols-1 gap-4 mb-4">
                       <div>
                         <p className="text-white/60 text-sm mb-1">Judging Mode</p>
-                        <p className="text-white text-base font-semibold">{prize.judgingMode}</p>
+                        <p className="text-white text-base font-semibold">Judge Only</p>
                       </div>
                     </div>
                   </div>
