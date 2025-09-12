@@ -24,13 +24,14 @@ const fetchHackathonById = async (hackathonId) => {
       throw new Error('No data CID found for the hackathon');
     }
     const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${dataCID}`;
-    const response = await fetch(url);
+    let response = await fetch(url);
+    
     if (!response.ok) {
       throw new Error('Failed to fetch hackathon data');
     }
-    console.log("pinata response",response);
-    const data = await response.json();
     
+    const data = await response.json();
+    console.log("pinata response",data);
     // 转换数据格式
     let techStack = [];
     if (Array.isArray(data.techStack)) {
@@ -52,13 +53,29 @@ const fetchHackathonById = async (hackathonId) => {
       });
     }
 
+    // 格式化日期
+    const formatDate = (dateStr) => {
+      if (!dateStr) return null;
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return null;
+        return date.toISOString().split('T')[0];
+      } catch (e) {
+        console.error('Date formatting error:', e);
+        return null;
+      }
+    };
+
     return {
       id: hackathonId,
       title: data.name,
       description: data.fullDescription || data.shortDescription,
-      startDate: data.hackathonStart,
-      endDate: data.hackathonEnd,
-      registrationEnd: data.registrationEnd,
+      startDate: formatDate(data.hackathonStart),
+      endDate: formatDate(data.hackathonEnd),
+      registrationStart: formatDate(data.registrationStart),
+      registrationEnd: formatDate(data.registrationEnd),
+      votingStart: formatDate(data.votingStart),
+      votingEnd: formatDate(data.votingEnd),
       prizePool: `${data.prizePool || 0} USD`,
       location: data.location || 'Online',
       level: data.experienceLevel || 'All Levels',
