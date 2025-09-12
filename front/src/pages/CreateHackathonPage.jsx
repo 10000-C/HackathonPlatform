@@ -72,7 +72,7 @@ export default function CreateHackathonPage() {
       case 'prizes':
         return <PrizesStep {...commonProps} />;
       case 'judges':
-        return <JudgesStep {...commonProps} judges={judges} setJudges={setJudges} />;
+        return <JudgesStep {...commonProps} judges={judges} setJudges={setJudges} activityId={activityId} />;
       case 'schedule':
         return <ScheduleStep {...commonProps} />;
       default:

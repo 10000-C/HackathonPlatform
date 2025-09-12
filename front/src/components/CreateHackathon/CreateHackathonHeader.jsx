@@ -195,11 +195,11 @@ export default function CreateHackathonHeader({
           });
           //目前没有设置最大参加人数的选项
           //调用合约并获取返回值
-          const result = await saveActivityToContract(dataCID, hackathonData.name, 9999, timeStamps);
-          console.log('Activity saved to contract with ID:', result.activityId);
+          const activityId = await saveActivityToContract(dataCID, hackathonData.name, 9999, timeStamps);
+          console.log('Activity saved to contract with ID:', activityId);
           
-          // 设置 activityId
-          setActivityId(result.activityId);
+          // 设置 activityId（现在已经是数字类型）
+          setActivityId(activityId);
           
           setIsPublished(true);
           alert("Hackathon successfully published!");

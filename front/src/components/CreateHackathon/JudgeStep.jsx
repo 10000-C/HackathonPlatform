@@ -1,28 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Users } from 'lucide-react';
+import { Users, Loader2 } from 'lucide-react';
 import generateJudgeCode from '../../utils/GenerateJudgeCode';
 
 const JudgesStep = ({ judges, setJudges, activityId }) => {
   const [inviteEmail, setInviteEmail] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  // 在组件开始时验证 activityId
-  useEffect(() => {
+  const handleGenerateInviteCode = async () => {
     if (!activityId) {
-      alert("Pleadse publish the activity first");
+      alert("Please publish the activity first");
+      return;
     }
-  }, [activityId]);
+    
+    if (!inviteEmail.trim()) {
+      alert("Please enter a valid email address");
+      return;
+    }
 
-  const handleGenerateInviteCode = () => {
-    if (inviteEmail.trim()) {
-      const judgeIvitation = generateJudgeCode(activityId, inviteEmail);
+    try {
+      setIsGenerating(true);
+      console.log("Generating invite code for activity:", activityId, "email:", inviteEmail);
+      const response = await generateJudgeCode(activityId, inviteEmail);
+      console.log("Invite code generated:", response);
+
       const newJudge = {
         email: inviteEmail,
         status: 'Code generated',
         type: 'pending',
-        inviteCode: judgeIvitation,
+        inviteCode: response.hash, // todo: 更改judge合约能正确返回邀请码
       };
+      
       setJudges(prev => [...prev, newJudge]);
       setInviteEmail('');
+      
+    } catch (error) {
+      console.error("Failed to generate invite code:", error);
+      alert("Failed to generate invite code. Please try again.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -81,10 +96,20 @@ const JudgesStep = ({ judges, setJudges, activityId }) => {
               onKeyPress={(e) => e.key === 'Enter' && handleGenerateInviteCode()}
             />
             <button 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm"
+              className={`${
+                isGenerating ? 'bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'
+              } text-white px-3 py-2 rounded text-sm inline-flex items-center transition-colors`}
               onClick={handleGenerateInviteCode}
+              disabled={isGenerating}
             >
-              Generate Code
+              {isGenerating ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                  Generating...
+                </>
+              ) : (
+                'Generate Code'
+              )}
             </button>
           </div>
           <p className="text-gray-400 text-xs mt-2">After generating the code, send it to the judge</p>

@@ -22,41 +22,22 @@ const saveActivityToContract = async (dataCID,topic,maxParticipants,timestamps) 
                 // 设置事件监听器
                 const eventFilter = contract.filters.ActivityCreated();
                 const listener = (eventPayload) => {
-                    console.log("检测到 ActivityCreated 事件，原始参数：", eventPayload);
+                    // 从事件中获取 activityId（第一个参数）
+                    const activityId = eventPayload.args[0];
+                    console.log("原始活动 ID:", activityId);
                     
-                    // 从 args 中获取事件参数
-                    const args = eventPayload.args;
-                    console.log("事件参数：", args);
-                    
-                    // activityId 是第一个参数
-                    const activityId = args[0];  // BigNumber
-                    // activity 结构是第二个参数
-                    const activity = args[1];    // Activity struct
-                    
-                    console.log("活动 ID:", activityId ? activityId.toString() : 'undefined');
-                    console.log("活动数据:", activity);
+                    // 将 BigInt 转换为数字
+                    const activityIdNumber = Number(activityId);
+                    console.log("转换后的活动 ID:", activityIdNumber);
 
-                    // 清除超时定时器
+                    // 清除超时定时器并移除监听器
                     if (timeoutId) {
                         clearTimeout(timeoutId);
                     }
-
-                    // 移除事件监听器
                     contract.off(eventFilter, listener);
 
-                    // 返回结果
-                    resolve({
-                        activityId: activityId ,
-                        activity: activity ? {
-                            dataCID: activity.dataCID || '',
-                            topic: activity.topic || '',
-                            creator: activity.creator || '',
-                            maxParticipants: activity.maxParticipants ? activity.maxParticipants.toString() : '0',
-                            cuParticipants: activity.cuParticipants ? activity.cuParticipants.toString() : '0'
-                        } : null,
-                        transactionHash: eventPayload.log.transactionHash,
-                        blockNumber: eventPayload.log.blockNumber
-                    });
+                    // 返回数字类型的 activityId
+                    resolve(activityIdNumber);
                 };
 
                 // 添加事件监听器
