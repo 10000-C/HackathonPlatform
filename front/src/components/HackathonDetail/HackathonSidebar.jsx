@@ -1,8 +1,25 @@
 import React from 'react';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import registerToHackathon from '../../utils/RegisterToHackathon';
 
 const HackathonSidebar = ({ hackathon }) => {
   // 确保 timeLeft 存在，如果不存在则提供默认值
   const timeLeft = hackathon.timeLeft || { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const [registering, setRegistering] = useState(false);
+  
+  const handleRegister = async() => {
+    try {
+        setRegistering(true);
+        const activityId = hackathon.id;
+        const response = await registerToHackathon(activityId);
+        console.log("Register response:",response);
+    } catch(error) {
+        console.error("Error registering to hackathon:",error);
+    } finally {
+        setRegistering(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -29,8 +46,19 @@ const HackathonSidebar = ({ hackathon }) => {
           </div>
         </div>
         
-        <button className="w-full bg-[#0092ff] text-white py-4 px-4 rounded-lg text-base font-medium">
-          Register to Hackathon
+        <button 
+          className="w-full bg-[#0092ff] text-white py-4 px-4 rounded-lg text-base font-medium inline-flex items-center justify-center transform transition-all duration-200 hover:scale-105 active:scale-95"
+          onClick={() => handleRegister()}
+          disabled={registering}
+        >
+          {registering ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Registering...
+            </>
+          ) : (
+            'Register to Hackathon'
+          )}
         </button>
       </div>
       

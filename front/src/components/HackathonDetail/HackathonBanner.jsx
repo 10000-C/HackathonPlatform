@@ -1,6 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import registerToHackathon from '../../utils/registerToHackathon';
 
 const HackathonBanner = ({ hackathon }) => {
+  const [registering, setRegistering] = useState(false);
+
+  const handleRegister = async() => {
+    try {
+      setRegistering(true);
+      const activityId = hackathon.id;
+      const response = await registerToHackathon(activityId);
+      console.log("Register response:",response);
+    } catch(error) {
+      console.error("Error registering to hackathon:",error);
+    } finally {
+      setRegistering(false);
+    }
+  }
   return (
     <div className="w-full bg-[#131a26] rounded-lg mb-6 overflow-hidden">
       <div className="relative">
@@ -25,8 +41,19 @@ const HackathonBanner = ({ hackathon }) => {
               </p>
             </div>
             <div className="flex space-x-3">
-              <button className="bg-[#0092ff] text-white py-2.5 px-5 rounded-lg text-sm font-medium">
-                Register Now
+              <button 
+                className="bg-[#0092ff] text-white py-2.5 px-5 rounded-lg text-sm font-medium inline-flex items-center transform transition-all duration-200 hover:scale-105 active:scale-95"
+                onClick={() => handleRegister()}
+                disabled={registering}
+              >
+                {registering ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  'Register Now'
+                )}
               </button>
               <button className="bg-transparent border border-[#2b3740] text-white py-2.5 px-5 rounded-lg text-sm font-medium">
                 Add to Calendar

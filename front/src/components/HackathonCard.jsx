@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import registerToHackthon from '../utils/RegisterToHackthon';
 // 根据日期确定活动状态的辅助函数
 const calculateStatus = (startDate, registrationEnd, endDate) => {
   const now = new Date();
@@ -95,15 +94,7 @@ const HackathonCard = ({ hackathon }) => {
     daysLeftDisplay = 'Ended';
   }
 
-  const handleRegister = async() => {
-    try{
-      const activityId = hackathon.id;
-      const response = await registerToHackthon(activityId);
-      console.log("Register response:",response);
-    }catch(error){
-      console.error("Error registering to hackathon:",error);
-    }
-  }
+  
 
   return (
     <div className="group">

@@ -1,7 +1,7 @@
 import {ethers} from 'ethers';
 import ActivitiesManagement from './contracts/ActivitiesManagement.json';
 
-const registerToHackthon = async (activityId) => {
+const registerToHackathon = async (activityId) => {
     const CONTRACT_ADDRESS = "0x1c2318b7415e369FeF9f66Af29E08DF51B5FFdDd";
 
     try{
@@ -22,4 +22,4 @@ const registerToHackthon = async (activityId) => {
         throw error;
     }
 }
-export default registerToHackthon;
+export default registerToHackathon;
