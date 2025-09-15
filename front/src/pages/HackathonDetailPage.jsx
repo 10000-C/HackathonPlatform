@@ -289,7 +289,7 @@ const HackathonDetailPage = () => {
 
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
-    navigate(`/hackathon/${id}/${newTab}`);
+    navigate(`/hackathons/${id}/${newTab}`);
   };
 
   // 渲染加载状态
