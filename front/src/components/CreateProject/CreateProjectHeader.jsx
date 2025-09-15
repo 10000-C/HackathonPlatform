@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import saveToIPFS from '../../utils/SaveToIPFS';
+import saveDemoToContract from '../../utils/SaveDemoToContract';
 export default function CreateProjectHeader({ currentStep, formData, activityId }) {
   // 计算完成百分比
   const getCompletionPercentage = () => {
@@ -61,12 +62,20 @@ export default function CreateProjectHeader({ currentStep, formData, activityId 
     if (!validateFormData()) {
       return;
     }
-    const imageCID = await saveToIPFS(formData.logo.file);
-    formData.logo = imageCID;
+    try{
+      const imageCID = await saveToIPFS(formData.logo.file);
+      formData.logo = imageCID;
 
-    const dataBlob = new Blob([JSON.stringify(formData)], { type: 'application/json' });
-    const dataCID = await saveToIPFS(dataBlob);
+      const dataBlob = new Blob([JSON.stringify(formData)], { type: 'application/json' });
+      const dataCID = await saveToIPFS(dataBlob);
 
+      const corhotID = formData.sectors.id;
+      await saveDemoToContract(dataCID,corhotID,activityId);
+      console.log("Project created successfully");
+    }catch(error){
+      console.error("Error creating project:", error);
+      return;
+    }
     
   };
 
