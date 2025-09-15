@@ -2,14 +2,44 @@ import { useState, useRef, useEffect } from 'react';
 import { Upload, Plus, X, Users, Link, Image } from 'lucide-react';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import MDEditor from '@uiw/react-md-editor';
+import callSearchService from '../../utils/CallSearchService';
 
-export default function CreateProjectOverview({ formData, updateFormData }) {
+export default function CreateProjectOverview({ formData, updateFormData, activityId }) {
   const fileInputRef = useRef(null);
   const logoInputRef = useRef(null);
   
   const handleInputChange = (field, value) => {
     updateFormData({ [field]: value });
   };
+
+  // 获取所有可用的sector选项
+  const fetchSectors = async () => {
+    try {
+      const activities = await callSearchService(activityId, "activityId");
+      const activity = activities.activities[0];
+      const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${activity.activity_dataCID}`;
+      const request = await fetch(url);
+      const response = await request.json();
+      const hackathonData = response;
+      
+      // 从 prizeCorhots 中提取 name 作为 sectors
+      const sectors = hackathonData.prizeCorhots.map((cohort, index) => ({
+        id: cohort.id.toString(),
+        name: cohort.name
+      }));
+      
+      updateFormData({ availableSectors: sectors });
+    } catch (error) {
+      console.error('Error fetching sectors:', error);
+      // 发生错误时设置为空数组
+      updateFormData({ availableSectors: [] });
+    }
+  };
+
+  // 组件加载时获取sector数据
+  useEffect(() => {
+    fetchSectors();
+  }, []);
 
   // 确保formData中总是有socialLinks
   useEffect(() => {
@@ -155,33 +185,24 @@ export default function CreateProjectOverview({ formData, updateFormData }) {
     
         {/* 行业分类 */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-white mb-2">Sector</label>
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-3">
-              {['SocialFi', 'DeFi', 'NFT', 'Infra', 'Gaming'].map((sector) => (
-                <button
-                  key={sector}
-                  type="button"
-                  className="flex items-center space-x-1 px-4 py-2 border border-solid border-[#738B9F] text-white rounded-lg hover:border-[#0092ff] transition-colors"
-                >
-                  <Plus className="w-3 h-3" />
-                  <span>{sector}</span>
-                </button>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {['DAO', 'RWA', 'AI', 'Other'].map((sector) => (
-                <button
-                  key={sector}
-                  type="button"
-                  className="flex items-center space-x-1 px-4 py-2 border border-solid border-[#738B9F] text-white rounded-lg hover:border-[#0092ff] transition-colors"
-                >
-                  <Plus className="w-3 h-3" />
-                  <span>{sector}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <label htmlFor="sector" className="block text-sm font-medium text-white mb-2">Sector</label>
+          <select
+            id="sector"
+            name="sectors"
+            value={formData.sectors || ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              handleInputChange('sectors', value ? [value] : []);
+            }}
+            className="w-full bg-[#0F1011] text-white px-4 py-3 rounded-lg border border-solid border-[#242425] focus:outline-none focus:border-[#0092ff]"
+          >
+            <option value="">Select sector</option>
+            {formData.availableSectors?.map((sector) => (
+              <option key={sector.id} value={sector.id}>
+                {sector.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* 黑客松进展 */}
