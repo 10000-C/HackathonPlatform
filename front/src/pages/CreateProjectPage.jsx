@@ -19,10 +19,7 @@ export default function CreateProjectPage() {
     fundraisingStatus: '',
     githubLink: '',
     techStack: [],
-    sectors: {
-      id: '',
-      name: ''
-    },
+    sectors: [],
     hackathonDescription: '',
     participationRequirements: '',
     videoLink: '',

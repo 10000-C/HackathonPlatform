@@ -13,30 +13,30 @@ export default function CreateProjectHeader({ currentStep, formData, activityId 
   // 验证表单数据
   const validateFormData = () => {
     const requiredFields = {
-      name: '项目名称',
-      logo: '项目 Logo',
-      shortDescription: '项目简介',
-      fullDescription: '完整描述',
-      progressDescription: '黑客松进展',
-      fundraisingStatus: '融资状态',
-      sectors: '行业分类'
+      name: 'Project Name',
+      logo: 'Project Logo',
+      shortDescription: 'Project Introduction',
+      fullDescription: 'Full Description',
+      progressDescription: 'Hackathon Progress',
+      fundraisingStatus: 'Fundraising Status',
+      sectors: 'Sector'
     };
 
     const missingFields = [];
 
     Object.entries(requiredFields).forEach(([field, label]) => {
       if (field === 'sectors') {
-        // 检查数组是否为空
+        // Check if array is empty
         if (!formData[field] || formData[field].length === 0) {
           missingFields.push(label);
         }
       } else if (field === 'logo') {
-        // 检查 logo 对象是否存在且有 file 属性
+        // Check if logo object exists and has file property
         if (!formData[field] || !formData[field].file) {
           missingFields.push(label);
         }
       } else {
-        // 检查其他字段是否为空
+        // Check if other fields are empty
         if (!formData[field] || formData[field].trim() === '') {
           missingFields.push(label);
         }
@@ -44,7 +44,7 @@ export default function CreateProjectHeader({ currentStep, formData, activityId 
     });
 
     if (missingFields.length > 0) {
-      const errorMessage = `请填写以下必填项：\n${missingFields.join('\n')}`;
+      const errorMessage = `Please fill in the following required fields:\n${missingFields.join('\n')}`;
       alert(errorMessage);
       return false;
     }
@@ -69,7 +69,7 @@ export default function CreateProjectHeader({ currentStep, formData, activityId 
       const dataBlob = new Blob([JSON.stringify(formData)], { type: 'application/json' });
       const dataCID = await saveToIPFS(dataBlob);
 
-      const corhotID = formData.sectors.id;
+      const corhotID = formData.sectors[0]; // sectors 是一个数组，我们取第一个选择的sector
       await saveDemoToContract(dataCID,corhotID,activityId);
       console.log("Project created successfully");
     }catch(error){
@@ -87,7 +87,7 @@ export default function CreateProjectHeader({ currentStep, formData, activityId 
         className="text-white hover:text-white flex items-center"
       >
         <X className="w-5 h-5 mr-2" />
-        <span>Save project draft & quit</span>
+        <span>quit</span>
       </button>
 
       {/* 中间：创建新项目标题 */}

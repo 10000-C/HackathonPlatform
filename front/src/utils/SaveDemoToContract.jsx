@@ -1,7 +1,7 @@
 import {ethers} from 'ethers';
 import DemosMangement from './contracts/DemosManagement.json';
 
-const saveDemoToContract = async (dataCID,activityId) => {
+const saveDemoToContract = async (dataCID,cohortId,activityId) => {
     const CONTRACT_ADDRESS = "0x951e6a4C59f5a866876094Bba4dE8d32ACF1E454";
 
     try{
@@ -16,8 +16,9 @@ const saveDemoToContract = async (dataCID,activityId) => {
 
         console.log("try to call function on contract");
         const response = await contract.submitDemo(
-            dataCID,
-            activityId
+            activityId,
+            cohortId,
+            dataCID
         );
         await response.wait();
         console.log("response:",response);
