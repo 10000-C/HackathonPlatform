@@ -1,36 +1,29 @@
-import CreateHackathonHeader from '../components/CreateHackathon/CreateHackathonHeader';
-import CreateHackathonOverview from '../components/CreateHackathon/CreateHackathonOverview';
-import CreateHackathonSidebar from '../components/CreateHackathon/CreateHackathonSidebar';
-import PrizesStep from '../components/CreateHackathon/PrizesStep';
-import JudgesStep from '../components/CreateHackathon/JudgeStep';
-import ScheduleStep from '../components/CreateHackathon/ScheduleStep';
+import CreateProjectHeader from '../components/CreateProject/CreateProjectHeader';
+import CreateProjectOverview from '../components/CreateProject/CreateProjectOverview';
+import CreateProjectSidebar from '../components/CreateProject/CreateProjectSidebar';
+import TechStackStep from '../components/CreateProject/TechStackStep';
+// import HackathonStep from '../components/CreateProject/HackathonStep';
 import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
-export default function CreateHackathonPage() {
+export default function CreateProjectPage() {
+  const { activityId } = useParams();
   const [currentStep, setCurrentStep] = useState('overview');
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
+    logo: null,
     shortDescription: '',
     fullDescription: '',
-    registrationStart: '',
-    registrationEnd: '',
-    hackathonStart: '',
-    hackathonEnd: '',
-    votingStart: '',
-    votingEnd: '',
-    techStack: '',
-    experienceLevel: '',
-    location: '',
-    socialLinks: [{ domain: '.com', url: '' }],
-    prizeCorhots: [],
-    judges: [],
-    schedule: [],
-    showPrizeDetails: false
+    progressDescription: '',
+    fundraisingStatus: '',
+    githubLink: '',
+    techStack: [],
+    sectors: [],
+    hackathonDescription: '',
+    participationRequirements: '',
+    videoLink: '',
   });
-
-  const [judges, setJudges] = useState([]);
-  const [isPublished, setIsPublished] = useState(false);
 
   const progressRef = useRef(0);
 
@@ -38,20 +31,8 @@ export default function CreateHackathonPage() {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
-  // 验证是否可以访问评委页面
-  const canAccessJudges = () => {
-    if (!isPublished) {
-      alert('Please publish hackathon in Schedule step before proceeding to Judges.');
-      return false;
-    }
-    return true;
-  };
-
   // 处理步骤变更
   const handleStepChange = (newStep) => {
-    if (newStep === 'judges' && !canAccessJudges()) {
-      return;
-    }
     setCurrentStep(newStep);
   };
 
@@ -60,27 +41,24 @@ export default function CreateHackathonPage() {
       formData,
       updateFormData,
       setCurrentStep: handleStepChange,
-      isPublished,
-      setIsPublished,
-      currentStep
+      currentStep,
+      activityId
     };
 
     switch (currentStep) {
       case 'overview':
-        return <CreateHackathonOverview {...commonProps} />;
-      case 'prizes':
-        return <PrizesStep {...commonProps} />;
-      case 'judges':
-        return <JudgesStep {...commonProps} judges={judges} setJudges={setJudges} />;
-      case 'schedule':
-        return <ScheduleStep {...commonProps} />;
+        return <CreateProjectOverview {...commonProps} />;
+      case 'techstack':
+        return <TechStackStep {...commonProps} />;
+      // case 'hackathon':
+      //   return <HackathonStep {...commonProps} />;
       default:
-        return <CreateHackathonOverview {...commonProps} />;
+        return <CreateProjectOverview {...commonProps} />;
     }
   };
 
   const getStepProgress = () => {
-    const steps = ['overview', 'prizes', 'schedule', 'judges'];
+    const steps = ['overview', 'techstack'];
     return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
   };
 
@@ -115,18 +93,15 @@ export default function CreateHackathonPage() {
     <div className="flex h-screen bg-[#1b1b1e]">
       <div className="flex flex-col flex-1">
         {/* 顶部全宽导航栏 */}
-        <CreateHackathonHeader 
+        <CreateProjectHeader 
           currentStep={currentStep}
-          isPublished={isPublished}
-          setIsPublished={setIsPublished}
           formData={formData}
         />
         <div className="flex flex-1 overflow-hidden">
           {/* 左侧步骤导航栏 */}
-          <CreateHackathonSidebar 
+          <CreateProjectSidebar 
             currentStep={currentStep} 
             setCurrentStep={handleStepChange}
-            isPublished={isPublished}
           />
           <div className="flex-1 flex flex-col">
             {/* 顶部进度条 */}
@@ -136,7 +111,7 @@ export default function CreateHackathonPage() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <div className="flex-1 overflow-y-auto hide-scrollbar">
+            <div className="flex-1 overflow-y-auto hide-scrollbar mx-30">
               {renderCurrentStep()}
             </div>
           </div>

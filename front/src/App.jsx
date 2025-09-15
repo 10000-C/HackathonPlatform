@@ -8,6 +8,7 @@ import HackathonLayout from './components/HackathonLayout'
 import Test from './pages/test'
 import JudgeDashboard from './pages/JudgeDashboard';
 import HackathonDetailPage from './pages/HackathonDetailPage';
+import CreateProjectPage from './pages/CreateProjectPage';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/judge-dashboard" element={<JudgeDashboard />} />
           {/* 创建活动页面 - 独立布局 */}
           <Route path="/create-event" element={<CreateHackathonForm />} />
+          <Route path="/create-project/:activityId" element={<CreateProjectPage />} />
           {/* 认证后的路由 */}
           <Route element={<HackathonLayout />}>
             <Route path="/hackathons" element={<HackathonsPage />} />
