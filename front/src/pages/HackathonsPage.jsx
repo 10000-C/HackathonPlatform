@@ -249,7 +249,7 @@ export default function HackathonsPage() {
   };
 
   const handleViewDetails = (hackathonId) => {
-    navigate(`/hackathon/${hackathonId}`);
+    navigate(`/hackathons/${hackathonId}`);
   };
 
   return (
