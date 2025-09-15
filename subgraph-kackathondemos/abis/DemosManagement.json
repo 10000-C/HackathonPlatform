@@ -1,0 +1,98 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_activitiesManagementAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_authorityManagementAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "activityId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          { "internalType": "uint256", "name": "demoId", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "activityId",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "cohortId", "type": "uint256" },
+          { "internalType": "string", "name": "dataCID", "type": "string" },
+          { "internalType": "address", "name": "submitter", "type": "address" }
+        ],
+        "indexed": false,
+        "internalType": "struct IDemosManagement.Demo",
+        "name": "demo",
+        "type": "tuple"
+      }
+    ],
+    "name": "DemoSubmitted",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "demos",
+    "outputs": [
+      { "internalType": "uint256", "name": "demoId", "type": "uint256" },
+      { "internalType": "uint256", "name": "activityId", "type": "uint256" },
+      { "internalType": "uint256", "name": "cohortId", "type": "uint256" },
+      { "internalType": "string", "name": "dataCID", "type": "string" },
+      { "internalType": "address", "name": "submitter", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_demoId", "type": "uint256" }
+    ],
+    "name": "getDemoCohortId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_activityId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_cohortId", "type": "uint256" },
+      { "internalType": "string", "name": "_dataCID", "type": "string" }
+    ],
+    "name": "submitDemo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_activitiesManagementAddress",
+        "type": "address"
+      }
+    ],
+    "name": "updateDependencies",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "DemosManagement": {
+      "address": "0x951e6a4C59f5a866876094Bba4dE8d32ACF1E454",
+      "startBlock": 9207066
+    }
+  }
+}
