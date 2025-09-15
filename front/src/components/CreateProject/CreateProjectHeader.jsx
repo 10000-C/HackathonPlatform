@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
-
-export default function CreateProjectHeader({ currentStep, formData }) {
+import saveToIPFS from '../../utils/SaveToIPFS';
+export default function CreateProjectHeader({ currentStep, formData, activityId }) {
   // 计算完成百分比
   const getCompletionPercentage = () => {
     const steps = ['overview', 'techstack'];
@@ -9,17 +9,65 @@ export default function CreateProjectHeader({ currentStep, formData }) {
     return Math.floor(((currentStepIndex + 1) / steps.length) * 100);
   };
 
+  // 验证表单数据
+  const validateFormData = () => {
+    const requiredFields = {
+      name: '项目名称',
+      logo: '项目 Logo',
+      shortDescription: '项目简介',
+      fullDescription: '完整描述',
+      progressDescription: '黑客松进展',
+      fundraisingStatus: '融资状态',
+      sectors: '行业分类'
+    };
+
+    const missingFields = [];
+
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (field === 'sectors') {
+        // 检查数组是否为空
+        if (!formData[field] || formData[field].length === 0) {
+          missingFields.push(label);
+        }
+      } else if (field === 'logo') {
+        // 检查 logo 对象是否存在且有 file 属性
+        if (!formData[field] || !formData[field].file) {
+          missingFields.push(label);
+        }
+      } else {
+        // 检查其他字段是否为空
+        if (!formData[field] || formData[field].trim() === '') {
+          missingFields.push(label);
+        }
+      }
+    });
+
+    if (missingFields.length > 0) {
+      const errorMessage = `请填写以下必填项：\n${missingFields.join('\n')}`;
+      alert(errorMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   // 保存草稿并退出
   const handleSaveDraftAndQuit = () => {
-    // 这里可以实现保存草稿的逻辑
-    // 暂时只做导航
     window.location.href = '/hackathons';
   };
 
   // 创建项目
-  const handleCreateProject = () => {
-    // 实现创建项目逻辑
-    alert('Project creation functionality will be implemented soon!');
+  const handleCreateProject = async() => {
+    if (!validateFormData()) {
+      return;
+    }
+    const imageCID = await saveToIPFS(formData.logo.file);
+    formData.logo = imageCID;
+
+    const dataBlob = new Blob([JSON.stringify(formData)], { type: 'application/json' });
+    const dataCID = await saveToIPFS(dataBlob);
+
+    
   };
 
   return (
@@ -42,12 +90,9 @@ export default function CreateProjectHeader({ currentStep, formData }) {
 
       {/* 右侧：完成百分比和创建项目按钮 */}
       <div className="flex items-center gap-4">
-        <span className="text-[#F44E4E] text-sm font-medium">
-          {getCompletionPercentage()}% completed
-        </span>
         <button 
           onClick={handleCreateProject}
-          className="bg-[#0092ff40] text-white px-4 py-2 rounded-lg"
+          className="bg-[#0092ff] hover:bg-[#0092ff]/90 text-white px-4 py-2 rounded-lg"
         >
           Create Project
         </button>
