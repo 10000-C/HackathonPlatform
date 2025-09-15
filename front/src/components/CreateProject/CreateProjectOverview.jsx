@@ -152,29 +152,7 @@ export default function CreateProjectOverview({ formData, updateFormData }) {
           />
         </div>
 
-        {/* 视频上传 */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-white mb-2">Pitch Video (optional)</label>
-          <div className="bg-[#0F1011] border border-solid border-[#242425] rounded-lg p-8 h-[300px] flex flex-col items-center justify-center">
-            <div className="flex flex-row space-x-4">
-              <button 
-                type="button"
-                className="flex items-center space-x-2 px-6 py-3 bg-[#0092ff] bg-opacity-40 text-white rounded-lg hover:bg-opacity-50 transition-colors"
-              >
-                <Upload className="w-4 h-4" />
-                <span>Upload Video</span>
-              </button>
-              <button 
-                type="button"
-                className="flex items-center space-x-2 px-6 py-3 bg-[#0092ff] bg-opacity-40 text-white rounded-lg hover:bg-opacity-50 transition-colors"
-              >
-                <Link className="w-4 h-4" />
-                <span>Add Video Link</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
+    
         {/* 行业分类 */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-white mb-2">Sector</label>

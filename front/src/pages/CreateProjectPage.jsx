@@ -4,8 +4,10 @@ import CreateProjectSidebar from '../components/CreateProject/CreateProjectSideb
 import TechStackStep from '../components/CreateProject/TechStackStep';
 // import HackathonStep from '../components/CreateProject/HackathonStep';
 import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
 export default function CreateProjectPage() {
+  const { activityId } = useParams();
   const [currentStep, setCurrentStep] = useState('overview');
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
@@ -17,19 +19,10 @@ export default function CreateProjectPage() {
     fundraisingStatus: '',
     githubLink: '',
     techStack: [],
-    techStackDescription: '',
     sectors: [],
-    startDate: '',
-    endDate: '',
-    rewards: [],
     hackathonDescription: '',
     participationRequirements: '',
-    video: {
-      type: '', // 'upload' 或 'link'
-      file: null,
-      url: ''
-    },
-    socialLinks: [{ domain: '.com', url: '' }]
+    videoLink: '',
   });
 
   const progressRef = useRef(0);
@@ -48,7 +41,8 @@ export default function CreateProjectPage() {
       formData,
       updateFormData,
       setCurrentStep: handleStepChange,
-      currentStep
+      currentStep,
+      activityId
     };
 
     switch (currentStep) {

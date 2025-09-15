@@ -22,7 +22,7 @@ function App() {
           <Route path="/judge-dashboard" element={<JudgeDashboard />} />
           {/* 创建活动页面 - 独立布局 */}
           <Route path="/create-event" element={<CreateHackathonForm />} />
-          <Route path="/create-project" element={<CreateProjectPage />} />
+          <Route path="/create-project/:activityId" element={<CreateProjectPage />} />
           {/* 认证后的路由 */}
           <Route element={<HackathonLayout />}>
             <Route path="/hackathons" element={<HackathonsPage />} />
