@@ -7,7 +7,6 @@ interface IDemosManagement {
         uint256 activityId;
         uint256 cohortId;
         string dataCID;
-        string vedioCID;
         address submitter;
     }
     

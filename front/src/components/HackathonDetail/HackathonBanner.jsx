@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import registerToHackathon from '../../utils/registerToHackathon';
+import registerToHackathon from '../../utils/RegisterToHackathon';
 
 const HackathonBanner = ({ hackathon }) => {
   const [registering, setRegistering] = useState(false);

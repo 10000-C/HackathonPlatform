@@ -96,6 +96,7 @@ export default function CreateProjectPage() {
         <CreateProjectHeader 
           currentStep={currentStep}
           formData={formData}
+          activityId={activityId}
         />
         <div className="flex flex-1 overflow-hidden">
           {/* 左侧步骤导航栏 */}
