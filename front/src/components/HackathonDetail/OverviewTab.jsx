@@ -21,7 +21,7 @@ const OverviewTab = ({ hackathon }) => {
       {/* Content grid with sidebar */}
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main content */}
-        <div className="lg:flex-grow">
+        <div className="flex-1 max-w-4xl">
           <div >
             {/* Main content area with proper styling */}
             <section className="mb-10">
@@ -127,7 +127,7 @@ const OverviewTab = ({ hackathon }) => {
         </div>
 
         {/* Sidebar */}
-        <div className="flex-shrink-0">
+        <div className="lg:w-80 flex-shrink-0">
           <div className="sticky top-0">
             <HackathonSidebar hackathon={hackathon} />
           </div>
