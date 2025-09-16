@@ -17,6 +17,7 @@ contract JudgementManagement is IJudgementManagement {
     
     mapping(uint256 => mapping(bytes32 => bool)) private isInvitationCodeValid; // activityId => invitationCode => exists
     mapping(uint256 => mapping(address => bool)) public isJudge; // activityId => judge => isJudge
+    mapping(uint256 => mapping(string => bytes32)) public judgeInvitations; // activityId => judgeId => invitationCode
 
     function random(uint256 number) public view returns(uint256) {
         return uint(keccak256(abi.encodePacked(block.timestamp,block.prevrandao,  
@@ -24,12 +25,12 @@ contract JudgementManagement is IJudgementManagement {
     }
 
     function createJudgeInvitation(uint256 _activityId, string memory _judgeName) public onlyOrganizer(_activityId) 
-    returns(bytes32 invitationCode)
     {
+        require(judgeInvitations[_activityId][_judgeName] == bytes32(0), "Invitation already created for this judge");
         uint256 randomNumber = random(_activityId * 1000);
-        invitationCode = keccak256(abi.encodePacked(randomNumber, _judgeName, msg.sender));
+        bytes32 invitationCode = keccak256(abi.encodePacked(randomNumber, _judgeName, msg.sender));
         isInvitationCodeValid[_activityId][invitationCode] = true;
-        return invitationCode;
+        judgeInvitations[_activityId][_judgeName] = invitationCode;
     }
 
     function registerAsJudge(uint256 _activityId, bytes32 _invitationCode) public returns(bool) {
@@ -43,6 +44,10 @@ contract JudgementManagement is IJudgementManagement {
     function isJudgeInActivity(uint256 _activityId, address _judge) public view returns(bool) {
         return isJudge[_activityId][_judge];
     } 
+
+    function getJudgeInvitationCode(uint256 _activityId, string memory _judgeName) public view returns(bytes32) {
+        return judgeInvitations[_activityId][_judgeName];
+    }
 
     // 添加更新 ActivitiesManagement 地址的方法
     function updateDependencies(address _newActivitiesManagementAddress) public onlyOwner(){

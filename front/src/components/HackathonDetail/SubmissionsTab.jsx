@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import HackathonSidebar from './HackathonSidebar';
 
 const SubmissionsTab = ({ hackathon }) => {
   // 从hackathon对象获取提交数据，如果不存在则使用空数组
+  const navigate = useNavigate();
   const submissions = hackathon.submissions || [
     {
       id: 1,
@@ -75,7 +77,8 @@ const SubmissionsTab = ({ hackathon }) => {
                   </ul>
                   
                   <div className="flex justify-center mt-8">
-                    <button className="bg-[#0092ff] text-white font-medium py-3 px-6 rounded-lg">
+                    <button className="bg-[#0092ff] text-white font-medium py-3 px-6 rounded-lg"
+                    onClick={() => navigate("/create-project/" + hackathon.id)}>
                       Submit Your Project
                     </button>
                   </div>

@@ -77,27 +77,19 @@ const TechStackStep = ({ formData, updateFormData }) => {
             />
           </div>
         </div>
+        
 
         {/* 视频上传 */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-white mb-2">Demo Video</label>
-          <div className="bg-[#0F1011] border border-solid border-[#242425] rounded-lg p-8 h-[300px] flex flex-col items-center justify-center">
-            <div className="flex flex-row space-x-4">
-              <button 
-                type="button"
-                className="flex items-center space-x-2 px-6 py-3 bg-[#0092ff] bg-opacity-40 text-white rounded-lg hover:bg-opacity-50 transition-colors"
-              >
-                <Upload className="w-4 h-4" />
-                <span>Upload Video</span>
-              </button>
-              <button 
-                type="button"
-                className="flex items-center space-x-2 px-6 py-3 bg-[#0092ff] bg-opacity-40 text-white rounded-lg hover:bg-opacity-50 transition-colors"
-              >
-                <Link className="w-4 h-4" />
-                <span>Add Video Link</span>
-              </button>
-            </div>
+          <h2 className="text-base font-normal text-white mb-2">Vedio Link</h2>
+          <div className="flex items-center w-full px-4 py-3 bg-[#0F1011] text-white rounded-lg border border-solid border-[#242425] focus-within:border-[#0092ff]">
+            <span className="text-gray-400 mr-1">https://</span>
+            <input
+              type="text"
+              className="bg-transparent border-none outline-none flex-1"
+              value={formData.videoLink || ''}
+              onChange={(e) => updateFormData({ videoLink: e.target.value })}
+            />
           </div>
         </div>
 
