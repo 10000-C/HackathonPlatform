@@ -24,7 +24,7 @@ const HackathonSidebar = ({ hackathon }) => {
   return (
     <div className="space-y-6">
       {/* Registration countdown */}
-      <div className="border-2 border-solid border-[#242425] rounded-lg p-6">
+      <div className="border border-solid border-[#2b3640] rounded-lg p-6">
         <h3 className="text-base font-medium text-white mb-4">Left to register</h3>
         
         <div className="grid grid-cols-4 gap-2 mb-6">
@@ -64,7 +64,7 @@ const HackathonSidebar = ({ hackathon }) => {
       
       
       {/* Hackathon Info */}
-      <div className="border-2 border-solid border-[#242425] rounded-lg p-6">
+      <div className="border border-solid border-[#2b3640] rounded-lg p-6">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-[#949fa8]/60 text-sm">Registration</span>
@@ -108,7 +108,7 @@ const HackathonSidebar = ({ hackathon }) => {
       </div>
       
       {/* Project Quests */}
-      <div className="border-2 border-solid border-[#242425] rounded-lg p-6">
+      <div className="border border-solid border-[#2b3640] rounded-lg p-6">
         <h3 className="text-base font-medium text-white mb-4">Project Quests</h3>
         
         <div className="border-b border-[#0092ff1a] mb-4"></div>

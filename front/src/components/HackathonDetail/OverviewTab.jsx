@@ -37,7 +37,7 @@ const OverviewTab = ({ hackathon }) => {
 
             {/* Available in Prizes section */}
             <section className="mb-10">
-              <div className="border-2 border-solid border-[#242425] rounded-lg p-6">
+              <div className="border border-solid border-[#2b3640] rounded-lg p-6">
                 <div className="flex flex-col">
                   <div className="flex flex-row items-center justify-between">
                     <span className="text-white/60 text-sm">Available in Prizes</span>
