@@ -189,7 +189,7 @@ const HackathonDetailPage = () => {
   // 渲染加载状态
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#121820]">
+      <div className="flex justify-center items-center min-h-screen bg-[#1b1b1e]">
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
@@ -198,7 +198,7 @@ const HackathonDetailPage = () => {
   // 渲染错误状态
   if (error || !hackathon) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#121820]">
+      <div className="flex justify-center items-center min-h-screen bg-[#1b1b1e]">
         <div className="text-white text-xl">{error || "Details of the hackathon cannot be obtained"}</div>
       </div>
     );
