@@ -1,6 +1,6 @@
 import { gql, request } from 'graphql-request'
 
-const callSearchService = async (searchTerm, target) => {
+const getActivities = async (searchTerm, target) => {
     let queryString = "";
     if(target === "topic" || target === "activityId"){
       queryString = `, where: {${target}: "${searchTerm}"}`;
@@ -33,4 +33,4 @@ const callSearchService = async (searchTerm, target) => {
     }
 }
 
-export default callSearchService
+export default getActivities
