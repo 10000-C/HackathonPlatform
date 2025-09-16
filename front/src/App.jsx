@@ -32,7 +32,7 @@ function App() {
             <Route path="/resources" element={<div>Resources Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} />
             <Route path="/hackathons/:id/:tab?" element={<HackathonDetailPage />} />
-            <Route path="/projects/:id/:tab?" element={<ProjectDetailPage />} />
+            <Route path="/hackathons/:activityId/projects/:projectId/:tab?" element={<ProjectDetailPage />} />
           </Route>
         </Routes>
       </Router>

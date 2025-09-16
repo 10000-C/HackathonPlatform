@@ -2,39 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ProjectDetailLayout from '../components/ProjectDetail/ProjectDetailLayout';
 import OverviewTab from '../components/ProjectDetail/OverviewTab';
+import getDemos from '../utils/GetDemos';
 
 // 模拟从API获取项目详情
-const fetchProjectById = async (projectId) => {
-  try {
-    // 这里应该是实际的API调用
-    // 暂时使用模拟数据
-    const mockProject = {
-      id: projectId,
-      name: 'Init Club Pro',
-      logo: null,
-      shortDescription: 'An innovative blockchain-based sports engagement platform',
-      fullDescription: 'Dunk Verse is an innovative blockchain-based sports engagement platform designed to revolutionize the fan experience. Leveraging Mantle\'s Layer 2 infrastructure, the platform combines GameFi, SocialFi, and NFT to offer unique features like AI-generated quizzes, live NFT auctions tied to Top Shots NBA sports events, and leaderboard competitions. Fans can upload videos that are automatically minted into NFTs, participate in AI quizzes',
-      progressDescription: 'During hackathon, we accomplished following: - Frontend Development: Built a user-friendly interface for NFT auctions, AI quizzes, and Social Interaction. - Smart Contracts: Deployed key smart contracts for the token and Betting Pool on the Mantle Testnet. - AI Quiz Integration: Implemented AIGC DALL-E3 GPT models that generate dynamic quizzes based on live sports events. Developed a functional NFT auction system that allows users to bid using our tokens. - Testing and Deployment: Conducted rigorous testing to ensure seamless operations and deployed the project with all features integrated.',
-      fundraisingStatus: 'Not raised any funds, but actively looking to raise.',
-      githubLink: 'https://github.com/example/project',
-      techStack: ['React', 'Blockchain', 'AI', 'NFT', 'DeFi', 'Test'],
-      sectors: ['SocialFi', 'Infra', 'GameFi', 'NFT', 'AI', 'DeFi','Test'],
-      hackathonDescription: 'This project was developed during the ChainSpark Hackathon 2024, focusing on innovative blockchain solutions.',
-      participationRequirements: 'Team members should have experience with blockchain development and web3 technologies.',
-      videoLink: 'https://example.com/demo-video',
-      teamLeader: 'Test User',
-      hackathonName: 'Test Hackathon'
-    };
 
-    return mockProject;
-  } catch (error) {
-    console.error("Error fetching project details:", error);
-    return null;
-  }
-};
 
 const ProjectDetailPage = () => {
-  const { id, tab = 'overview' } = useParams();
+  const { activityId, projectId, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(tab);
   const [project, setProject] = useState(null);
@@ -46,14 +20,32 @@ const ProjectDetailPage = () => {
     const getProjectData = async () => {
       setLoading(true);
       try {
-        const data = await fetchProjectById(id);
+        console.log("Fetching project data for activityId:", activityId, "projectId:", projectId);
+        const demos = await getDemos(activityId, projectId, "Both");
+        const dataCID = demos.demos[0].demo_dataCID;
+        const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${dataCID}`
+        const request = await fetch(url);
+        const data = await request.json();
+        console.log("pinata response data", data);
+        
+        // 处理项目数据
         if (data) {
-          setProject(data);
+          // 处理 logo
+          const processedData = {
+            ...data,
+            // 如果有 logo 且是 IPFS CID，转换为完整的 IPFS URL
+            logo: data.logo ? 
+              data.logo.startsWith('http') ? 
+                data.logo : 
+                `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${data.logo}` :
+              null
+          };
+          setProject(processedData);
         } else {
-          setError("无法获取项目详情");
+          setError("Project details not found");
         }
       } catch (err) {
-        setError("获取项目详情时发生错误");
+        setError("Error fetching project details");
         console.error(err);
       } finally {
         setLoading(false);
@@ -61,7 +53,7 @@ const ProjectDetailPage = () => {
     };
 
     getProjectData();
-  }, [id]);
+  }, [activityId, projectId]);
 
   // Handle tab change
   useEffect(() => {
@@ -70,7 +62,7 @@ const ProjectDetailPage = () => {
 
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
-    navigate(`/projects/${id}/${newTab}`);
+    navigate(`/hackathons/${activityId}/projects/${projectId}/${newTab}`);
   };
 
   // 渲染加载状态
@@ -90,6 +82,8 @@ const ProjectDetailPage = () => {
       </div>
     );
   }
+
+
 
   return (
     <ProjectDetailLayout 

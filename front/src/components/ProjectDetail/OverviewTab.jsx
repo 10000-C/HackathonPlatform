@@ -53,44 +53,19 @@ const OverviewTab = ({ project }) => {
           {/* Project description */}
           <p className="text-lg text-white mb-16 leading-8 max-w-[805px]">{fullDescription}</p>
 
-          {/* Tech Stack and Sectors */}
-          {/* <div className="mb-8">
-            <h3 className="text-white/60 text-sm mb-4">Sector</h3>
-            <div className="flex flex-wrap gap-2">
-              {sectors.length > 0 ? (
-                sectors.map((sector, index) => (
-                  <div key={index} className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">
-                    {sector}
-                  </div>
-                ))
-              ) : (
-                techStack.map((tech, index) => (
-                  <div key={index} className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">
-                    {tech}
-                  </div>
-                ))
-              )} */}
-              {/* Default tags if no sectors or tech stack */}
-              {/* {sectors.length === 0 && techStack.length === 0 && (
-                <>
-                  <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">SocialFi</div>
-                  <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">Infra</div>
-                  <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">GameFi</div>
-                  <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">NFT</div>
-                  <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">AI</div>
-                  <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">DeFi</div>
-                </>
-              )}
-            </div>
-          </div> */}
+
 
           {/* Video buttons */}
           <div className="flex gap-4 mb-4 mt-16">
             {videoLink ? (
               <a 
-                href={videoLink} 
+                href={videoLink.startsWith('http') ? videoLink : `https://${videoLink}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open(videoLink.startsWith('http') ? videoLink : `https://${videoLink}`, '_blank');
+                }}
                 className="bg-[#0092FF] px-4 py-2 rounded-lg text-white font-semibold text-base hover:bg-[#0082e6] transition-colors inline-flex items-center gap-2"
               >
                 Demo Video
@@ -171,12 +146,16 @@ const OverviewTab = ({ project }) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <a
-                    href={githubLink}
+                    href={githubLink.startsWith('http') ? githubLink : `https://${githubLink}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.open(githubLink.startsWith('http') ? githubLink : `https://${githubLink}`, '_blank');
+                    }}
                     className="text-[#0092FF] text-sm font-medium hover:underline"
                   >
-                    github.com
+                    {githubLink.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                   </a>
                   <svg width="14" height="14" viewBox="0 0 14 14" className="text-[#0092FF]">
                     <path d="M2.91699 7H11.0837" stroke="currentColor" strokeWidth="1.5" />
@@ -187,20 +166,21 @@ const OverviewTab = ({ project }) => {
             )}
 
             <div className="text-white/60 text-sm mb-4">Sector</div>
+            {sectors.length > 1 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                <div className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">
+                  {sectors[1]}
+                </div>
+              </div>
+            )}
+
+            <div className="text-white/60 text-sm mb-4">Tech Stack</div>
             <div className="flex flex-wrap gap-2">
-              {sectors.length > 0 ? (
-                sectors.map((sector, index) => (
-                  <div key={index} className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">
-                    {sector}
-                  </div>
-                ))
-              ) : (
-                techStack.slice(0, 6).map((tech, index) => (
-                  <div key={index} className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">
-                    {tech}
-                  </div>
-                ))
-              )}
+              {techStack.map((tech, index) => (
+                <div key={index} className="bg-[#2F2F2F] px-3 py-2 rounded text-white text-sm">
+                  {tech}
+                </div>
+              ))}
               {/* Default tags if no sectors or tech stack */}
               {sectors.length === 0 && techStack.length === 0 && (
                 <>
