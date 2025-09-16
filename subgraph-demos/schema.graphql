@@ -1,6 +1,7 @@
-type ExampleEntity @entity(immutable: true) {
+type Demo @entity(immutable: true) {
   id: Bytes!
-  count: BigInt!
   activityId: BigInt! # uint256
   demo_demoId: BigInt! # uint256
+  demo_dataCID: String! 
+  demo_cohortId: BigInt! # uint256
 }

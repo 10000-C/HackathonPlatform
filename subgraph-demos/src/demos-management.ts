@@ -3,7 +3,7 @@ import {
   DemosManagement,
   DemoSubmitted
 } from "../generated/DemosManagement/DemosManagement"
-import { ExampleEntity } from "../generated/schema"
+import { Demo } from "../generated/schema"
 
 export function handleDemoSubmitted(event: DemoSubmitted): void {
   // Entities can be loaded from the store using an ID; this ID
@@ -11,23 +11,21 @@ export function handleDemoSubmitted(event: DemoSubmitted): void {
   const id = event.transaction.hash.concat(
     Bytes.fromByteArray(Bytes.fromBigInt(event.logIndex))
   )
-  let entity = ExampleEntity.load(id)
+  let entity = Demo.load(id)
 
   // Entities only exist after they have been saved to the store;
   // `null` checks allow to create entities on demand
   if (!entity) {
-    entity = new ExampleEntity(id)
+    entity = new Demo(id)
 
     // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
   }
 
   // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
-
-  // Entity fields can be set based on event parameters
   entity.activityId = event.params.activityId
   entity.demo_demoId = event.params.demo.demoId
+  entity.demo_cohortId = event.params.demo.cohortId
+  entity.demo_dataCID = event.params.demo.dataCID
 
   // Entities can be written to the store with `.save()`
   entity.save()
