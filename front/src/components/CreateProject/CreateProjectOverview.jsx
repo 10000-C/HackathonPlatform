@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Upload, Plus, X, Users, Link, Image } from 'lucide-react';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import MDEditor from '@uiw/react-md-editor';
-import callSearchService from '../../utils/CallSearchService';
+import getActivities from '../../utils/getActivities';
 
 export default function CreateProjectOverview({ formData, updateFormData, activityId }) {
   const fileInputRef = useRef(null);
@@ -15,7 +15,7 @@ export default function CreateProjectOverview({ formData, updateFormData, activi
   // 获取所有可用的sector选项
   const fetchSectors = async () => {
     try {
-      const activities = await callSearchService(activityId, "activityId");
+      const activities = await getActivities(activityId, "activityId");
       const activity = activities.activities[0];
       const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${activity.activity_dataCID}`;
       const request = await fetch(url);

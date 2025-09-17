@@ -7,7 +7,7 @@ import {
   PlusCircleIcon
 } from '@heroicons/react/24/outline';
 import HackathonCard from '../components/HackathonCard';
-import callSearchService from '../utils/CallSearchService';
+import getActivities from '../utils/getActivities';
 import BannerSection from '../components/BannerSection';
 
 const filters = {
@@ -69,7 +69,7 @@ export default function HackathonsPage() {
         setLoading(true);
         
         // 从GraphQL服务获取活动列表
-        const response = await callSearchService("", "all");
+        const response = await getActivities("", "all");
         const activities = response.activities || [];
         
         // 从IPFS获取每个活动的详细数据

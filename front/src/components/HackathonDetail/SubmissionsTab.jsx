@@ -1,47 +1,61 @@
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import HackathonSidebar from './HackathonSidebar';
+import getDemos from '../../utils/GetDemos';
 
 const SubmissionsTab = ({ hackathon }) => {
-  // 从hackathon对象获取提交数据，如果不存在则使用空数组
   const navigate = useNavigate();
-  const submissions = hackathon.submissions || [
-    {
-      id: 1,
-      title: 'FairData Protocol',
-      team: 'DataGuardians',
-      description: 'A blockchain-based data sovereignty protocol that gives users complete control over how their data is shared and used.',
-      techStack: ['Solidity', 'React', 'IPFS'],
-      submittedAt: '2024-01-14',
-      thumbnailUrl: 'https://placehold.co/400x225/2b3640/white?text=FairData+Protocol',
-      likes: 24,
-      comments: 8
-    },
-    {
-      id: 2,
-      title: 'TransparAI',
-      team: 'AlgoEthics',
-      description: 'Open-source AI decision transparency tool that allows users to see and understand how algorithms make recommendations and decisions.',
-      techStack: ['Python', 'TensorFlow', 'Vue.js'],
-      submittedAt: '2024-01-13',
-      thumbnailUrl: 'https://placehold.co/400x225/2b3640/white?text=TransparAI',
-      likes: 19,
-      comments: 5
-    },
-    {
-      id: 3,
-      title: 'CreatorFirst',
-      team: 'ContentDAO',
-      description: 'A creator-first content platform ensuring fair revenue distribution and complete ownership of works.',
-      techStack: ['Rust', 'WebAssembly', 'Svelte'],
-      submittedAt: '2024-01-15',
-      thumbnailUrl: 'https://placehold.co/400x225/2b3640/white?text=CreatorFirst',
-      likes: 31,
-      comments: 12
-    }
-  ];
+  const [submissions, setSubmissions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  const fetchSubmissions = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      // 从Graph获取demos列表
+      const response = await getDemos(hackathon.id, null, "onlyActivity");
+      const demos = response.demos;
+      
+      // 并行获取所有submissions的详细信息
+      const submissionsPromises = demos.map(async (demo) => {
+        try {
+          const url = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${demo.demo_dataCID}`;
+          const request = await fetch(url);
+          const submissionData = await request.json();
+          console.log("submissionData", submissionData);
+          const imageUrl = `https://gold-rational-monkey-593.mypinata.cloud/ipfs/${submissionData.logo}`;
+
+          return {
+            id: demo.demo_demoId,
+            thumbnailUrl: imageUrl,
+            ...submissionData,
+          };
+        } catch (err) {
+          console.error(`Error fetching submission ${demo.demo_demoId}:`, err);
+          return null;
+        }
+      });
+
+      // 等待所有请求完成并过滤掉失败的请求
+      const submissionsData = (await Promise.all(submissionsPromises))
+        .filter(submission => submission !== null);
+
+      setSubmissions(submissionsData);
+    } catch (error) {
+      console.error("Error fetching submissions:", error);
+      setError("Failed to load submissions. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // 根据当前日期和hackathon的结束日期判断提交期是否活跃
+  useEffect(() => {
+    if (hackathon && hackathon.id) {
+      fetchSubmissions();
+    }
+  }, [hackathon?.id]);
+
   const now = new Date();
   const endDate = new Date(hackathon.endDate);
   const isSubmissionPeriodActive = now <= endDate;
@@ -49,7 +63,7 @@ const SubmissionsTab = ({ hackathon }) => {
   return (
     <div className="pb-16">
       <h2 className="text-2xl font-semibold text-white mb-8">Submitted Projects for {hackathon.title}</h2>
-      
+
       {/* Content grid with sidebar */}
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main content */}
@@ -57,15 +71,15 @@ const SubmissionsTab = ({ hackathon }) => {
           <div className="max-w-[800px]">
             <section>
               {isSubmissionPeriodActive && (
-                <div className="bg-opacity-10 border-2 border-solid border-[#242425] rounded-lg p-6 mb-8">
+                <div className="bg-opacity-10 border border-solid border-[#2b3640] rounded-lg p-6 mb-8">
                   <div className="mb-4">
                     <h3 className="text-xl font-semibold text-white">Submission Guidelines</h3>
                   </div>
-                  
+
                   <p className="text-white/80 mb-6">
                     Before submitting your project to {hackathon.title}, please ensure you include the following:
                   </p>
-                  
+
                   <ul className="list-disc list-inside text-white/80 mb-6 space-y-2 pl-4">
                     <li>Project title and brief description</li>
                     <li>Team member information</li>
@@ -75,61 +89,91 @@ const SubmissionsTab = ({ hackathon }) => {
                     <li>Project repository link (GitHub, etc.)</li>
                     <li>Instructions on how to run/test the project</li>
                   </ul>
-                  
+
                   <div className="flex justify-center mt-8">
                     <button className="bg-[#0092ff] text-white font-medium py-3 px-6 rounded-lg"
-                    onClick={() => navigate("/create-project/" + hackathon.id)}>
+                      onClick={() => navigate("/create-project/" + hackathon.id)}>
                       Submit Your Project
                     </button>
                   </div>
                 </div>
               )}
             </section>
-            
+
             <section>
-              {submissions.length > 0 ? (
+              {isLoading ? (
+                <div className="bg-opacity-10 border border-solid border-[#242425] rounded-lg p-10 text-center">
+                  <h2 className="text-xl font-semibold text-white mb-3">Loading submissions...</h2>
+                </div>
+              ) : error ? (
+                <div className="bg-opacity-10 border border-solid border-[#242425] rounded-lg p-10 text-center">
+                  <h2 className="text-xl font-semibold text-white mb-3">Error</h2>
+                  <p className="text-white/80 mb-6">{error}</p>
+                </div>
+              ) : submissions.length > 0 ? (
                 <div className="space-y-6">
                   {submissions.map((submission) => (
-                    <div key={submission.id} className="bg-opacity-10 border border-solid border-[#242425] rounded-lg overflow-hidden">
+                    <div key={submission.id} className="bg-opacity-10 border border-solid border-[#2b3640] rounded-2xl overflow-hidden hover:border-[#0092ff] transition-colors duration-200">
                       <div className="flex flex-col md:flex-row">
-                        <div className="md:w-1/3 h-48 bg-gray-800 overflow-hidden">
-                          <img 
-                            src={submission.thumbnailUrl} 
-                            alt={submission.title}
-                            className="w-full h-full object-cover" 
-                          />
+                        <div className="md:w-48 md:h-48 m-4 rounded-2xl bg-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center self-center">
+                          {submission.logo ? (
+                            <img
+                              src={`https://gateway.pinata.cloud/ipfs/${submission.logo}`}
+                              alt={submission.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = '/public/vite.svg'; // 设置默认图片
+                                e.target.onerror = null;
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-[#1e2329] flex items-center justify-center">
+                              <span className="text-white/40 text-sm">No Logo</span>
+                            </div>
+                          )}
                         </div>
-                        
-                        <div className="p-5 md:w-2/3">
-                          <h3 className="text-lg font-semibold text-white mb-1">{submission.title}</h3>
-                          <p className="text-white/60 text-sm mb-3">By {submission.team} • Submitted on {submission.submittedAt}</p>
-                          
-                          <p className="text-white/80 mb-4 line-clamp-2">
-                            {submission.description}
-                          </p>
-                          
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {submission.techStack.map((tech) => (
-                              <span key={tech} className="bg-opacity-50 text-white text-xs py-1 px-2 rounded">
-                                {tech}
-                              </span>
-                            ))}
+
+                        <div className="p-5 flex-1 flex flex-col justify-between min-h-48">
+                          <div>
+                            <div className="flex justify-between items-start mb-3">
+                              <h3 className="text-lg font-semibold text-white">{submission.name}</h3>
+                              {submission.githubLink && (
+                                <a 
+                                  href={ submission.githubLink } 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-[#0092ff] hover:text-[#0092ff]/80 ml-4"
+                                >
+                                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
+                                  </svg>
+                                </a>
+                              )}
+                            </div>
+
+                            <p className="text-white/80 mb-4 line-clamp-2">
+                              {submission.shortDescription}
+                            </p>
+
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {submission.techStack.map((tech) => (
+                                <span 
+                                  key={tech} 
+                                  className="bg-[#1e2329] text-white/80 text-xs py-1.5 px-3 rounded-full border border-[#2b3640]"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          
-                          <div className="flex justify-between text-white/60 text-sm">
-                            <div className="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                              </svg>
-                              {submission.likes}
-                            </div>
-                            <div className="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
-                              </svg>
-                              {submission.comments}
-                            </div>
-                            <button className="text-[#0092ff]">View Details</button>
+
+                          <div className="flex justify-end text-white/60 text-sm">
+                            <button 
+                              className="text-[#0092ff] hover:text-[#0092ff]/80 transition-colors"
+                              onClick={() => navigate(`/hackathons/${hackathon.id}/projects/${submission.id}`)}
+                            >
+                              View Details →
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -147,7 +191,7 @@ const SubmissionsTab = ({ hackathon }) => {
             </section>
           </div>
         </div>
-        
+
         {/* Sidebar */}
         <div className="lg:w-80 flex-shrink-0">
           <div className="sticky top-0">

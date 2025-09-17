@@ -5,13 +5,13 @@ import OverviewTab from '../components/HackathonDetail/OverviewTab';
 import PrizesTab from '../components/HackathonDetail/PrizesTab';
 import ScheduleTab from '../components/HackathonDetail/ScheduleTab';
 import SubmissionsTab from '../components/HackathonDetail/SubmissionsTab';
-import callSearchService from '../utils/CallSearchService';
+import getActivities from '../utils/getActivities';
 
 // 从IPFS获取黑客松详情
 const fetchHackathonById = async (hackathonId) => {
   try {
     // 构建IPFS URL
-    const dataFromGraph = await callSearchService(hackathonId, "activityId");
+    const dataFromGraph = await getActivities(hackathonId, "activityId");
     console.log("GraphQL response:", dataFromGraph);
     
     const activityData = dataFromGraph.activities[0];
@@ -189,7 +189,7 @@ const HackathonDetailPage = () => {
   // 渲染加载状态
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#121820]">
+      <div className="flex justify-center items-center min-h-screen bg-[#1b1b1e]">
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
@@ -198,7 +198,7 @@ const HackathonDetailPage = () => {
   // 渲染错误状态
   if (error || !hackathon) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#121820]">
+      <div className="flex justify-center items-center min-h-screen bg-[#1b1b1e]">
         <div className="text-white text-xl">{error || "Details of the hackathon cannot be obtained"}</div>
       </div>
     );
