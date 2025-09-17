@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const ProjectDetailLayout = ({ project, activeTab, onTabChange, children }) => {
+    const navigate = useNavigate();
+    const { activityId } = useParams();
     const [isScrolled, setIsScrolled] = useState(false);
+
+    // 确保 activityId 存在
+
 
     // Handle scroll event to show/hide fixed header
     useEffect(() => {
@@ -15,11 +20,6 @@ const ProjectDetailLayout = ({ project, activeTab, onTabChange, children }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const tabs = [
-        { id: 'overview', label: 'Project Overview' },
-        // { id: 'hackathon', label: 'Hackathon' },
-        // { id: 'judging', label: 'Judging' }
-    ];
 
     return (
         <div className="bg-[#1b1b1e] min-h-screen pb-12 px-20">
@@ -30,7 +30,10 @@ const ProjectDetailLayout = ({ project, activeTab, onTabChange, children }) => {
                     {/* Top Navigation Row */}
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center">
-                            <button className="flex items-center text-white/60 hover:text-white mr-6">
+                            <button 
+                                onClick={() => navigate(`/hackathons/${activityId}/submissions`)}
+                                className="flex items-center text-white/60 hover:text-white mr-6"
+                            >
                                 <div className="w-4 h-4 mr-2 border border-[#949FA8] rounded p-0.5">
                                     <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M12.75 9L5.25 9" stroke="#949FA8" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -45,20 +48,6 @@ const ProjectDetailLayout = ({ project, activeTab, onTabChange, children }) => {
                     <h2 className="text-lg font-semibold text-white hidden sm:block mb-4">{project?.name}</h2>
 
                     {/* Tabs Row */}
-                    <div className="bg-[#ffffff]/10 rounded-lg w-fit">
-                        <div className="relative flex items-center h-[42px]">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    className={`px-4 py-2 text-white text-xs ${activeTab === tab.id ? 'bg-[#0092ff] rounded-lg z-10' : ''
-                                        }`}
-                                    onClick={() => onTabChange(tab.id)}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -69,7 +58,10 @@ const ProjectDetailLayout = ({ project, activeTab, onTabChange, children }) => {
                     {/* Back button */}
                     <div className="py-4 flex justify-between">
                         <div className="flex items-center">
-                            <button className="flex items-center text-white/60 hover:text-white">
+                            <button 
+                                onClick={() => navigate(`/hackathons/${activityId}/submissions`)}
+                                className="flex items-center text-white/60 hover:text-white"
+                            >
                                 <div className="w-4 h-4 mr-2 border border-[#949FA8] rounded p-0.5">
                                     <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M12.75 9L5.25 9" stroke="#949FA8" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -87,22 +79,6 @@ const ProjectDetailLayout = ({ project, activeTab, onTabChange, children }) => {
                     </div> */}
 
                     {/* Tab Navigation */}
-                    <div className="my-6">
-                        <div className="bg-[#ffffff]/10 rounded-lg w-fit">
-                            <div className="relative flex items-center h-[48px]">
-                                {tabs.map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        className={`px-10 py-3 text-white text-sm h-full ${activeTab === tab.id ? 'bg-[#0092ff] rounded-lg z-10' : ''
-                                            }`}
-                                        onClick={() => onTabChange(tab.id)}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Content Area */}
                     <div className="mt-6">
