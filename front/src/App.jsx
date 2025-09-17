@@ -9,6 +9,7 @@ import Test from './pages/test'
 import JudgeDashboard from './pages/JudgeDashboard';
 import HackathonDetailPage from './pages/HackathonDetailPage';
 import CreateProjectPage from './pages/CreateProjectPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/resources" element={<div>Resources Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} />
             <Route path="/hackathons/:id/:tab?" element={<HackathonDetailPage />} />
+            <Route path="/hackathons/:activityId/projects/:projectId/:tab?" element={<ProjectDetailPage />} />
           </Route>
         </Routes>
       </Router>

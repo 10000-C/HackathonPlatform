@@ -5,13 +5,13 @@ import OverviewTab from '../components/HackathonDetail/OverviewTab';
 import PrizesTab from '../components/HackathonDetail/PrizesTab';
 import ScheduleTab from '../components/HackathonDetail/ScheduleTab';
 import SubmissionsTab from '../components/HackathonDetail/SubmissionsTab';
-import callSearchService from '../utils/CallSearchService';
+import getActivities from '../utils/getActivities';
 
 // 从IPFS获取黑客松详情
 const fetchHackathonById = async (hackathonId) => {
   try {
     // 构建IPFS URL
-    const dataFromGraph = await callSearchService(hackathonId, "activityId");
+    const dataFromGraph = await getActivities(hackathonId, "activityId");
     console.log("GraphQL response:", dataFromGraph);
     
     const activityData = dataFromGraph.activities[0];
