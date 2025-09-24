@@ -1,0 +1,48 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-addd86dbee720a88b349b4c5eb4e1fbdac532412",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/JudgementManagement.sol": "project/contracts/JudgementManagement.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/interface/IActivitiesManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IActivitiesManagement {\r\n    function isParticipantInActivity(uint256 _activityId, address _user) external view returns (bool);\r\n    function getCreatorOfActivity(uint256 _activityId) external view returns (address);\r\n    function isActivityIdValid(uint256 _activityId) external view returns (bool);\r\n    function getActivity(uint256 _activityId) external view returns (Activity memory);\r\n    function isRegistrationOpen(uint256 _activityId) external view returns (bool);\r\n    function isJudgementOpen(uint256 _activityId) external view returns (bool);\r\n    function isHackthonOpen(uint256 _activityId) external view returns (bool);\r\n\r\n    struct Duration {\r\n        uint256 startTime;\r\n        uint256 endTime;\r\n    }\r\n    \r\n    struct Activity {\r\n        string dataCID;\r\n        string topic;\r\n        address creator;\r\n        uint256 maxParticipants;\r\n        uint256 cuParticipants;\r\n        uint256 activityId;\r\n        Duration judgementDuration;\r\n        Duration registerDuration;\r\n        Duration hackthonDuration;\r\n    }\r\n}"
+      },
+      "project/contracts/interface/IAuthorityManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IAuthorityManagement {\r\n    function isAdmin(address _admin) external view returns (bool);\r\n    function isBlockedUser(address _user) external view returns (bool);\r\n    function isAnOrganizer(address _organizer) external view returns (bool);\r\n    function getOwner() external view returns (address);\r\n}"
+      },
+      "project/contracts/interface/IJudgementManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IJudgementManagement {\r\n    function isJudgeInActivity(uint256 _activityId, address _judge) external view returns (bool);\r\n    function getJudgeInvitationCode(uint256 _activityId, string memory _judgeName) external view returns (bytes32);\r\n}"
+      },
+      "project/contracts/JudgementManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nimport \"./interface/IActivitiesManagement.sol\";\r\nimport \"./interface/IJudgementManagement.sol\";\r\nimport \"./interface/IAuthorityManagement.sol\";\r\n\r\ncontract JudgementManagement is IJudgementManagement { \r\n\r\n    IActivitiesManagement private activitiesManagement;\r\n    IAuthorityManagement private authorityManagement;\r\n\r\n    constructor(address _activitiesManagementAddress, address _authorityManagementAddress) {\r\n        authorityManagement = IAuthorityManagement(_authorityManagementAddress);\r\n        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);\r\n    }\r\n    \r\n    mapping(uint256 => mapping(bytes32 => bool)) private isInvitationCodeValid; // activityId => invitationCode => exists\r\n    mapping(uint256 => mapping(address => bool)) public isJudge; // activityId => judge => isJudge\r\n    mapping(uint256 => mapping(string => bytes32)) public judgeInvitations; // activityId => judgeId => invitationCode\r\n\r\n    function random(uint256 number) public view returns(uint256) {\r\n        return uint(keccak256(abi.encodePacked(block.timestamp,block.prevrandao,  \r\n        msg.sender))) % number;\r\n    }\r\n\r\n    function createJudgeInvitation(uint256 _activityId, string memory _judgeName) public onlyOrganizer(_activityId) \r\n    {\r\n        require(judgeInvitations[_activityId][_judgeName] == bytes32(0), \"Invitation already created for this judge\");\r\n        uint256 randomNumber = random(_activityId * 1000);\r\n        bytes32 invitationCode = keccak256(abi.encodePacked(randomNumber, _judgeName, msg.sender));\r\n        isInvitationCodeValid[_activityId][invitationCode] = true;\r\n        judgeInvitations[_activityId][_judgeName] = invitationCode;\r\n    }\r\n\r\n    function registerAsJudge(uint256 _activityId, bytes32 _invitationCode) public returns(bool) {\r\n        if(!isInvitationCodeValid[_activityId][_invitationCode]) {\r\n            return false; // invalid code\r\n        }\r\n        isJudge[_activityId][msg.sender] = true;\r\n        return true;\r\n    }\r\n\r\n    function isJudgeInActivity(uint256 _activityId, address _judge) public view returns(bool) {\r\n        return isJudge[_activityId][_judge];\r\n    } \r\n\r\n    function getJudgeInvitationCode(uint256 _activityId, string memory _judgeName) public view returns(bytes32) {\r\n        return judgeInvitations[_activityId][_judgeName];\r\n    }\r\n\r\n    // 添加更新 ActivitiesManagement 地址的方法\r\n    function updateDependencies(address _newActivitiesManagementAddress) public onlyOwner(){\r\n        activitiesManagement = IActivitiesManagement(_newActivitiesManagementAddress);\r\n    }\r\n\r\n    modifier onlyOrganizer(uint256 _activityId)  {\r\n        address activityCreator = activitiesManagement.getCreatorOfActivity(_activityId);\r\n        require(msg.sender == activityCreator, \"Not the organizer of this activity\");\r\n        _;\r\n    }\r\n\r\n    modifier onlyOwner() {\r\n        require(msg.sender == authorityManagement.getOwner(), \"Not the owner\");\r\n        _;\r\n    }\r\n}"
+      }
+    }
+  }
+}

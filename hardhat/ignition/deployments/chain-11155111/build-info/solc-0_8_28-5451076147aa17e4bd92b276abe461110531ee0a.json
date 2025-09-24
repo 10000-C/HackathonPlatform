@@ -1,0 +1,48 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-5451076147aa17e4bd92b276abe461110531ee0a",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/PrizesManagement.sol": "project/contracts/PrizesManagement.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/interface/IActivitiesManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IActivitiesManagement {\r\n    function isParticipantInActivity(uint256 _activityId, address _user) external view returns (bool);\r\n    function getCreatorOfActivity(uint256 _activityId) external view returns (address);\r\n    function isActivityIdValid(uint256 _activityId) external view returns (bool);\r\n    function getActivity(uint256 _activityId) external view returns (Activity memory);\r\n    function isRegistrationOpen(uint256 _activityId) external view returns (bool);\r\n    function isJudgementOpen(uint256 _activityId) external view returns (bool);\r\n    function isHackthonOpen(uint256 _activityId) external view returns (bool);\r\n\r\n    struct Duration {\r\n        uint256 startTime;\r\n        uint256 endTime;\r\n    }\r\n    \r\n    struct Activity {\r\n        string dataCID;\r\n        string topic;\r\n        address creator;\r\n        uint256 maxParticipants;\r\n        uint256 cuParticipants;\r\n        uint256 activityId;\r\n        Duration judgementDuration;\r\n        Duration registerDuration;\r\n        Duration hackthonDuration;\r\n    }\r\n}"
+      },
+      "project/contracts/interface/IAuthorityManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IAuthorityManagement {\r\n    function isAdmin(address _admin) external view returns (bool);\r\n    function isBlockedUser(address _user) external view returns (bool);\r\n    function isAnOrganizer(address _organizer) external view returns (bool);\r\n    function getOwner() external view returns (address);\r\n}"
+      },
+      "project/contracts/interface/IPrizesManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ninterface IPrizesManagement {\r\n    struct cohort {\r\n        uint256 numOfWinners;\r\n        string[] criteria;\r\n        uint256[] pointsOfCriteria;\r\n        uint256 bonusAmount;\r\n    }\r\n    \r\n    function getCohort(uint256 _activityId, uint256 _cohortId) external view returns (cohort memory);\r\n}"
+      },
+      "project/contracts/PrizesManagement.sol": {
+        "content": "// SPDX-License-Identifier: MIT \r\npragma solidity ^0.8.28;\r\n\r\nimport \"./interface/IActivitiesManagement.sol\";\r\nimport \"./interface/IPrizesManagement.sol\";\r\nimport \"./interface/IAuthorityManagement.sol\";\r\n\r\n// part of activity information\r\n/* save details of prizes : \r\n   cohort : number of winners\r\n   criteria : number of points    \r\n*/\r\ncontract PrizesManagement is IPrizesManagement { \r\n\r\n    event PrizeAdded(uint256 indexed activityId, Prize prize);\r\n    IActivitiesManagement private activitiesManagement;\r\n    IAuthorityManagement private authorityManagement;\r\n    \r\n    struct Prize{\r\n        cohort[] cohorts;\r\n        uint256 activityId;\r\n        uint256 totalBonusAmount;\r\n    }\r\n    mapping(uint256 => Prize) public prizes; // activityId => Prize\r\n    \r\n    constructor(address _activitiesManagementAddress) {\r\n        activitiesManagement = IActivitiesManagement(_activitiesManagementAddress);\r\n    }\r\n    \r\n    function addPrizeInfo(uint256 _activityId, uint256 _numOfCohorts, uint256[] memory _numOfWinners, string[][] memory _criteria, uint256[][] memory _pointsOfCriteria, uint256[] memory _bonusAmounts) \r\n    public onlyOrganizer(_activityId) onlyValidTime(_activityId)\r\n    {\r\n        require(prizes[_activityId].activityId == 0, \"Prize info already added for this activity\");\r\n        require(_numOfCohorts == _criteria.length &&_criteria.length == _numOfWinners.length && _criteria.length == _bonusAmounts.length && _criteria.length == _pointsOfCriteria.length, \"Mismatched cohorts data\");\r\n        cohort[] storage cohorts = prizes[_activityId].cohorts;\r\n        for (uint256 i = 0; i < _numOfCohorts; i++) { \r\n            cohorts.push(cohort(_numOfWinners[i], _criteria[i], _pointsOfCriteria[i], _bonusAmounts[i]));\r\n            prizes[_activityId].totalBonusAmount += _bonusAmounts[i];\r\n        }\r\n        prizes[_activityId].activityId = _activityId;\r\n        emit PrizeAdded(_activityId, prizes[_activityId]);\r\n    }\r\n\r\n    function getCohort(uint256 _activityId, uint256 _cohortId) public view returns(cohort memory) {\r\n        require(prizes[_activityId].activityId != 0, \"No prize info for this activity\");\r\n        require(_cohortId < prizes[_activityId].cohorts.length, \"Invalid cohort index\");\r\n        return prizes[_activityId].cohorts[_cohortId];\r\n    }\r\n\r\n    // 添加更新 ActivitiesManagement 地址的方法\r\n    function updateDependencies(address _newActivitiesManagementAddress) public onlyOwner(){\r\n        // 这里需要获取活动创建者来验证权限，暂时使用modifier中的逻辑\r\n        activitiesManagement = IActivitiesManagement(_newActivitiesManagementAddress);\r\n    }\r\n\r\n    modifier onlyOrganizer(uint256 _activityId) {\r\n        address activityCreator = activitiesManagement.getCreatorOfActivity(_activityId);\r\n        require(msg.sender == activityCreator, \"Not the organizer of this activity\");\r\n        _;\r\n    }\r\n\r\n    modifier onlyOwner() {\r\n        require(msg.sender == authorityManagement.getOwner(), \"Not the owner\");\r\n        _;\r\n    }\r\n\r\n    modifier onlyValidTime(uint256 _activityId) {\r\n        require(activitiesManagement.isActivityIdValid(_activityId), \"Invalid activity ID\");\r\n        require(activitiesManagement.isHackthonOpen(_activityId), \"Not in hackthon time\");\r\n        _;\r\n    }\r\n}"
+      }
+    }
+  }
+}

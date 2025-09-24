@@ -1,0 +1,10 @@
+{
+  "HackathonPlatformDeployment#AuthorityManagement": "0xf0Cfe10D3F6277a868679EDF2b899bd57F5E8b2e",
+  "HackathonPlatformDeployment#ActivitiesManagement": "0x1c2318b7415e369FeF9f66Af29E08DF51B5FFdDd",
+  "HackathonPlatformDeployment#JudgementManagement": "0xFe09E101a92EEcE4Bc40F6d9aE8eAA2AE2F90B8a",
+  "HackathonPlatformDeployment#PrizesManagement": "0xE218EbBA3899FDAcF1B5bED9Cc8A5DE2a643F374",
+  "HackathonPlatformDeployment#DemosManagement": "0xdFEe1551649115Eb59D346725B3A11c50948f929",
+  "HackathonPlatformDeployment#DemosJudgement": "0x62F8fD5D916b55f377ba6505D71cC1610119E3E9",
+  "RedeployJudgementAndDemos#DemosManagement": "0x951e6a4C59f5a866876094Bba4dE8d32ACF1E454",
+  "RedeployJudgementAndDemos#JudgementManagement": "0xC7fb7710BE0e1948C6c3bFeD73188dB41F7A804d"
+}

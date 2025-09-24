@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "ActivitiesManagement": {
+      "address": "0xC91cfB0Ab5EA34e350bb2cC4Eb360Ddeb05a1552",
+      "startBlock": 9083030
+    }
+  }
+}
